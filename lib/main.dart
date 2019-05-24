@@ -12,7 +12,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-            floatingActionButtonTheme: FloatingActionButtonThemeData(backgroundColor: AppColors.SECONDARY),
+            canvasColor: Colors.transparent,
+            floatingActionButtonTheme: FloatingActionButtonThemeData(
+                backgroundColor: AppColors.SECONDARY),
             primaryColor: AppColors.PRIMARY),
         home: BlocProvider(
           bloc: HomeBloc(),

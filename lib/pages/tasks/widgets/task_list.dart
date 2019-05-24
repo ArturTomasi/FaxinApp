@@ -2,7 +2,6 @@ import 'package:faxinapp/bloc/bloc_provider.dart';
 import 'package:faxinapp/pages/tasks/bloc/task_bloc.dart';
 import 'package:faxinapp/pages/tasks/models/task.dart';
 import 'package:faxinapp/util/AppColors.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class TaskList extends StatelessWidget {
@@ -16,7 +15,7 @@ class TaskList extends StatelessWidget {
         if (snapshot.hasData) {
           return TaskListWidget(snapshot.data);
         } else {
-          return CircularProgressIndicator();
+          return Container( color: AppColors.PRIMARY_LIGHT, child: Center( child: CircularProgressIndicator() ) );
         }
       },
     );
@@ -56,7 +55,7 @@ class TaskListWidget extends StatelessWidget {
                   ),
                   child: ListTile(
                       leading: new Icon(
-                        Icons.adjust,
+                        Icons.fitness_center,
                         color: Colors.white,
                       ),
                       title: new Text(_tasks[i].name.toUpperCase(),
