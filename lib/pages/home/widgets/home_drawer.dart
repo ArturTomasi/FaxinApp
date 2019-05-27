@@ -2,8 +2,7 @@ import 'package:faxinapp/bloc/bloc_provider.dart';
 import 'package:faxinapp/pages/products/bloc/product_bloc.dart';
 import 'package:faxinapp/pages/products/widgets/product_widget.dart';
 import 'package:faxinapp/pages/tasks/bloc/task_bloc.dart';
-import 'package:faxinapp/pages/tasks/models/task_repository.dart';
-import 'package:faxinapp/pages/tasks/widgets/task_editor.dart';
+import 'package:faxinapp/pages/tasks/widgets/task_widget.dart';
 import 'package:faxinapp/util/AppColors.dart';
 import 'package:flutter/material.dart';
 
@@ -27,6 +26,24 @@ class HomeDrawer extends StatelessWidget {
                           BorderRadius.vertical(bottom: Radius.circular(30)))),
               ListTile(
                 leading: new Icon(
+                  Icons.hotel,
+                  color: Colors.white,
+                ),
+                subtitle: Text(
+                  "Gerenciar faxinas",
+                  style: TextStyle(
+                      color: Colors.white, fontStyle: FontStyle.italic),
+                ),
+                title: Text(
+                  "Faxinas",
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+                onTap: () async {
+                },
+              ),
+              Divider(color: AppColors.SECONDARY),
+              ListTile(
+                leading: new Icon(
                   Icons.fitness_center,
                   color: Colors.white,
                 ),
@@ -41,15 +58,16 @@ class HomeDrawer extends StatelessWidget {
                 ),
                 onTap: () async {
                   var bloc = BlocProvider(
-                    bloc: TaskBloc(TaskRepository.get()),
-                    child: TaskEditor(),
+                    bloc: TaskBloc(),
+                    child: TaskWidget(),
                   );
+
                   await Navigator.push(
                     context,
                     MaterialPageRoute<bool>(builder: (context) => bloc),
                   );
 
-                  BlocProvider.of<TaskBloc>(context).refresh();
+                  Navigator.pop(context);
                 },
               ),
               ListTile(
@@ -71,12 +89,13 @@ class HomeDrawer extends StatelessWidget {
                     bloc: ProductBloc(),
                     child: ProductWidget(),
                   );
+
                   await Navigator.push(
                     context,
                     MaterialPageRoute<bool>(builder: (context) => bloc),
                   );
 
-                  //BlocProvider.of<TaskBloc>(context).refresh();
+                  Navigator.pop(context);
                 },
               )
             ])));

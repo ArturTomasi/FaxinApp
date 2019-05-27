@@ -9,21 +9,20 @@ class ProductEditor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ProductBloc bloc = BlocProvider.of(context);
-
+    ProductBloc bloc = BlocProvider.of<ProductBloc>(context);
     final Product product = new Product.create("");
 
     return Container(
-        decoration: BoxDecoration(
+        decoration: ShapeDecoration(
             color: AppColors.PRIMARY_LIGHT,
-            //borderRadius: BorderRadius.vertical(top: Radius.circular(30)) ),
-            border: Border(
-                top: BorderSide(
-                    width: 5,
-                    color: AppColors.SECONDARY,
-                    style: BorderStyle.solid))),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+              side: new BorderSide(
+                  color: AppColors.SECONDARY,
+                  style: BorderStyle.solid,
+                  width: 1),
+            )),
         height: 225,
-        //color: AppColors.PRIMARY_LIGHT,
         child: ListView(
           children: <Widget>[
             Form(
@@ -66,16 +65,20 @@ class ProductEditor extends StatelessWidget {
                     SizedBox(
                         width: MediaQuery.of(context).size.width,
                         child: RaisedButton(
+                          shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
                           onPressed: () async {
                             if (_formState.currentState.validate()) {
                               _formState.currentState.save();
                               await bloc.save(product);
                               Navigator.pop(context);
+                              bloc.refresh();
                             }
                           },
                           color: AppColors.SECONDARY,
                           textColor: Colors.white,
-                          child: Text("Salvar"),
+                          child: Text("Salvar", style: TextStyle(fontSize: 16)),
                         ))
                   ])),
               key: _formState,

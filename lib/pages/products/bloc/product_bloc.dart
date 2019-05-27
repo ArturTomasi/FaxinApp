@@ -25,7 +25,6 @@ class ProductBloc extends BlocBase {
 
   ProductBloc() {
     _repository = ProductRepository.get();
-    refresh();
   }
 
   void showCreate( bool b ){
@@ -38,7 +37,6 @@ class ProductBloc extends BlocBase {
 
   void delete( Product p ){
     _repository.delete( p );
-    refresh();
   }
 
   Future save(Product p) async {

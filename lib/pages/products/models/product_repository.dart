@@ -53,7 +53,7 @@ class ProductRepository {
   Future<List<Product>> findAll() async {
     var db = await _appDatabase.getDb();
 
-    var result = await db.query(ProductTable.table);
+    var result = await db.query(ProductTable.table, orderBy: ProductTable.name);
     
     List<Product> products = List();
 

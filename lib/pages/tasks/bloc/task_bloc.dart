@@ -12,37 +12,37 @@ class TaskBloc implements BlocBase {
       StreamController<bool>.broadcast();
   Stream<bool> get exists => _taskExistController.stream;
 
+  StreamController<bool> _showFABController =
+      StreamController<bool>.broadcast();
+
+  Stream<bool> get showFAB => _showFABController.stream;
+
   @override
   void dispose() {
     _taskController.close();
+    _showFABController.close();
     _taskExistController.close();
   }
 
   TaskRepository _repository;
 
-  TaskBloc(this._repository) {
-    _load();
+  TaskBloc() {
+    this._repository = TaskRepository.get();
   }
 
-  void _load() {
-    _repository.findAll().then((tasks) {
-      _taskController.sink.add(List.unmodifiable(tasks));
-    });
+  void refresh() async {
+    _taskController.sink.add(await _repository.findAll());
   }
 
-  void refresh() {
-    if ( ! _taskController.isClosed ) _load();
+  void delete(Task task) {
+    _repository.delete(task);
   }
 
-  void delete( Task task ){
-    _repository.delete( task );
-    refresh();
+  Future save(Task task) async {
+    await _repository.save(task);
   }
 
-  void save(Task task) async {
-    _repository.save(task).then((isExist) {
-      if ( ! _taskController.isClosed )
-        _taskExistController.sink.add(isExist);
-    });
+  void showCreate( bool b ){
+    _showFABController.sink.add(b);
   }
 }

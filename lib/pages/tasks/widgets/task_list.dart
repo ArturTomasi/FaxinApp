@@ -7,15 +7,26 @@ import 'package:flutter/material.dart';
 class TaskList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    TaskBloc taskBloc = BlocProvider.of(context);
+    TaskBloc _bloc = BlocProvider.of(context);
+    _bloc.refresh();
 
     return StreamBuilder<List<Task>>(
-      stream: taskBloc.tasks,
+      stream: _bloc.tasks,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
+          if (snapshot.data.isEmpty) {
+            return Container(
+              color: AppColors.PRIMARY_LIGHT,
+              child: Center(
+                  child:
+                      Icon(Icons.fitness_center, size: 100, color: AppColors.SECONDARY)),
+            );
+          }
           return TaskListWidget(snapshot.data);
         } else {
-          return Container( color: AppColors.PRIMARY_LIGHT, child: Center( child: CircularProgressIndicator() ) );
+          return Container(
+              color: AppColors.PRIMARY_LIGHT,
+              child: Center(child: CircularProgressIndicator()));
         }
       },
     );
@@ -38,20 +49,23 @@ class TaskListWidget extends StatelessWidget {
                   key: ObjectKey(_tasks[i]),
                   direction: DismissDirection.endToStart,
                   onDismissed: (direction) {
-                    final TaskBloc _tasksBloc =
-                        BlocProvider.of<TaskBloc>(context);
                     if (direction == DismissDirection.endToStart) {
-                      _tasksBloc.delete(_tasks[i]);
+                      TaskBloc _bloc = BlocProvider.of<TaskBloc>(context);
+                      _bloc.delete(_tasks[i]);
+                      _bloc.refresh();
+
                       Scaffold.of(context).showSnackBar(SnackBar(
                           backgroundColor: AppColors.SECONDARY,
-                          content: Text("Tarefa excluida com sucesso!", style: TextStyle(fontSize: 16),)));
+                          content: Text(
+                            "Tarefa excluida com sucesso!",
+                            style: TextStyle(fontSize: 16),
+                          )));
                     }
                   },
                   background: Container(
                     color: Colors.red,
                     child: ListTile(
-                      trailing: Icon(Icons.delete, color: Colors.white)
-                    ),
+                        trailing: Icon(Icons.delete, color: Colors.white)),
                   ),
                   child: ListTile(
                       leading: new Icon(

@@ -8,6 +8,7 @@ class ProductList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ProductBloc bloc = BlocProvider.of(context);
+    bloc.refresh();
 
     return StreamBuilder<List<Product>>(
       stream: bloc.products,
@@ -41,8 +42,10 @@ class ProductListWidget extends StatelessWidget {
                   direction: DismissDirection.endToStart,
                   onDismissed: (direction) {
                     if (direction == DismissDirection.endToStart) {
-                      BlocProvider.of<ProductBloc>(context)
-                          .delete(_products[i]);
+                      ProductBloc _bloc = BlocProvider.of<ProductBloc>(context);
+                      _bloc.delete(_products[i]);
+                      _bloc.refresh();
+                      
                       Scaffold.of(context).showSnackBar(SnackBar(
                           backgroundColor: AppColors.SECONDARY,
                           content: Text(
