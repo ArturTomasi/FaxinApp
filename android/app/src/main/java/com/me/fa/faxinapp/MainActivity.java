@@ -1,4 +1,4 @@
-package com.example.faxinapp;
+package com.me.fa.faxinapp;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;
