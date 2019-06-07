@@ -1,4 +1,6 @@
 import 'package:faxinapp/bloc/bloc_provider.dart';
+import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';
+import 'package:faxinapp/pages/cleaning/widgets/cleaning_widget.dart';
 import 'package:faxinapp/pages/products/bloc/product_bloc.dart';
 import 'package:faxinapp/pages/products/widgets/product_widget.dart';
 import 'package:faxinapp/pages/tasks/bloc/task_bloc.dart';
@@ -26,7 +28,7 @@ class HomeDrawer extends StatelessWidget {
                           BorderRadius.vertical(bottom: Radius.circular(30)))),
               ListTile(
                 leading: new Icon(
-                  Icons.hotel,
+                  Icons.clear_all,
                   color: Colors.white,
                 ),
                 subtitle: Text(
@@ -39,6 +41,15 @@ class HomeDrawer extends StatelessWidget {
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
                 onTap: () async {
+                  var _bloc = BlocProvider(
+                      bloc: CleaningBloc(), child: CleaningWidget());
+
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute<bool>(builder: (context) => _bloc),
+                  );
+
+                  //Navigator.pop(context);
                 },
               ),
               Divider(color: AppColors.SECONDARY),
@@ -67,7 +78,7 @@ class HomeDrawer extends StatelessWidget {
                     MaterialPageRoute<bool>(builder: (context) => bloc),
                   );
 
-                  Navigator.pop(context);
+                  //Navigator.pop(context);
                 },
               ),
               ListTile(
@@ -95,7 +106,7 @@ class HomeDrawer extends StatelessWidget {
                     MaterialPageRoute<bool>(builder: (context) => bloc),
                   );
 
-                  Navigator.pop(context);
+                  //Navigator.pop(context);
                 },
               )
             ])));

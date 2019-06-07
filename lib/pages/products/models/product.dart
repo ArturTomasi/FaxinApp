@@ -16,13 +16,19 @@ class Product {
     }
   }
 
-  bool operator(o) => o is Product && o.id == id;
+  bool operator(o)=>o is Product && o.id == id;
+  
+
+  int get hashcode => id.hashCode;
 
   Product.fromMap(Map<String, dynamic> map)
       : this.update(
             id: map[ProductTable.id],
             name: map[ProductTable.name],
             brand: map[ProductTable.brand]);
+
+  @override
+  String toString() => name;
 }
 
 class ProductTable {

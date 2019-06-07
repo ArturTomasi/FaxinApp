@@ -45,7 +45,7 @@ class TaskRepository
 
   Future<List<Task>> findAll() async {
     var db = await _appDatabase.getDb();
-    var result = await db.rawQuery('SELECT * FROM ${TaskTable.table}');
+    var result = await db.rawQuery('SELECT * FROM ${TaskTable.table} order by ${TaskTable.name}');
     List<Task> tasks = List();
     for (Map<String, dynamic> item in result) {
       tasks.add(Task.fromMap(item));

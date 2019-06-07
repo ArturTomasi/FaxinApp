@@ -1,71 +1,41 @@
-/*
-import 'package:flutter/material.dart';
-import 'package:meta/meta.dart';
+import 'package:faxinapp/pages/products/models/product.dart';
+import 'package:faxinapp/pages/tasks/models/task.dart';
 
-class Cleaning
-{
-    String title, info;
-    int id, date, time, status;
-    List<String> labelList = List();
+class Cleaning {
+  int id;
+  String title, info;
+  List<Product> products;
+  List<Task> tasks;
 
-    Task.create(
-      {@required this.title
-      this.comment = "",
-      this.dueDate = -1,
-      this.priority = Status.PRIORITY_4}) {
-    if (this.dueDate == -1) {
-      this.dueDate = DateTime.now().millisecondsSinceEpoch;
-    }
-    this.tasksStatus = TaskStatus.PENDING;
-  }
+  Cleaning.create(
+      {this.title = "",
+      this.info = "",
+      this.id = 0,
+      this.products = const [],
+      this.tasks = const []});
+
+  Cleaning.fromMap(Map<String, dynamic> map)
+      : this.create(
+            title: map[CleaningTable.TITLE],
+            info: map[CleaningTable.INFO],
+            id: map[CleaningTable.ID]);
 }
 
-class Table
-{
-    static final name       = "cleanings";
-    static final dbId       = "id";
-    static final dbTitle    = "title";
-    static final dbInfo     = "info";
-    static final dbDate     = "dt_programed";
-    static final dbTime     = "dt_time";
-    static final dbStatus   = "status";
+class CleaningTable {
+  static const table = "cleanings";
+  static const ID = "id";
+  static const TITLE = "title";
+  static const INFO = "info";
 }
 
-class Tasks {
-
-
-
- 
-
-  bool operator ==(o) => o is Tasks && o.id == id;
-
-  Tasks.update(
-      {@required this.id,
-      @required this.title,
-      @required this.projectId,
-      this.comment = "",
-      this.dueDate =-1,
-      this.priority = Status.PRIORITY_4,
-      this.tasksStatus = TaskStatus.PENDING}) {
-    if (this.dueDate == -1) {
-      this.dueDate = DateTime.now().millisecondsSinceEpoch;
-    }
-  }
-
-  Tasks.fromMap(Map<String, dynamic> map)
-      : this.update(
-          id: map[dbId],
-          title: map[dbTitle],
-          projectId: map[dbProjectID],
-          comment: map[dbComment],
-          dueDate: map[dbDueDate],
-          priority: Status.values[map[dbPriority]],
-          tasksStatus: TaskStatus.values[map[dbStatus]],
-        );
+class CleaningTaskTable {
+  static const table = "cleaning_tasks";
+  static const REF_TASK = "ref_task";
+  static const REF_CLEANING = "ref_cleaning";
 }
 
-enum TaskStatus {
-  PENDING,
-  COMPLETE,
+class CleaningProductTable {
+  static const table = "cleaning_products";
+  static const REF_PRODUCT = "ref_product";
+  static const REF_CLEANING = "ref_cleaning";
 }
-*/

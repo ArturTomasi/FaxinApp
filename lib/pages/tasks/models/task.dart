@@ -16,6 +16,9 @@ class Task {
 
   Task.fromMap(Map<String, dynamic> map)
       : this.update(id: map[TaskTable.id], name: map[TaskTable.name]);
+
+  @override
+  String toString() => name;
 }
 
 class TaskTable {

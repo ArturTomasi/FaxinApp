@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
 import 'package:faxinapp/pages/products/models/product.dart';
 import 'package:faxinapp/pages/tasks/models/task.dart';
 import 'package:path/path.dart';
@@ -33,22 +34,26 @@ class AppDatabase {
     // Get a location using path_provider
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, "faxinapp.db");
-    _database = await openDatabase(path, version: 2,
+    _database = await openDatabase(path, version: 3,
         onCreate: (Database db, int version) async {
-      // When creating the db, create the table
-      //await _createProjectTable(db);
       await _createTaskTable(db);
       await _createProductTable(db);
-      //await _createLabelTable(db);
+      await _createCleaningTable(db);
+      await _createCleaningTaskTable(db);
+      await _createCleaningProductTable(db);
+
     }, onUpgrade: (Database db, int oldVersion, int newVersion) async {
       await db.execute("DROP TABLE IF EXISTS ${TaskTable.table}");
       await db.execute("DROP TABLE IF EXISTS ${ProductTable.table}");
-      //await db.execute("DROP TABLE ${Project.tblProject}");
-      //await db.execute("DROP TABLE ${TaskLabels.tblTaskLabel}");
-      //await db.execute("DROP TABLE ${Label.tblLabel}");
+      await db.execute("DROP TABLE IF EXISTS ${CleaningTable.table}");
+      await db.execute("DROP TABLE IF EXISTS ${CleaningTaskTable.table}");
+      await db.execute("DROP TABLE IF EXISTS ${CleaningProductTable.table}");
+
       await _createTaskTable(db);
       await _createProductTable(db);
-      //await _createLabelTable(db);
+      await _createCleaningTable(db);
+      await _createCleaningTaskTable(db);
+      await _createCleaningProductTable(db);
     });
     didInit = true;
   }
@@ -64,5 +69,24 @@ class AppDatabase {
         "${ProductTable.id} INTEGER PRIMARY KEY AUTOINCREMENT,"
         "${ProductTable.name} TEXT,"
         "${ProductTable.brand} TEXT);");
+  }
+
+  Future _createCleaningTable( Database db){
+    return db.execute("CREATE TABLE ${CleaningTable.table} ("
+        "${CleaningTable.ID} INTEGER PRIMARY KEY AUTOINCREMENT,"
+        "${CleaningTable.TITLE} TEXT,"
+        "${CleaningTable.INFO} TEXT);");
+  }
+
+  Future _createCleaningTaskTable( Database db){
+    return db.execute("CREATE TABLE ${CleaningTaskTable.table} ("
+        "${CleaningTaskTable.REF_CLEANING} INTEGER,"
+        "${CleaningTaskTable.REF_TASK} INTEGER);");
+  }
+
+  Future _createCleaningProductTable( Database db){
+    return db.execute("CREATE TABLE ${CleaningProductTable.table} ("
+        "${CleaningProductTable.REF_CLEANING} INTEGER,"
+        "${CleaningProductTable.REF_PRODUCT} INTEGER);");
   }
 }
