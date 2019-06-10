@@ -18,7 +18,7 @@ class TaskRepository
   Future<bool> save(Task task) async {
     var db = await _appDatabase.getDb();
     var result = await db.rawQuery(
-        "SELECT * FROM ${TaskTable.table} WHERE ${TaskTable.name} LIKE '${task.name}'");
+        "SELECT * FROM ${TaskTable.table} WHERE ${TaskTable.NAME} LIKE '${task.name}'");
     if (result.length == 0) {
       return await update(task).then((value) {
         return false;
@@ -32,7 +32,7 @@ class TaskRepository
     var db = await _appDatabase.getDb();
     await db.transaction((Transaction txn) async {
       await txn.rawInsert('INSERT OR REPLACE INTO '
-          '${TaskTable.table}(${TaskTable.name})'
+          '${TaskTable.table}(${TaskTable.NAME})'
           ' VALUES("${task.name}")');
     });
   }
@@ -40,12 +40,12 @@ class TaskRepository
   Future delete(Task task) async {
     var db = await _appDatabase.getDb();
     
-    return await db.delete( TaskTable.table, where: TaskTable.id + " = ? ", whereArgs: [task.id] );
+    return await db.delete( TaskTable.table, where: TaskTable.ID + " = ? ", whereArgs: [task.id] );
   }
 
   Future<List<Task>> findAll() async {
     var db = await _appDatabase.getDb();
-    var result = await db.rawQuery('SELECT * FROM ${TaskTable.table} order by ${TaskTable.name}');
+    var result = await db.rawQuery('SELECT * FROM ${TaskTable.table} order by ${TaskTable.NAME}');
     List<Task> tasks = List();
     for (Map<String, dynamic> item in result) {
       tasks.add(Task.fromMap(item));

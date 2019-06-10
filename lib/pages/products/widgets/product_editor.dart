@@ -37,6 +37,7 @@ class ProductEditor extends StatelessWidget {
                           counterStyle: TextStyle(color: AppColors.SECONDARY),
                           errorBorder: InputBorder.none),
                       maxLength: 80,
+                      autofocus: true,
                       initialValue: product.name,
                       style: TextStyle(color: Colors.white),
                       validator: (value) {

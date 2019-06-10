@@ -15,7 +15,7 @@ class Task {
   bool operator(o) => o is Task && o.id == id;
 
   Task.fromMap(Map<String, dynamic> map)
-      : this.update(id: map[TaskTable.id], name: map[TaskTable.name]);
+      : this.update(id: map[TaskTable.ID], name: map[TaskTable.NAME]);
 
   @override
   String toString() => name;
@@ -23,6 +23,6 @@ class Task {
 
 class TaskTable {
   static final table = "tasks";
-  static final id = "id";
-  static final name = "name";
+  static const ID = "id";
+  static const NAME = "name";
 }

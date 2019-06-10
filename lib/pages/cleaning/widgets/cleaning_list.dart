@@ -4,7 +4,7 @@ import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
 import 'package:faxinapp/util/AppColors.dart';
 import 'package:flutter/material.dart';
 
-class CleaningList extends StatelessWidget{
+class CleaningList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     CleaningBloc _bloc = BlocProvider.of<CleaningBloc>(context);
@@ -18,8 +18,8 @@ class CleaningList extends StatelessWidget{
             return Container(
               color: AppColors.PRIMARY_LIGHT,
               child: Center(
-                  child:
-                      Icon(Icons.clear_all, size: 100, color: AppColors.SECONDARY)),
+                  child: Icon(Icons.clear_all,
+                      size: 100, color: AppColors.SECONDARY)),
             );
           }
           return CleaningListWidget(snapshot.data);
@@ -33,7 +33,7 @@ class CleaningList extends StatelessWidget{
   }
 }
 
-class CleaningListWidget extends StatelessWidget{
+class CleaningListWidget extends StatelessWidget {
   final List<Cleaning> _cleaning;
 
   CleaningListWidget(this._cleaning);
@@ -50,14 +50,15 @@ class CleaningListWidget extends StatelessWidget{
                   direction: DismissDirection.endToStart,
                   onDismissed: (direction) {
                     if (direction == DismissDirection.endToStart) {
-                      CleaningBloc _bloc = BlocProvider.of<CleaningBloc>(context);
+                      CleaningBloc _bloc =
+                          BlocProvider.of<CleaningBloc>(context);
                       _bloc.delete(_cleaning[i]);
                       _bloc.refresh();
 
                       Scaffold.of(context).showSnackBar(SnackBar(
                           backgroundColor: AppColors.SECONDARY,
                           content: Text(
-                            "Tarefa excluida com sucesso!",
+                            "Faxina excluida com sucesso!",
                             style: TextStyle(fontSize: 16),
                           )));
                     }
@@ -72,6 +73,29 @@ class CleaningListWidget extends StatelessWidget{
                         Icons.fitness_center,
                         color: Colors.white,
                       ),
+                      subtitle: Column(
+                        children: <Widget>[
+                        Row(children: <Widget>[
+                          new Text(
+                            _cleaning[i].info.toLowerCase(),
+                            style: TextStyle(
+                                color: AppColors.SECONDARY,
+                                fontStyle: FontStyle.italic),
+                          )
+                        ]),
+                        SizedBox(height : 15),
+                        Row(
+                          children: <Widget>[
+                          Icon(Icons.shopping_cart, color: Colors.white, size: 15),
+                          SizedBox(width: 5),
+                          Text('${_cleaning[i].products.length}', style: TextStyle( color: Colors.white)),
+                          SizedBox(width: 50),
+                          Icon(Icons.fitness_center, color: Colors.white, size: 15),
+                          SizedBox(width: 5),
+                          Text('${_cleaning[i].tasks.length}', style: TextStyle( color: Colors.white))
+                        ]),
+                        SizedBox(height : 15)
+                      ]),
                       title: new Text(_cleaning[i].title.toUpperCase(),
                           style:
                               TextStyle(color: Colors.white, fontSize: 20))));

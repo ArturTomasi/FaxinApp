@@ -18,10 +18,10 @@ class ProductRepository {
 
     var result = await db.query(ProductTable.table,
         where: "upper( " +
-            ProductTable.name +
+            ProductTable.NAME +
             " ) = ? and " +
             "upper( " +
-            ProductTable.brand +
+            ProductTable.BRAND +
             " ) = ? ",
         whereArgs: [product.name.toUpperCase(), product.brand.toUpperCase()]);
 
@@ -38,8 +38,8 @@ class ProductRepository {
     var db = await _appDatabase.getDb();
 
     return await db.insert( ProductTable.table, {
-      ProductTable.name: product.name,
-      ProductTable.brand: product.brand
+      ProductTable.NAME: product.name,
+      ProductTable.BRAND: product.brand
     });
   }
 
@@ -47,13 +47,13 @@ class ProductRepository {
     var db = await _appDatabase.getDb();
 
     return await db.delete(ProductTable.table,
-        where: ProductTable.id + " = ? ", whereArgs: [product.id]);
+        where: ProductTable.ID + " = ? ", whereArgs: [product.id]);
   }
 
   Future<List<Product>> findAll() async {
     var db = await _appDatabase.getDb();
 
-    var result = await db.query(ProductTable.table, orderBy: ProductTable.name);
+    var result = await db.query(ProductTable.table, orderBy: ProductTable.NAME);
     
     List<Product> products = List();
 

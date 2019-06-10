@@ -33,7 +33,7 @@ class _CleaningEditorState extends State<CleaningEditor> {
             style: TextStyle(color: AppColors.SECONDARY, fontSize: 22)),
         actions: <Widget>[
           FlatButton(
-            onPressed: () {
+            onPressed: () async {
               bool valid = cleaning.tasks != null &&
                   cleaning.tasks.isNotEmpty &&
                   cleaning.products != null &&
@@ -43,7 +43,7 @@ class _CleaningEditorState extends State<CleaningEditor> {
               if (valid) {
                 _formState.currentState.save();
 
-                CleaningRepository.get().save(cleaning);
+                await CleaningRepository.get().save(cleaning);
 
                 Navigator.of(context).pop(cleaning);
               }
@@ -87,6 +87,7 @@ class _CleaningEditorState extends State<CleaningEditor> {
                     minLines: 4,
                     maxLines: 8,
                     initialValue: cleaning.info,
+                    maxLength: 4000,
                     style: TextStyle(color: Colors.white),
                     validator: (value) {
                       return value.isEmpty ? "Requerido *" : null;
