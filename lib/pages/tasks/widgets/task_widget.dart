@@ -10,30 +10,21 @@ class TaskWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TaskBloc _bloc = BlocProvider.of<TaskBloc>(context);
-    _bloc.showCreate(true);
-
     return Scaffold(
         key: _scaffoldKey,
         appBar: AppBar(
+          centerTitle: true,
           title: Text("Tarefas"),
         ),
-        floatingActionButton: StreamBuilder<bool>(
-            stream: _bloc.showFAB,
-            initialData: true,
-            builder: (context, snapshot) {
-              if (snapshot.hasData && snapshot.data) {
-                return FloatingActionButton(
-                    child: Icon(
-                      Icons.add,
-                      color: Colors.white,
-                    ),
-                    onPressed: () async {
-                      _bloc.showCreate(false);
-                      await _scaffoldKey.currentState.showBottomSheet((b) => TaskEditor()).closed;
-                      _bloc.showCreate(true);
-                    });
-              }
-              return Container();
+        floatingActionButton: FloatingActionButton(
+            child: Icon(
+              Icons.add,
+              color: Colors.white,
+            ),
+            onPressed: () async {
+              await Navigator.of(context).push(new MaterialPageRoute(
+                  fullscreenDialog: true, builder: (c) => TaskEditor()));
+              _bloc.refresh();
             }),
         body: BlocProvider(bloc: _bloc, child: TaskList()));
   }

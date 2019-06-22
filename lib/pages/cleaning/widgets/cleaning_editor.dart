@@ -1,3 +1,4 @@
+import 'package:faxinapp/common/ui/date_picker.dart';
 import 'package:faxinapp/common/ui/selection_dialog.dart';
 import 'package:faxinapp/common/ui/selection_picker.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
@@ -20,7 +21,7 @@ class _CleaningEditorState extends State<CleaningEditor> {
   final GlobalKey<FormState> _formState = GlobalKey<FormState>();
 
   _CleaningEditorState() {
-    this.cleaning = Cleaning.create();
+    this.cleaning = Cleaning();
   }
 
   @override
@@ -34,19 +35,7 @@ class _CleaningEditorState extends State<CleaningEditor> {
         actions: <Widget>[
           FlatButton(
             onPressed: () async {
-              bool valid = cleaning.tasks != null &&
-                  cleaning.tasks.isNotEmpty &&
-                  cleaning.products != null &&
-                  cleaning.products.isNotEmpty &&
-                  _formState.currentState.validate();
-
-              if (valid) {
-                _formState.currentState.save();
-
-                await CleaningRepository.get().save(cleaning);
-
-                Navigator.of(context).pop(cleaning);
-              }
+              save(cleaning);
             },
             child: Text("SALVAR", style: TextStyle(color: AppColors.SECONDARY)),
           )
@@ -64,37 +53,50 @@ class _CleaningEditorState extends State<CleaningEditor> {
                 children: <Widget>[
                   TextFormField(
                     decoration: InputDecoration(
-                        labelText: "Título",
+                        labelText: "Nome",
                         labelStyle: TextStyle(color: AppColors.SECONDARY),
                         counterStyle: TextStyle(color: AppColors.SECONDARY),
                         errorBorder: InputBorder.none),
                     maxLength: 80,
-                    initialValue: cleaning.title,
+                    initialValue: cleaning.name,
                     style: TextStyle(color: Colors.white),
                     validator: (value) {
                       return value.isEmpty ? "Requerido *" : null;
                     },
                     onSaved: (value) {
-                      cleaning.title = value;
+                      cleaning.name = value;
                     },
                   ),
                   TextFormField(
                     decoration: InputDecoration(
-                        labelText: "Descrição",
+                        labelText: "Instruções",
                         labelStyle: TextStyle(color: AppColors.SECONDARY),
                         counterStyle: TextStyle(color: AppColors.SECONDARY),
                         errorBorder: InputBorder.none),
                     minLines: 4,
                     maxLines: 8,
-                    initialValue: cleaning.info,
+                    initialValue: cleaning.guidelines,
                     maxLength: 4000,
                     style: TextStyle(color: Colors.white),
                     validator: (value) {
                       return value.isEmpty ? "Requerido *" : null;
                     },
                     onSaved: (value) {
-                      cleaning.info = value;
+                      cleaning.guidelines = value;
                     },
+                  ),
+                  DatePicker(
+                    initialValue: cleaning.nextDate,
+                    onChanged: (value) {
+                      cleaning.nextDate = value;
+                    },
+                  ),
+                  SelectionPicker<Frequency>(
+                    onChanged: (f) => cleaning.frequency = f.first,
+                    elements: Frequency.values(),
+                    singleSelected: true,
+                    renderer: FrequencySelector(),
+                    title: "Frequência",
                   ),
                   FutureBuilder<List<Product>>(
                       future: ProductRepository.get().findAll(),
@@ -117,12 +119,71 @@ class _CleaningEditorState extends State<CleaningEditor> {
                             selecteds: cleaning.tasks,
                             renderer: TaskSelector(),
                             elements: y.data,
-                          ))
+                          )),
+                  SizedBox(
+                    height: 50,
+                  ),
+                  SizedBox(
+                      width: MediaQuery.of(context).size.width,
+                      child: RaisedButton(
+                        shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(10))),
+                        onPressed: () async {
+                          save(cleaning);
+                        },
+                        color: AppColors.SECONDARY,
+                        textColor: Colors.white,
+                        child: Text("Salvar", style: TextStyle(fontSize: 16)),
+                      ))
                 ],
               ),
             ),
           )),
     );
+  }
+
+  void save(Cleaning cleaning) async {
+    bool valid = cleaning.tasks != null &&
+        cleaning.tasks.isNotEmpty &&
+        cleaning.products != null &&
+        cleaning.products.isNotEmpty &&
+        cleaning.nextDate != null &&
+        _formState.currentState.validate();
+
+    if (valid) {
+      _formState.currentState.save();
+
+      await CleaningRepository.get().save(cleaning);
+
+      Navigator.of(context).pop(cleaning);
+    } else {
+      showDialog(
+          context: context,
+          builder: (_) => SimpleDialog(
+                title: Center(child: Text("Aviso")),
+                backgroundColor: AppColors.SECONDARY.withOpacity( 0.8 ),
+                contentPadding: EdgeInsets.all(20),
+                children: <Widget>[
+                  Center(child: Text("Preencha todos os campos"))
+                ],
+              ));
+    }
+  }
+}
+
+class FrequencySelector implements ItemRenderer<Frequency> {
+  @override
+  Widget renderer(Frequency p, bool sel) {
+    return Container(
+        alignment: Alignment(-0.8, 0),
+        height: 50,
+        color: !sel ? AppColors.PRIMARY_LIGHT : AppColors.PRIMARY,
+        child: Text(
+            p.label.substring(0, 1).toUpperCase() +
+                p.label.substring(1, p.label.length).toLowerCase(),
+            textAlign: TextAlign.left,
+            style: TextStyle(color: Colors.white, fontSize: 20)));
   }
 }
 

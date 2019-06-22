@@ -17,18 +17,28 @@ class CleaningRepository {
 
   Future<bool> save(Cleaning cleaning) async {
     var db = await _appDatabase.getDb();
-
+    
     if (cleaning.id == null || cleaning.id == 0) {
       cleaning.id = await db.insert(CleaningTable.table, {
-        CleaningTable.TITLE: cleaning.title,
-        CleaningTable.INFO: cleaning.info
+        CleaningTable.NAME: cleaning.name,
+        CleaningTable.GUIDELINES: cleaning.guidelines,
+        CleaningTable.FREQUENCY: cleaning.frequency.index,
+        CleaningTable.NEXT_DATE: cleaning.nextDate.toIso8601String(),
+        CleaningTable.START_DATE: cleaning.startDate.toIso8601String(),
+        CleaningTable.END_DATE: cleaning.endDate.toIso8601String(),
+        CleaningTable.ESTIMATED_TIME : cleaning.estimatedTime.toIso8601String()
       });
     } else {
       await db.update(
           CleaningTable.table,
           {
-            CleaningTable.TITLE: cleaning.title,
-            CleaningTable.INFO: cleaning.info
+            CleaningTable.NAME: cleaning.name,
+            CleaningTable.GUIDELINES: cleaning.guidelines,
+            CleaningTable.FREQUENCY: cleaning.frequency.index,
+            CleaningTable.NEXT_DATE: cleaning.nextDate.toIso8601String(),
+            CleaningTable.START_DATE: cleaning.startDate.toIso8601String(),
+            CleaningTable.END_DATE: cleaning.endDate.toIso8601String(),
+            CleaningTable.ESTIMATED_TIME : cleaning.estimatedTime.toIso8601String()
           },
           where: '${CleaningTable.ID} = ? ',
           whereArgs: [cleaning.id]);
@@ -42,7 +52,9 @@ class CleaningRepository {
       for (Product p in cleaning.products) {
         await db.insert(CleaningProductTable.table, {
           CleaningProductTable.REF_CLEANING: cleaning.id,
-          CleaningProductTable.REF_PRODUCT: p.id
+          CleaningProductTable.REF_PRODUCT: p.id,
+          CleaningProductTable.AMOUNT: 0,
+          CleaningProductTable.REALIZED: false
         });
       }
     }
@@ -55,7 +67,8 @@ class CleaningRepository {
       for (Task t in cleaning.tasks) {
         await db.insert(CleaningTaskTable.table, {
           CleaningTaskTable.REF_CLEANING: cleaning.id,
-          CleaningTaskTable.REF_TASK: t.id
+          CleaningTaskTable.REF_TASK: t.id,
+          CleaningTaskTable.REALIZED: false
         });
       }
     }
@@ -78,7 +91,7 @@ class CleaningRepository {
     var db = await _appDatabase.getDb();
 
     var result =
-        await db.query(CleaningTable.table, orderBy: CleaningTable.TITLE);
+        await db.query(CleaningTable.table, orderBy: CleaningTable.NAME);
 
     List<Cleaning> cleanings = List();
 

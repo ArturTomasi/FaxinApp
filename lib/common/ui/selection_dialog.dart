@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class SelectionDialog<T> extends StatefulWidget {
   final List<T> elements;
   //final List<T> favoriteElements;
+  final bool singleSelected;
   final List<T> selecteds;
   final EmptyWidget emptyWidget;
   final Filter<T> filter;
@@ -14,11 +15,13 @@ class SelectionDialog<T> extends StatefulWidget {
       EmptyWidget emptyWidget,
       Filter filter,
       ItemRenderer renderer,
+      bool singleSelected,
       List<T> selecteds})
       : assert(renderer != null, 'Renderer cannot be null'),
         this.emptyWidget = emptyWidget != null ? emptyWidget : EmptyWidget(),
         this.filter = filter != null ? filter : new DefaultFilter<T>(),
         this.renderer = renderer,
+        this.singleSelected = singleSelected,
         this.selecteds = selecteds != null ? selecteds : [],
         super(key: key);
 
@@ -74,7 +77,7 @@ class _SelectionDialogState<T> extends State<SelectionDialog<T>> {
           .map((e) => GestureDetector(
               onLongPress: () {
                 setState(() {
-                  multiSelected = true;
+                  multiSelected = ! widget.singleSelected;
                   selecteds.add(e);
                 });
               },
@@ -82,7 +85,7 @@ class _SelectionDialogState<T> extends State<SelectionDialog<T>> {
                   child: widget.renderer.renderer(e, selecteds.contains(e)),
                   onPressed: () {
                     setState(() {
-                      if (multiSelected) {
+                      if ( ! widget.singleSelected &&  multiSelected) {
                         if (!selecteds.contains(e)) {
                           selecteds.add(e);
                         } else {
@@ -99,19 +102,19 @@ class _SelectionDialogState<T> extends State<SelectionDialog<T>> {
 
   List<Widget> _selectWidget() {
     List<Widget> buttons = [];
-    buttons.add(RaisedButton(
+    buttons.add(FlatButton(
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(10))),
       padding: EdgeInsets.only(left: 15, right: 15),
       onPressed: () async {
         Navigator.pop(context);
       },
-      color: AppColors.PRIMARY_DARK,
+      color: AppColors.PRIMARY_LIGHT,
       textColor: Colors.white,
       child: Text("Cancelar", style: TextStyle(fontSize: 14)),
     ));
 
-    if (multiSelected) {
+    if ( ! widget.singleSelected && multiSelected) {
       buttons.add(RaisedButton(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(10))),

@@ -77,7 +77,7 @@ class CleaningListWidget extends StatelessWidget {
                         children: <Widget>[
                         Row(children: <Widget>[
                           new Text(
-                            _cleaning[i].info.toLowerCase(),
+                            _cleaning[i].name.toLowerCase(),
                             style: TextStyle(
                                 color: AppColors.SECONDARY,
                                 fontStyle: FontStyle.italic),
@@ -96,7 +96,7 @@ class CleaningListWidget extends StatelessWidget {
                         ]),
                         SizedBox(height : 15)
                       ]),
-                      title: new Text(_cleaning[i].title.toUpperCase(),
+                      title: new Text(_cleaning[i].name.toUpperCase(),
                           style:
                               TextStyle(color: Colors.white, fontSize: 20))));
             }));

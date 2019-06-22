@@ -72,6 +72,12 @@ class TaskListWidget extends StatelessWidget {
                         Icons.fitness_center,
                         color: Colors.white,
                       ),
+                      subtitle: new Text(
+                        _tasks[i].guidelines.toLowerCase(),
+                        style: TextStyle(
+                            color: AppColors.SECONDARY,
+                            fontStyle: FontStyle.italic),
+                      ),
                       title: new Text(_tasks[i].name.toUpperCase(),
                           style:
                               TextStyle(color: Colors.white, fontSize: 20))));

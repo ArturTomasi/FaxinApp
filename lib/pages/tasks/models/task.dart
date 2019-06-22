@@ -1,28 +1,28 @@
-import 'package:meta/meta.dart';
-
 class Task {
   int id;
   String name;
+  String guidelines;
+  int state;
 
-  Task.create(this.name);
+  Task();
 
-  Task.update({@required this.id, name = ""}) {
-    if (name != "") {
-      this.name = name;
-    }
+  Task.fromMap(Map<String, dynamic> map) {
+    id = map[TaskTable.ID];
+    name = map[TaskTable.NAME];
+    guidelines = map[TaskTable.GUIDELINES];
+    state = map[TaskTable.STATE];
   }
 
   bool operator(o) => o is Task && o.id == id;
-
-  Task.fromMap(Map<String, dynamic> map)
-      : this.update(id: map[TaskTable.ID], name: map[TaskTable.NAME]);
 
   @override
   String toString() => name;
 }
 
 class TaskTable {
-  static final table = "tasks";
+  static const table = "tasks";
   static const ID = "id";
   static const NAME = "name";
+  static const GUIDELINES = "guidelines";
+  static const STATE = "state";
 }

@@ -1,35 +1,25 @@
-import 'package:meta/meta.dart';
-
 class Product {
   int id;
   String name;
-  String brand;
-  double fill = 100;
+  String branding;
+  double capacity = 0;
+  double currentCapacity = 0;
+  int state;
 
-  Product.create(this.name);
+  Product();
 
-  Product.update({@required this.id, name = "", brand = "", fill = 100}) {
-    if (name != "") {
-      this.name = name;
-    }
-    if (brand != "") {
-      this.brand = brand;
-    }
-    if(this.fill<=0){
-      this.fill = 100;
-    }
+  Product.fromMap(Map<String, dynamic> map) {
+    id = map[ProductTable.ID];
+    name = map[ProductTable.NAME];
+    branding = map[ProductTable.BRANDING];
+    capacity = map[ProductTable.CAPACITY];
+    currentCapacity = map[ProductTable.CURRENT_CAPACITY];
+    state = map[ProductTable.STATE];
   }
 
-  bool operator(o)=>o is Product && o.id == id;
-  
-  int get hashcode => id.hashCode;
+  bool operator(o) => o is Product && o.id == id;
 
-  Product.fromMap(Map<String, dynamic> map)
-      : this.update(
-            id: map[ProductTable.ID],
-            name: map[ProductTable.NAME],
-            fill: map[ProductTable.FILL],
-            brand: map[ProductTable.BRAND]);
+  int get hashcode => id.hashCode;
 
   @override
   String toString() => name;
@@ -37,8 +27,10 @@ class Product {
 
 class ProductTable {
   static final table = "products";
-  static const ID    = "id";
-  static const NAME  = "name";
-  static const BRAND = "brand";
-  static const FILL  = "fill";
+  static const ID = "id";
+  static const NAME = "name";
+  static const BRANDING = "branding";
+  static const CAPACITY = "capacity";
+  static const CURRENT_CAPACITY = "current_capacity";
+  static const STATE = "state";
 }

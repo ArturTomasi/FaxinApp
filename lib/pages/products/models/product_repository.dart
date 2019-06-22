@@ -16,45 +16,29 @@ class ProductRepository {
   Future<bool> save(Product product) async {
     var db = await _appDatabase.getDb();
 
-    var result = await db.query(ProductTable.table,
-        where: "upper( " +
-            ProductTable.NAME +
-            " ) = ? and " +
-            "upper( " +
-            ProductTable.BRAND +
-            " ) = ? ",
-        whereArgs: [product.name.toUpperCase(), product.brand.toUpperCase()]);
-
-    if (result.length == 0) {
-      int id = await update(product);
-      product.id = id;
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  Future update(Product product) async {
-    var db = await _appDatabase.getDb();
-
-    return await db.insert( ProductTable.table, {
+    product.id = await db.insert(ProductTable.table, {
       ProductTable.NAME: product.name,
-      ProductTable.BRAND: product.brand
+      ProductTable.CAPACITY: product.capacity,
+      ProductTable.CURRENT_CAPACITY: product.currentCapacity,
+      ProductTable.BRANDING: product.branding,
+      ProductTable.STATE: product.state
     });
+    return true;
   }
 
   Future delete(Product product) async {
     var db = await _appDatabase.getDb();
 
-    return await db.delete(ProductTable.table,
+    return await db.update(ProductTable.table, {ProductTable.STATE: 0},
         where: ProductTable.ID + " = ? ", whereArgs: [product.id]);
   }
 
   Future<List<Product>> findAll() async {
     var db = await _appDatabase.getDb();
 
-    var result = await db.query(ProductTable.table, orderBy: ProductTable.NAME);
-    
+    var result = await db.query(ProductTable.table,
+        where: "${ProductTable.STATE} = 1", orderBy: ProductTable.NAME);
+
     List<Product> products = List();
 
     for (Map<String, dynamic> item in result) {

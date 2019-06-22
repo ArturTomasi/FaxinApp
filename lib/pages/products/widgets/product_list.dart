@@ -13,7 +13,7 @@ class ProductList extends StatelessWidget {
     return StreamBuilder<List<Product>>(
       stream: bloc.products,
       builder: (context, snapshot) {
-        if (snapshot.hasData ) {
+        if (snapshot.hasData) {
           return ProductListWidget(snapshot.data);
         } else {
           return Container(
@@ -45,7 +45,7 @@ class ProductListWidget extends StatelessWidget {
                       ProductBloc _bloc = BlocProvider.of<ProductBloc>(context);
                       _bloc.delete(_products[i]);
                       _bloc.refresh();
-                      
+
                       Scaffold.of(context).showSnackBar(SnackBar(
                           backgroundColor: AppColors.SECONDARY,
                           content: Text(
@@ -64,7 +64,20 @@ class ProductListWidget extends StatelessWidget {
                         Icons.shopping_cart,
                         color: Colors.white,
                       ),
-                      subtitle:  new Text(_products[i].brand.toLowerCase(), style: TextStyle( color: AppColors.SECONDARY, fontStyle: FontStyle.italic), ),
+                      trailing: Chip(
+                          backgroundColor: AppColors.SECONDARY,
+                          label: Text(
+                            '${((_products[i].currentCapacity / _products[i].capacity) * 100).round()}%',
+                            style: TextStyle(
+                              color: Colors.white,
+                            ),
+                          )),
+                      subtitle: new Text(
+                        _products[i].branding.toLowerCase(),
+                        style: TextStyle(
+                            color: AppColors.SECONDARY,
+                            fontStyle: FontStyle.italic),
+                      ),
                       title: new Text(_products[i].name.toUpperCase(),
                           style:
                               TextStyle(color: Colors.white, fontSize: 20))));

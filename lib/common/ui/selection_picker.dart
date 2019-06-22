@@ -15,9 +15,12 @@ class SelectionPicker<T> extends StatefulWidget {
   final List<T> elements;
   final String title;
   final ItemRenderer<T> renderer;
+  final bool singleSelected;
+
   SelectionPicker(
       {this.onChanged,
       this.onSaved,
+      this.singleSelected = false,
       this.title = "Seletor",
       this.renderer,
       this.elements = const [],
@@ -33,9 +36,7 @@ class _SelectionPickerState<T> extends State<SelectionPicker<T>> {
   Widget build(BuildContext context) {
     final SelectionBloc<T> bloc = new SelectionBloc<T>();
 
-    bloc.selecteds.listen((data) => 
-      _publishSelection( _tempSelecteds = data )
-    );
+    bloc.selecteds.listen((data) => _publishSelection(_tempSelecteds = data));
 
     return BlocProvider(
         bloc: bloc,
@@ -47,6 +48,7 @@ class _SelectionPickerState<T> extends State<SelectionPicker<T>> {
                       builder: (c) {
                         return SelectionDialog<T>(
                           widget.elements,
+                          singleSelected: widget.singleSelected,
                           selecteds: _tempSelecteds,
                           renderer: widget.renderer,
                         );
@@ -59,7 +61,7 @@ class _SelectionPickerState<T> extends State<SelectionPicker<T>> {
                     builder: (context, snapshot) {
                       return Container(
                           color: AppColors.PRIMARY_LIGHT,
-                          padding: EdgeInsets.only( top: 20 ),
+                          padding: EdgeInsets.only(top: 20),
                           width: double.infinity,
                           child: Center(
                               child: Column(
@@ -93,11 +95,10 @@ class _SelectionPickerState<T> extends State<SelectionPicker<T>> {
                                                         AppColors.PRIMARY_DARK),
                                                 backgroundColor:
                                                     AppColors.SECONDARY,
-                                                labelPadding: EdgeInsets.only(
-                                                    top: 2,
-                                                    bottom: 2,
-                                                    right: 10,
-                                                    left: 10),
+                                                labelPadding:
+                                                    EdgeInsets.symmetric(
+                                                        vertical: 2,
+                                                        horizontal: 10),
                                                 label: Text(p.toString())))
                                             .toList()),
                                       )
@@ -111,7 +112,18 @@ class _SelectionPickerState<T> extends State<SelectionPicker<T>> {
                                                   color: Colors.white,
                                                   fontSize: 14))
                                         ],
-                                      )
+                                      ),
+                                Padding(
+                                  padding: EdgeInsets.only(top: 10),
+                                ),
+                                Container(
+                                  color: AppColors.PRIMARY_DARK,
+                                  width: double.infinity,
+                                  height: 1,
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(top: 10),
+                                ),
                               ])));
                     }))));
   }

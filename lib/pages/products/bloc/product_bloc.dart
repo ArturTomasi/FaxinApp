@@ -9,16 +9,9 @@ class ProductBloc extends BlocBase {
 
   Stream<List<Product>> get products => _productController.stream;
 
-  StreamController<bool> _showFABController =
-      StreamController<bool>.broadcast();
-
-  Stream<bool> get showFAB => _showFABController.stream;
-
-
   @override
   void dispose() {
     _productController.close();
-    _showFABController.close();
   }
 
   ProductRepository _repository;
@@ -27,16 +20,12 @@ class ProductBloc extends BlocBase {
     _repository = ProductRepository.get();
   }
 
-  void showCreate( bool b ){
-    _showFABController.sink.add(b);
-  }
-
   void refresh() async {
-    _productController.sink.add( await _repository.findAll() );
+    _productController.sink.add(await _repository.findAll());
   }
 
-  void delete( Product p ){
-    _repository.delete( p );
+  void delete(Product p) {
+    _repository.delete(p);
   }
 
   Future save(Product p) async {
