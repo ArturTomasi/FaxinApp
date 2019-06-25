@@ -4,9 +4,17 @@ import 'package:intl/intl.dart';
 
 class DatePicker extends StatefulWidget {
   final ValueChanged<DateTime> onChanged;
-  DateTime initialValue;
+  final DateTime initialValue;
+  final bool showDate;
+  final bool showTime;
+  final String title;
 
-  DatePicker({this.onChanged, this.initialValue});
+  DatePicker(
+      {this.onChanged,
+      this.initialValue,
+      this.title = "Desc",
+      this.showDate = true,
+      this.showTime = true});
 
   @override
   _DatePickerState createState() => _DatePickerState();
@@ -18,21 +26,13 @@ class _DatePickerState extends State<DatePicker> {
   String _timeString = '';
   TimeOfDay _time;
 
-  DateTime _getDate() =>
-      widget.initialValue != null ? widget.initialValue : DateTime.now();
-
-  TimeOfDay _getTime() => widget.initialValue != null
-      ? TimeOfDay.fromDateTime(widget.initialValue)
-      : TimeOfDay.now();
-
   Future _selectDate() async {
     _date = await showDatePicker(
         context: context,
-        initialDate: _getDate(),
-        firstDate: DateTime(_getDate().year),
-        lastDate: DateTime(_getDate().year + 5),
-        initialDatePickerMode: DatePickerMode.day,
-        );
+        initialDate: _date,
+        firstDate: DateTime(_date.year),
+        lastDate: DateTime(_date.year + 5),
+        initialDatePickerMode: DatePickerMode.day);
 
     setState(() {
       if (_date != null) {
@@ -45,12 +45,11 @@ class _DatePickerState extends State<DatePicker> {
   }
 
   Future _selectTime() async {
-  
-    _time = await showTimePicker(context: context, 
-    initialTime: _getTime());
+    _time = await showTimePicker(context: context, initialTime: _time);
     setState(() {
       if (_time != null) {
-        _timeString = DateFormat.Hm().format( new DateTime(0, 0, 0, _time.hour, _time.minute ) );
+        _timeString = DateFormat.Hm()
+            .format(new DateTime(0, 0, 0, _time.hour, _time.minute));
       } else {
         _timeString = 'hh:mm';
       }
@@ -60,16 +59,23 @@ class _DatePickerState extends State<DatePicker> {
 
   void fireChanges() {
     if (widget.onChanged != null) {
-      if ( _date != null && _time != null ) {
-        widget.onChanged( DateTime( _date.year, _date.month, _date.day, _time.hour, _time.minute ) );
-      }
-      else if ( _date != null ) {
-        widget.onChanged( DateTime( _date.year, _date.month, _date.day ) );
-      }
-      else {
+      if (_date != null && _time != null) {
+        widget.onChanged(DateTime(
+            _date.year, _date.month, _date.day, _time.hour, _time.minute));
+      } else if (_date != null) {
+        widget.onChanged(DateTime(_date.year, _date.month, _date.day));
+      } else {
         widget.onChanged(null);
       }
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _date = widget.initialValue != null ? widget.initialValue : DateTime.now();
+
+    _time = TimeOfDay(hour: _date.hour, minute: _date.minute);
   }
 
   @override
@@ -79,7 +85,7 @@ class _DatePickerState extends State<DatePicker> {
         Container(
           alignment: Alignment.centerLeft,
           padding: EdgeInsets.only(top: 5, bottom: 10),
-          child: Text("Agendamento",
+          child: Text(widget.title,
               style: TextStyle(fontSize: 16, color: AppColors.SECONDARY),
               textAlign: TextAlign.start),
         ),
@@ -87,7 +93,7 @@ class _DatePickerState extends State<DatePicker> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            GestureDetector(
+            widget.showDate ? GestureDetector(
               onTap: _selectDate,
               child: Row(
                 children: <Widget>[
@@ -106,8 +112,8 @@ class _DatePickerState extends State<DatePicker> {
                       ))
                 ],
               ),
-            ),
-            GestureDetector(
+            ) : Container(),
+            widget.showTime ? GestureDetector(
               onTap: _selectTime,
               child: Row(
                 children: <Widget>[
@@ -124,7 +130,7 @@ class _DatePickerState extends State<DatePicker> {
                       )),
                 ],
               ),
-            ),
+            ) : Container(),
           ],
         ),
         Padding(

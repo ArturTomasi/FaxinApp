@@ -1,8 +1,10 @@
 import 'package:faxinapp/bloc/bloc_provider.dart';
 import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
+import 'package:faxinapp/pages/cleaning/widgets/cleaning_view.dart';
 import 'package:faxinapp/util/AppColors.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class CleaningList extends StatelessWidget {
   @override
@@ -68,37 +70,112 @@ class CleaningListWidget extends StatelessWidget {
                     child: ListTile(
                         trailing: Icon(Icons.delete, color: Colors.white)),
                   ),
-                  child: ListTile(
-                      leading: new Icon(
-                        Icons.fitness_center,
-                        color: Colors.white,
-                      ),
-                      subtitle: Column(
-                        children: <Widget>[
-                        Row(children: <Widget>[
-                          new Text(
-                            _cleaning[i].name.toLowerCase(),
-                            style: TextStyle(
-                                color: AppColors.SECONDARY,
-                                fontStyle: FontStyle.italic),
-                          )
-                        ]),
-                        SizedBox(height : 15),
-                        Row(
-                          children: <Widget>[
-                          Icon(Icons.shopping_cart, color: Colors.white, size: 15),
-                          SizedBox(width: 5),
-                          Text('${_cleaning[i].products.length}', style: TextStyle( color: Colors.white)),
-                          SizedBox(width: 50),
-                          Icon(Icons.fitness_center, color: Colors.white, size: 15),
-                          SizedBox(width: 5),
-                          Text('${_cleaning[i].tasks.length}', style: TextStyle( color: Colors.white))
-                        ]),
-                        SizedBox(height : 15)
-                      ]),
-                      title: new Text(_cleaning[i].name.toUpperCase(),
-                          style:
-                              TextStyle(color: Colors.white, fontSize: 20))));
+                  child: GestureDetector(
+                      onTap: () async {
+                        await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    CleaningView(_cleaning[i])));
+                      },
+                      child: item(
+                        _cleaning[i],
+                      )));
             }));
+  }
+
+  Widget item(Cleaning cleaning) {
+    return Container(
+      alignment: Alignment.center,
+      child: Row(
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.all(5),
+            margin: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                color: AppColors.SECONDARY),
+            width: 75,
+            height: 75,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  '${cleaning.nextDate.day}',
+                  style: TextStyle(
+                    fontSize: 30,
+                  ),
+                ),
+                Container(
+                  height: 1,
+                  color: AppColors.PRIMARY_DARK,
+                  width: 30,
+                ),
+                Text(
+                  DateFormat.MMM().format(cleaning.nextDate),
+                  style: TextStyle(fontSize: 20),
+                ),
+              ],
+            ),
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(
+                cleaning.name,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Text(
+                cleaning.guidelines != null ? cleaning.guidelines : 'n/d',
+                maxLines: 2,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                ),
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _item(Cleaning cleaning) {
+    return ListTile(
+        leading: Icon(
+          Icons.event_available,
+          color: Colors.white,
+        ),
+        subtitle: Column(children: <Widget>[
+          Row(children: <Widget>[
+            new Text(
+              cleaning.name.toLowerCase(),
+              style: TextStyle(
+                  color: AppColors.SECONDARY, fontStyle: FontStyle.italic),
+            )
+          ]),
+          SizedBox(height: 15),
+          Row(children: <Widget>[
+            Icon(Icons.shopping_cart, color: Colors.white, size: 15),
+            SizedBox(width: 5),
+            Text('${cleaning.products.length}',
+                style: TextStyle(color: Colors.white)),
+            SizedBox(width: 50),
+            Icon(Icons.fitness_center, color: Colors.white, size: 15),
+            SizedBox(width: 5),
+            Text('${cleaning.tasks.length}',
+                style: TextStyle(color: Colors.white))
+          ]),
+          SizedBox(height: 15)
+        ]),
+        title: new Text(cleaning.name.toUpperCase(),
+            style: TextStyle(color: Colors.white, fontSize: 20)));
   }
 }

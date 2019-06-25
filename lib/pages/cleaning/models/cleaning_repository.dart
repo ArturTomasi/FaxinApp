@@ -24,9 +24,9 @@ class CleaningRepository {
         CleaningTable.GUIDELINES: cleaning.guidelines,
         CleaningTable.FREQUENCY: cleaning.frequency.index,
         CleaningTable.NEXT_DATE: cleaning.nextDate.toIso8601String(),
-        CleaningTable.START_DATE: cleaning.startDate.toIso8601String(),
-        CleaningTable.END_DATE: cleaning.endDate.toIso8601String(),
-        CleaningTable.ESTIMATED_TIME : cleaning.estimatedTime.toIso8601String()
+        CleaningTable.START_DATE: cleaning.startDate != null ? cleaning.startDate.toIso8601String() : null,
+        CleaningTable.END_DATE: cleaning.endDate != null ? cleaning.endDate.toIso8601String() : null,
+        CleaningTable.ESTIMATED_TIME : cleaning.estimatedTime.toString()
       });
     } else {
       await db.update(
@@ -38,7 +38,7 @@ class CleaningRepository {
             CleaningTable.NEXT_DATE: cleaning.nextDate.toIso8601String(),
             CleaningTable.START_DATE: cleaning.startDate.toIso8601String(),
             CleaningTable.END_DATE: cleaning.endDate.toIso8601String(),
-            CleaningTable.ESTIMATED_TIME : cleaning.estimatedTime.toIso8601String()
+            CleaningTable.ESTIMATED_TIME :  cleaning.estimatedTime.toString()
           },
           where: '${CleaningTable.ID} = ? ',
           whereArgs: [cleaning.id]);

@@ -8,6 +8,7 @@ import 'package:faxinapp/pages/products/models/product_repository.dart';
 import 'package:faxinapp/pages/tasks/models/task.dart';
 import 'package:faxinapp/pages/tasks/models/task_repository.dart';
 import 'package:faxinapp/util/AppColors.dart';
+import 'package:faxinapp/util/push_notification.dart';
 import 'package:flutter/material.dart';
 
 class CleaningEditor extends StatefulWidget {
@@ -17,11 +18,19 @@ class CleaningEditor extends StatefulWidget {
 
 class _CleaningEditorState extends State<CleaningEditor> {
   Cleaning cleaning;
+  PushNotification notification;
 
   final GlobalKey<FormState> _formState = GlobalKey<FormState>();
 
   _CleaningEditorState() {
     this.cleaning = Cleaning();
+  }
+
+  void initState(){
+    super.initState();
+    notification = PushNotification(
+      context
+    );
   }
 
   @override
@@ -87,8 +96,17 @@ class _CleaningEditorState extends State<CleaningEditor> {
                   ),
                   DatePicker(
                     initialValue: cleaning.nextDate,
+                    title: "Agendamento",
                     onChanged: (value) {
                       cleaning.nextDate = value;
+                    },
+                  ),
+                  DatePicker(
+                    initialValue: cleaning.nextDate,
+                    title: "Tempo estimado",
+                    showDate: false,
+                    onChanged: (value) {
+                      cleaning.estimatedTime = TimeOfDay.fromDateTime(value);
                     },
                   ),
                   SelectionPicker<Frequency>(
@@ -135,7 +153,10 @@ class _CleaningEditorState extends State<CleaningEditor> {
                         color: AppColors.SECONDARY,
                         textColor: Colors.white,
                         child: Text("Salvar", style: TextStyle(fontSize: 16)),
-                      ))
+                      )),
+                  SizedBox(
+                    height: 50,
+                  ),
                 ],
               ),
             ),
@@ -156,13 +177,15 @@ class _CleaningEditorState extends State<CleaningEditor> {
 
       await CleaningRepository.get().save(cleaning);
 
+      notification.schedule( cleaning );
+
       Navigator.of(context).pop(cleaning);
     } else {
       showDialog(
           context: context,
           builder: (_) => SimpleDialog(
                 title: Center(child: Text("Aviso")),
-                backgroundColor: AppColors.SECONDARY.withOpacity( 0.8 ),
+                backgroundColor: AppColors.SECONDARY.withOpacity(0.8),
                 contentPadding: EdgeInsets.all(20),
                 children: <Widget>[
                   Center(child: Text("Preencha todos os campos"))

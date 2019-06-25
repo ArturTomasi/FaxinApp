@@ -1,5 +1,6 @@
 import 'package:faxinapp/pages/products/models/product.dart';
 import 'package:faxinapp/pages/tasks/models/task.dart';
+import 'package:flutter/material.dart';
 
 class Frequency {
   static final Frequency NONE = Frequency._(0, "Manual");
@@ -41,7 +42,8 @@ class Cleaning {
   String name;
   String guidelines;
   Frequency frequency;
-  DateTime nextDate, startDate, endDate, estimatedTime;
+  DateTime nextDate, startDate, endDate;
+  TimeOfDay estimatedTime;
   List<Product> products;
   List<Task> tasks;
 
@@ -52,10 +54,15 @@ class Cleaning {
     name = map[CleaningTable.NAME];
     guidelines = map[CleaningTable.GUIDELINES];
     frequency = Frequency.valueOf(map[CleaningTable.FREQUENCY]);
-    nextDate = map[CleaningTable.NEXT_DATE];
-    endDate = map[CleaningTable.END_DATE];
-    startDate = map[CleaningTable.START_DATE];
-    estimatedTime = map[CleaningTable.ESTIMATED_TIME];
+    
+    String t = map[CleaningTable.ESTIMATED_TIME]
+                      .toString()
+                      .replaceAll( RegExp( "[^0-9]" ) , "" );
+
+    estimatedTime = new TimeOfDay( hour: int.parse( t.substring(0,2) ), minute: int.parse( t.substring(2,4) ) );
+    nextDate = DateTime.parse( map[CleaningTable.NEXT_DATE] );
+    endDate = map[CleaningTable.END_DATE] != null ? DateTime( map[CleaningTable.END_DATE] ) : null;
+    startDate = map[CleaningTable.START_DATE] != null ? DateTime(map[CleaningTable.START_DATE]) : null;
   }
 }
 
