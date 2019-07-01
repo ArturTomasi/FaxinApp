@@ -14,7 +14,16 @@ class ProductList extends StatelessWidget {
       stream: bloc.products,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return ProductListWidget(snapshot.data);
+          if (snapshot.data.isNotEmpty) {
+            return ProductListWidget(snapshot.data);
+          } else {
+            return Container(
+              color: AppColors.PRIMARY_LIGHT,
+              child: Center(
+                  child: Icon(Icons.shopping_cart,
+                      size: 100, color: AppColors.SECONDARY)),
+            );
+          }
         } else {
           return Container(
               color: AppColors.PRIMARY_LIGHT,
@@ -38,49 +47,55 @@ class ProductListWidget extends StatelessWidget {
             itemCount: _products.length,
             itemBuilder: (BuildContext context, int i) {
               return Dismissible(
-                  key: ObjectKey(_products[i]),
-                  direction: DismissDirection.endToStart,
-                  onDismissed: (direction) {
-                    if (direction == DismissDirection.endToStart) {
-                      ProductBloc _bloc = BlocProvider.of<ProductBloc>(context);
-                      _bloc.delete(_products[i]);
-                      _bloc.refresh();
+                key: ObjectKey(_products[i]),
+                direction: DismissDirection.endToStart,
+                onDismissed: (direction) {
+                  if (direction == DismissDirection.endToStart) {
+                    ProductBloc _bloc = BlocProvider.of<ProductBloc>(context);
+                    _bloc.delete(_products[i]);
+                    _bloc.refresh();
 
-                      Scaffold.of(context).showSnackBar(SnackBar(
-                          backgroundColor: AppColors.SECONDARY,
-                          content: Text(
-                            "Produto excluida com sucesso!",
-                            style: TextStyle(fontSize: 16),
-                          )));
-                    }
-                  },
-                  background: Container(
-                    color: Colors.red,
-                    child: ListTile(
-                        trailing: Icon(Icons.delete, color: Colors.white)),
-                  ),
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                        backgroundColor: AppColors.SECONDARY,
+                        content: Text(
+                          "Produto excluida com sucesso!",
+                          style: TextStyle(fontSize: 16),
+                        )));
+                  }
+                },
+                background: Container(
+                  color: Colors.red,
                   child: ListTile(
-                      leading: new Icon(
-                        Icons.shopping_cart,
-                        color: Colors.white,
-                      ),
-                      trailing: Chip(
-                          backgroundColor: AppColors.SECONDARY,
-                          label: Text(
-                            '${((_products[i].currentCapacity / _products[i].capacity) * 100).round()}%',
-                            style: TextStyle(
-                              color: Colors.white,
-                            ),
-                          )),
-                      subtitle: new Text(
-                        _products[i].branding.toLowerCase(),
+                      trailing: Icon(Icons.delete, color: Colors.white)),
+                ),
+                child: ListTile(
+                  leading: new Icon(
+                    Icons.shopping_cart,
+                    color: Colors.white,
+                  ),
+                  trailing: Chip(
+                      backgroundColor: AppColors.SECONDARY,
+                      label: Text(
+                        '${((_products[i].currentCapacity / _products[i].capacity) * 100).round()}%',
                         style: TextStyle(
-                            color: AppColors.SECONDARY,
-                            fontStyle: FontStyle.italic),
-                      ),
-                      title: new Text(_products[i].name.toUpperCase(),
-                          style:
-                              TextStyle(color: Colors.white, fontSize: 20))));
+                          color: Colors.white,
+                        ),
+                      )),
+                  subtitle: new Text(
+                    _products[i].branding.toLowerCase(),
+                    style: TextStyle(
+                        color: AppColors.SECONDARY,
+                        fontStyle: FontStyle.italic),
+                  ),
+                  title: new Text(
+                    _products[i].name.toUpperCase(),
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+              );
             }));
   }
 }

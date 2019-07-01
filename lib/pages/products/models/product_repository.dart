@@ -46,4 +46,28 @@ class ProductRepository {
     }
     return products;
   }
+
+  Future<List<Product>> findEmpty() async {
+    var db = await _appDatabase.getDb();
+
+    var result = await db.query(ProductTable.table,
+        where:
+            "${ProductTable.STATE} = 1 and ((${ProductTable.CURRENT_CAPACITY} / ${ProductTable.CAPACITY}) * 100) < 30",
+        orderBy: ProductTable.NAME);
+
+    List<Product> products = List();
+
+    for (Map<String, dynamic> item in result) {
+      products.add(Product.fromMap(item));
+    }
+    return products;
+  }
+
+  Future fill(Product product) async {
+    var db = await _appDatabase.getDb();
+
+    return await db.update(
+        ProductTable.table, {ProductTable.CURRENT_CAPACITY: product.capacity},
+        where: ProductTable.ID + " = ? ", whereArgs: [product.id]);
+  }
 }

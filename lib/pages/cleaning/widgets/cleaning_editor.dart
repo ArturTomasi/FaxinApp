@@ -13,24 +13,27 @@ import 'package:flutter/material.dart';
 
 class CleaningEditor extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _CleaningEditorState();
+  State<StatefulWidget> createState() => _CleaningEditorState(Cleaning());
 }
 
 class _CleaningEditorState extends State<CleaningEditor> {
-  Cleaning cleaning;
+  final Cleaning cleaning;
   PushNotification notification;
+
+  final _nameTextController = TextEditingController();
+  final _guidelinesTextController = TextEditingController();
 
   final GlobalKey<FormState> _formState = GlobalKey<FormState>();
 
-  _CleaningEditorState() {
-    this.cleaning = Cleaning();
-  }
+  _CleaningEditorState(this.cleaning);
 
-  void initState(){
+  void initState() {
     super.initState();
-    notification = PushNotification(
-      context
-    );
+
+    notification = PushNotification(context);
+
+    _nameTextController.text = cleaning.name;
+    _guidelinesTextController.text = cleaning.guidelines;
   }
 
   @override
@@ -67,13 +70,10 @@ class _CleaningEditorState extends State<CleaningEditor> {
                         counterStyle: TextStyle(color: AppColors.SECONDARY),
                         errorBorder: InputBorder.none),
                     maxLength: 80,
-                    initialValue: cleaning.name,
+                    controller: _nameTextController,
                     style: TextStyle(color: Colors.white),
                     validator: (value) {
                       return value.isEmpty ? "Requerido *" : null;
-                    },
-                    onSaved: (value) {
-                      cleaning.name = value;
                     },
                   ),
                   TextFormField(
@@ -84,7 +84,7 @@ class _CleaningEditorState extends State<CleaningEditor> {
                         errorBorder: InputBorder.none),
                     minLines: 4,
                     maxLines: 8,
-                    initialValue: cleaning.guidelines,
+                    controller: _guidelinesTextController,
                     maxLength: 4000,
                     style: TextStyle(color: Colors.white),
                     validator: (value) {
@@ -102,7 +102,7 @@ class _CleaningEditorState extends State<CleaningEditor> {
                     },
                   ),
                   DatePicker(
-                    initialValue: cleaning.nextDate,
+                    initialValue: DateTime(1, 1, 1, 1, 0),
                     title: "Tempo estimado",
                     showDate: false,
                     onChanged: (value) {
@@ -167,17 +167,18 @@ class _CleaningEditorState extends State<CleaningEditor> {
   void save(Cleaning cleaning) async {
     bool valid = cleaning.tasks != null &&
         cleaning.tasks.isNotEmpty &&
-        cleaning.products != null &&
-        cleaning.products.isNotEmpty &&
         cleaning.nextDate != null &&
         _formState.currentState.validate();
 
     if (valid) {
       _formState.currentState.save();
 
+      cleaning.name = _nameTextController.text;
+      cleaning.guidelines = _guidelinesTextController.text;
+
       await CleaningRepository.get().save(cleaning);
 
-      notification.schedule( cleaning );
+      notification.schedule(cleaning);
 
       Navigator.of(context).pop(cleaning);
     } else {

@@ -73,9 +73,12 @@ class _DatePickerState extends State<DatePicker> {
   @override
   void initState() {
     super.initState();
-    _date = widget.initialValue != null ? widget.initialValue : DateTime.now();
 
+    _date = widget.initialValue != null ? widget.initialValue : DateTime.now();
+    _dateString = DateFormat('dd/MM/yyyy').format(_date);
     _time = TimeOfDay(hour: _date.hour, minute: _date.minute);
+    _timeString =
+        DateFormat.Hm().format(new DateTime(0, 0, 0, _time.hour, _time.minute));
   }
 
   @override
@@ -93,44 +96,50 @@ class _DatePickerState extends State<DatePicker> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            widget.showDate ? GestureDetector(
-              onTap: _selectDate,
-              child: Row(
-                children: <Widget>[
-                  Icon(Icons.calendar_today,
-                      size: 30, color: AppColors.SECONDARY),
-                  Container(
-                      alignment: Alignment.centerLeft,
-                      width: 150,
-                      padding: EdgeInsets.only(left: 10),
-                      child: Text(
-                        _dateString != null && _dateString.isNotEmpty
-                            ? _dateString
-                            : 'dd/mm/yyy',
-                        textAlign: TextAlign.start,
-                        style: TextStyle(color: Colors.white, fontSize: 14),
-                      ))
-                ],
-              ),
-            ) : Container(),
-            widget.showTime ? GestureDetector(
-              onTap: _selectTime,
-              child: Row(
-                children: <Widget>[
-                  Icon(Icons.timer, size: 30, color: AppColors.SECONDARY),
-                  Container(
-                      alignment: Alignment.centerLeft,
-                      width: 150,
-                      padding: EdgeInsets.only(left: 10),
-                      child: Text(
-                        _timeString != null && _timeString.isNotEmpty
-                            ? _timeString
-                            : 'hh:mm',
-                        style: TextStyle(color: Colors.white, fontSize: 14),
-                      )),
-                ],
-              ),
-            ) : Container(),
+            widget.showDate
+                ? GestureDetector(
+                    onTap: _selectDate,
+                    child: Row(
+                      children: <Widget>[
+                        Icon(Icons.calendar_today,
+                            size: 30, color: AppColors.SECONDARY),
+                        Container(
+                            alignment: Alignment.centerLeft,
+                            width: 150,
+                            padding: EdgeInsets.only(left: 10),
+                            child: Text(
+                              _dateString != null && _dateString.isNotEmpty
+                                  ? _dateString
+                                  : 'dd/mm/yyy',
+                              textAlign: TextAlign.start,
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 14),
+                            ))
+                      ],
+                    ),
+                  )
+                : Container(),
+            widget.showTime
+                ? GestureDetector(
+                    onTap: _selectTime,
+                    child: Row(
+                      children: <Widget>[
+                        Icon(Icons.timer, size: 30, color: AppColors.SECONDARY),
+                        Container(
+                            alignment: Alignment.centerLeft,
+                            width: 150,
+                            padding: EdgeInsets.only(left: 10),
+                            child: Text(
+                              _timeString != null && _timeString.isNotEmpty
+                                  ? _timeString
+                                  : 'hh:mm',
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 14),
+                            )),
+                      ],
+                    ),
+                  )
+                : Container(),
           ],
         ),
         Padding(

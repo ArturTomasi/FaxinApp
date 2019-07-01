@@ -41,12 +41,15 @@ class HomeDrawer extends StatelessWidget {
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
                 onTap: () async {
-                  var _bloc = BlocProvider(
-                      bloc: CleaningBloc(), child: CleaningWidget());
+
+                  CleaningBloc _bloc = BlocProvider.of(context);
+
+                  var _provider = BlocProvider(
+                      bloc: _bloc, child: CleaningWidget());
 
                   await Navigator.push(
                     context,
-                    MaterialPageRoute<bool>(builder: (context) => _bloc),
+                    MaterialPageRoute<bool>(builder: (context) => _provider),
                   );
 
                   //Navigator.pop(context);

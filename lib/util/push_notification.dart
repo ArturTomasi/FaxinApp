@@ -1,4 +1,6 @@
 import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
+import 'package:faxinapp/pages/cleaning/models/cleaning_repository.dart';
+import 'package:faxinapp/pages/cleaning/widgets/cleaning_view.dart';
 import 'package:faxinapp/util/AppColors.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
@@ -47,16 +49,21 @@ class PushNotification {
         payload: 'faxinapp:${cleaning.id}');
   }
 
-  void cancel(Cleaning cleaning) async {
+  Future cancel(Cleaning cleaning) async {
     await notifications.cancel(cleaning.id);
   }
 
   Future onSelectNotification(String payload) async {
     if (payload != null && payload.startsWith('faxinapp:')) {
-      await Navigator.push(
-        context,
-        new MaterialPageRoute(builder: (context) => Text(payload)),
-      );
+      Cleaning cleaning = await CleaningRepository.get()
+          .find(int.parse(payload.substring('faxinapp:'.length)));
+
+      if (cleaning != null) {
+        await Navigator.push(
+          context,
+          new MaterialPageRoute(builder: (context) => CleaningView(cleaning)),
+        );
+      }
     }
   }
 }

@@ -3,6 +3,7 @@ import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
 import 'package:faxinapp/pages/cleaning/widgets/cleaning_view.dart';
 import 'package:faxinapp/util/AppColors.dart';
+import 'package:faxinapp/util/push_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -42,6 +43,8 @@ class CleaningListWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    PushNotification notification = PushNotification(context);
+
     return Container(
         color: AppColors.PRIMARY_LIGHT,
         child: ListView.builder(
@@ -50,10 +53,11 @@ class CleaningListWidget extends StatelessWidget {
               return Dismissible(
                   key: ObjectKey(_cleaning[i]),
                   direction: DismissDirection.endToStart,
-                  onDismissed: (direction) {
+                  onDismissed: (direction) async {
                     if (direction == DismissDirection.endToStart) {
                       CleaningBloc _bloc =
                           BlocProvider.of<CleaningBloc>(context);
+                      await notification.cancel(_cleaning[i]);
                       _bloc.delete(_cleaning[i]);
                       _bloc.refresh();
 
@@ -79,12 +83,13 @@ class CleaningListWidget extends StatelessWidget {
                                     CleaningView(_cleaning[i])));
                       },
                       child: item(
+                        context,
                         _cleaning[i],
                       )));
             }));
   }
 
-  Widget item(Cleaning cleaning) {
+  Widget item(BuildContext context, Cleaning cleaning) {
     return Container(
       alignment: Alignment.center,
       child: Row(
@@ -118,64 +123,41 @@ class CleaningListWidget extends StatelessWidget {
               ],
             ),
           ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Container(
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(
-                cleaning.name,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
+              SizedBox(
+                width: MediaQuery.of(context).size.width - 100,
+                child: Text(
+                  cleaning.name,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                  ),
                 ),
               ),
               SizedBox(
                 height: 10,
               ),
-              Text(
-                cleaning.guidelines != null ? cleaning.guidelines : 'n/d',
-                maxLines: 2,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 15,
+              SizedBox(
+                width: MediaQuery.of(context).size.width - 100,
+                child: Text(
+                  cleaning.guidelines != null ? cleaning.guidelines : 'n/d',
+                  softWrap: true,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 15,
+                  ),
                 ),
               )
             ],
-          )
+          )),
         ],
       ),
     );
-  }
-
-  Widget _item(Cleaning cleaning) {
-    return ListTile(
-        leading: Icon(
-          Icons.event_available,
-          color: Colors.white,
-        ),
-        subtitle: Column(children: <Widget>[
-          Row(children: <Widget>[
-            new Text(
-              cleaning.name.toLowerCase(),
-              style: TextStyle(
-                  color: AppColors.SECONDARY, fontStyle: FontStyle.italic),
-            )
-          ]),
-          SizedBox(height: 15),
-          Row(children: <Widget>[
-            Icon(Icons.shopping_cart, color: Colors.white, size: 15),
-            SizedBox(width: 5),
-            Text('${cleaning.products.length}',
-                style: TextStyle(color: Colors.white)),
-            SizedBox(width: 50),
-            Icon(Icons.fitness_center, color: Colors.white, size: 15),
-            SizedBox(width: 5),
-            Text('${cleaning.tasks.length}',
-                style: TextStyle(color: Colors.white))
-          ]),
-          SizedBox(height: 15)
-        ]),
-        title: new Text(cleaning.name.toUpperCase(),
-            style: TextStyle(color: Colors.white, fontSize: 20)));
   }
 }

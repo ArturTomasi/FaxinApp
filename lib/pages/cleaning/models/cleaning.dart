@@ -9,8 +9,9 @@ class Frequency {
   static final Frequency BI_WEEKLY = Frequency._(3, "Quinzenal");
   static final Frequency MONTH = Frequency._(4, "Mensal");
   static final Frequency YEAR = Frequency._(5, "Anual");
-  
-  static List<Frequency> values() => [ NONE, DAY, WEEKLY, BI_WEEKLY, MONTH, YEAR ];
+
+  static List<Frequency> values() =>
+      [NONE, DAY, WEEKLY, BI_WEEKLY, MONTH, YEAR];
 
   static Frequency valueOf(int index) {
     switch (index) {
@@ -29,10 +30,13 @@ class Frequency {
     }
   }
 
-  int index; String label;
+  int index;
+  String label;
 
   Frequency._(this.index, this.label);
-  
+
+  bool operator(o) => o is Frequency && o.index == index;
+
   @override
   String toString() => label;
 }
@@ -42,8 +46,8 @@ class Cleaning {
   String name;
   String guidelines;
   Frequency frequency;
-  DateTime nextDate, startDate, endDate;
-  TimeOfDay estimatedTime;
+  DateTime nextDate = DateTime.now(), dueDate;
+  TimeOfDay estimatedTime = new TimeOfDay(hour: 1, minute: 0);
   List<Product> products;
   List<Task> tasks;
 
@@ -54,16 +58,49 @@ class Cleaning {
     name = map[CleaningTable.NAME];
     guidelines = map[CleaningTable.GUIDELINES];
     frequency = Frequency.valueOf(map[CleaningTable.FREQUENCY]);
-    
-    String t = map[CleaningTable.ESTIMATED_TIME]
-                      .toString()
-                      .replaceAll( RegExp( "[^0-9]" ) , "" );
 
-    estimatedTime = new TimeOfDay( hour: int.parse( t.substring(0,2) ), minute: int.parse( t.substring(2,4) ) );
-    nextDate = DateTime.parse( map[CleaningTable.NEXT_DATE] );
-    endDate = map[CleaningTable.END_DATE] != null ? DateTime( map[CleaningTable.END_DATE] ) : null;
-    startDate = map[CleaningTable.START_DATE] != null ? DateTime(map[CleaningTable.START_DATE]) : null;
+    String t = map[CleaningTable.ESTIMATED_TIME]
+        .toString()
+        .replaceAll(RegExp("[^0-9]"), "");
+
+    estimatedTime = new TimeOfDay(
+        hour: int.parse(t.substring(0, 2)),
+        minute: int.parse(t.substring(2, 4)));
+    nextDate = DateTime.parse(map[CleaningTable.NEXT_DATE]);
+    dueDate = map[CleaningTable.DUE_DATE] != null
+        ? DateTime.parse(map[CleaningTable.DUE_DATE])
+        : null;
   }
+
+  DateTime futureDate() {
+    int days = 0;
+    if (frequency == Frequency.DAY) {
+      days = 1;
+    } else if (frequency == Frequency.WEEKLY) {
+      days = 7;
+    } else if (frequency == Frequency.BI_WEEKLY) {
+      days = 15;
+    } else if (frequency == Frequency.MONTH) {
+      days = 30;
+    } else if (frequency == Frequency.YEAR) {
+      days = 365;
+    }
+
+    return DateTime(
+      nextDate.year,
+      nextDate.month,
+      nextDate.day + days,
+      nextDate.hour,
+      nextDate.minute,
+      nextDate.second,
+      nextDate.millisecond,
+      nextDate.microsecond,
+    );
+  }
+
+  bool operator(o) => o is Cleaning && o.id == id;
+
+  String toString() => name;
 }
 
 class CleaningTable {
@@ -73,22 +110,6 @@ class CleaningTable {
   static const GUIDELINES = "guidelines";
   static const FREQUENCY = "frequency";
   static const NEXT_DATE = "next_date";
-  static const START_DATE = "start_date";
-  static const END_DATE = "end_date";
+  static const DUE_DATE = "due_date";
   static const ESTIMATED_TIME = "estimated_time";
-}
-
-class CleaningTaskTable {
-  static const table = "cleaning_tasks";
-  static const REF_TASK = "ref_task";
-  static const REF_CLEANING = "ref_cleaning";
-  static const REALIZED = "realized";
-}
-
-class CleaningProductTable {
-  static const table = "cleaning_products";
-  static const REF_PRODUCT = "ref_product";
-  static const REF_CLEANING = "ref_cleaning";
-  static const AMOUNT = "amount";
-  static const REALIZED = "realized";
 }

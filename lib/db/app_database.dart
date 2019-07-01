@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
+import 'package:faxinapp/pages/cleaning/models/cleaning_product.dart';
+import 'package:faxinapp/pages/cleaning/models/cleaning_task.dart';
 import 'package:faxinapp/pages/products/models/product.dart';
 import 'package:faxinapp/pages/tasks/models/task.dart';
 import 'package:path/path.dart';
@@ -29,7 +31,7 @@ class AppDatabase {
     // Get a location using path_provider
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, "faxinapp.db");
-    _database = await openDatabase(path, version: 6,
+    _database = await openDatabase(path, version: 7,
         onCreate: (Database db, int version) async {
       await _createTaskTable(db);
       await _createProductTable(db);
@@ -76,8 +78,7 @@ class AppDatabase {
         "${CleaningTable.NAME} TEXT,"
         "${CleaningTable.FREQUENCY} INTEGER,"
         "${CleaningTable.NEXT_DATE} TEXT,"
-        "${CleaningTable.START_DATE} TEXT,"
-        "${CleaningTable.END_DATE} TEXT,"
+        "${CleaningTable.DUE_DATE} TEXT,"
         "${CleaningTable.ESTIMATED_TIME} TEXT,"
         "${CleaningTable.GUIDELINES} TEXT);");
   }

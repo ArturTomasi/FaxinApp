@@ -1,4 +1,5 @@
 import 'package:faxinapp/bloc/bloc_provider.dart';
+import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';
 import 'package:faxinapp/pages/home/bloc/home_bloc.dart';
 import 'package:faxinapp/pages/home/widgets/home_page.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +11,14 @@ void main() async {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final CleaningBloc _cleaningBloc = new CleaningBloc();
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -19,12 +27,15 @@ class MyApp extends StatelessWidget {
             canvasColor: Colors.transparent,
             highlightColor: AppColors.SECONDARY,
             accentColor: AppColors.SECONDARY,
-            buttonTheme: ButtonThemeData(textTheme: ButtonTextTheme.accent),
+            buttonTheme: ButtonThemeData(
+              textTheme: ButtonTextTheme.accent,
+            ),
             floatingActionButtonTheme: FloatingActionButtonThemeData(
-                backgroundColor: AppColors.SECONDARY),
+              backgroundColor: AppColors.SECONDARY,
+            ),
             primaryColor: AppColors.PRIMARY),
         home: BlocProvider(
-          bloc: HomeBloc(),
+          bloc: _cleaningBloc,
           child: HomePage(),
         ));
   }

@@ -24,6 +24,14 @@ class ProductBloc extends BlocBase {
     _productController.sink.add(await _repository.findAll());
   }
 
+  void getEmpty() async {
+    _productController.sink.add(await _repository.findEmpty());
+  }
+
+  void fill(Product p){
+    _repository.fill(p);
+  }
+  
   void delete(Product p) {
     _repository.delete(p);
   }
