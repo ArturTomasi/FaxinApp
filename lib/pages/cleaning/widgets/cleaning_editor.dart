@@ -12,12 +12,15 @@ import 'package:faxinapp/util/push_notification.dart';
 import 'package:flutter/material.dart';
 
 class CleaningEditor extends StatefulWidget {
+  final Cleaning cleaning;
+
+  CleaningEditor({@required this.cleaning});
+
   @override
-  State<StatefulWidget> createState() => _CleaningEditorState(Cleaning());
+  State<StatefulWidget> createState() => _CleaningEditorState();
 }
 
 class _CleaningEditorState extends State<CleaningEditor> {
-  final Cleaning cleaning;
   PushNotification notification;
 
   final _nameTextController = TextEditingController();
@@ -25,15 +28,15 @@ class _CleaningEditorState extends State<CleaningEditor> {
 
   final GlobalKey<FormState> _formState = GlobalKey<FormState>();
 
-  _CleaningEditorState(this.cleaning);
+  _CleaningEditorState();
 
   void initState() {
     super.initState();
 
     notification = PushNotification(context);
 
-    _nameTextController.text = cleaning.name;
-    _guidelinesTextController.text = cleaning.guidelines;
+    _nameTextController.text = widget.cleaning.name;
+    _guidelinesTextController.text = widget.cleaning.guidelines;
   }
 
   @override
@@ -42,12 +45,12 @@ class _CleaningEditorState extends State<CleaningEditor> {
       appBar: AppBar(
         centerTitle: true,
         iconTheme: new IconThemeData(color: AppColors.SECONDARY),
-        title: Text("Nova Faxina",
+        title: Text( widget.cleaning.id != null ? "Editar Faxina" : "Nova Faxina",
             style: TextStyle(color: AppColors.SECONDARY, fontSize: 22)),
         actions: <Widget>[
           FlatButton(
             onPressed: () async {
-              save(cleaning);
+              save(widget.cleaning);
             },
             child: Text("SALVAR", style: TextStyle(color: AppColors.SECONDARY)),
           )
@@ -82,23 +85,20 @@ class _CleaningEditorState extends State<CleaningEditor> {
                         labelStyle: TextStyle(color: AppColors.SECONDARY),
                         counterStyle: TextStyle(color: AppColors.SECONDARY),
                         errorBorder: InputBorder.none),
-                    minLines: 4,
+                    minLines: 2,
                     maxLines: 8,
                     controller: _guidelinesTextController,
                     maxLength: 4000,
                     style: TextStyle(color: Colors.white),
-                    validator: (value) {
-                      return value.isEmpty ? "Requerido *" : null;
-                    },
                     onSaved: (value) {
-                      cleaning.guidelines = value;
+                      widget.cleaning.guidelines = value;
                     },
                   ),
                   DatePicker(
-                    initialValue: cleaning.nextDate,
+                    initialValue: widget.cleaning.nextDate,
                     title: "Agendamento",
                     onChanged: (value) {
-                      cleaning.nextDate = value;
+                      widget.cleaning.nextDate = value;
                     },
                   ),
                   DatePicker(
@@ -106,12 +106,14 @@ class _CleaningEditorState extends State<CleaningEditor> {
                     title: "Tempo estimado",
                     showDate: false,
                     onChanged: (value) {
-                      cleaning.estimatedTime = TimeOfDay.fromDateTime(value);
+                      widget.cleaning.estimatedTime = TimeOfDay.fromDateTime(value);
                     },
                   ),
                   SelectionPicker<Frequency>(
-                    onChanged: (f) => cleaning.frequency = f.first,
+                    onChanged: (f) =>
+                        widget.cleaning.frequency = f != null ? f.first : null,
                     elements: Frequency.values(),
+                    selecteds: widget.cleaning.frequency != null ? ( []..add(  widget.cleaning.frequency ) ) : null,
                     singleSelected: true,
                     renderer: FrequencySelector(),
                     title: "Frequência",
@@ -120,10 +122,10 @@ class _CleaningEditorState extends State<CleaningEditor> {
                       future: ProductRepository.get().findAll(),
                       builder: (x, y) => SelectionPicker<Product>(
                             onChanged: (value) {
-                              cleaning.products = value;
+                              widget.cleaning.products = value;
                             },
                             title: "Produtos",
-                            selecteds: cleaning.products,
+                            selecteds: widget.cleaning.products,
                             renderer: ProductSelector(),
                             elements: y.data,
                           )),
@@ -131,10 +133,10 @@ class _CleaningEditorState extends State<CleaningEditor> {
                       future: TaskRepository.get().findAll(),
                       builder: (x, y) => SelectionPicker<Task>(
                             onChanged: (value) {
-                              cleaning.tasks = value;
+                              widget.cleaning.tasks = value;
                             },
                             title: "Tarefas",
-                            selecteds: cleaning.tasks,
+                            selecteds: widget.cleaning.tasks,
                             renderer: TaskSelector(),
                             elements: y.data,
                           )),
@@ -148,7 +150,7 @@ class _CleaningEditorState extends State<CleaningEditor> {
                             borderRadius:
                                 BorderRadius.all(Radius.circular(10))),
                         onPressed: () async {
-                          save(cleaning);
+                          save(widget.cleaning);
                         },
                         color: AppColors.SECONDARY,
                         textColor: Colors.white,

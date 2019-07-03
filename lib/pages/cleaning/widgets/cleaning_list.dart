@@ -1,4 +1,5 @@
 import 'package:faxinapp/bloc/bloc_provider.dart';
+import 'package:faxinapp/common/ui/animate_route.dart';
 import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
 import 'package:faxinapp/pages/cleaning/widgets/cleaning_view.dart';
@@ -53,6 +54,22 @@ class CleaningListWidget extends StatelessWidget {
               return Dismissible(
                   key: ObjectKey(_cleaning[i]),
                   direction: DismissDirection.endToStart,
+                  confirmDismiss: (d) {
+                    if (_cleaning[i].dueDate == null) {
+                      return Future.value(true);
+                    }
+                    Scaffold.of(context).showSnackBar(
+                      SnackBar(
+                        backgroundColor: AppColors.SECONDARY,
+                        content: Text(
+                          "Faxina concluida não pode ser excluida",
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    );
+
+                    return Future.value(false);
+                  },
                   onDismissed: (direction) async {
                     if (direction == DismissDirection.endToStart) {
                       CleaningBloc _bloc =
@@ -61,12 +78,15 @@ class CleaningListWidget extends StatelessWidget {
                       _bloc.delete(_cleaning[i]);
                       _bloc.refresh();
 
-                      Scaffold.of(context).showSnackBar(SnackBar(
+                      Scaffold.of(context).showSnackBar(
+                        SnackBar(
                           backgroundColor: AppColors.SECONDARY,
                           content: Text(
                             "Faxina excluida com sucesso!",
                             style: TextStyle(fontSize: 16),
-                          )));
+                          ),
+                        ),
+                      );
                     }
                   },
                   background: Container(
@@ -76,11 +96,15 @@ class CleaningListWidget extends StatelessWidget {
                   ),
                   child: GestureDetector(
                       onTap: () async {
-                        await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    CleaningView(_cleaning[i])));
+                        var provider = BlocProvider(
+                          bloc: BlocProvider.of<CleaningBloc>(context),
+                          child: CleaningView(
+                            cleaning: _cleaning[i],
+                          ),
+                        );
+
+                        await Navigator.of(context).push(new AnimateRoute(
+                            fullscreenDialog: true, builder: (c) => provider));
                       },
                       child: item(
                         context,
@@ -98,27 +122,26 @@ class CleaningListWidget extends StatelessWidget {
             padding: EdgeInsets.all(5),
             margin: EdgeInsets.all(10),
             decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(50),
+                borderRadius: BorderRadius.horizontal(
+                  left: Radius.elliptical(10, 10),
+                  right: Radius.elliptical(10, 10),
+                ),
                 color: AppColors.SECONDARY),
             width: 75,
             height: 75,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Text(
-                  '${cleaning.nextDate.day}',
-                  style: TextStyle(
-                    fontSize: 30,
-                  ),
-                ),
-                Container(
-                  height: 1,
+                Icon(
+                  cleaning.dueDate == null ? Icons.access_time : Icons.done,
+                  size: 40,
                   color: AppColors.PRIMARY_DARK,
-                  width: 30,
                 ),
                 Text(
-                  DateFormat.MMM().format(cleaning.nextDate),
-                  style: TextStyle(fontSize: 20),
+                  '${cleaning.nextDate.day}/${DateFormat.MMM().format(cleaning.nextDate)}',
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
                 ),
               ],
             ),

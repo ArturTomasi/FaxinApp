@@ -1,13 +1,15 @@
 import 'package:faxinapp/bloc/bloc_provider.dart';
+import 'package:faxinapp/common/ui/animate_route.dart';
 import 'package:faxinapp/pages/products/bloc/product_bloc.dart';
 import 'package:faxinapp/pages/products/models/product.dart';
+import 'package:faxinapp/pages/products/widgets/product_editor.dart';
 import 'package:faxinapp/util/AppColors.dart';
 import 'package:flutter/material.dart';
 
 class ProductList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    ProductBloc bloc = BlocProvider.of(context);
+    ProductBloc bloc = BlocProvider.of<ProductBloc>(context);
     bloc.refresh();
 
     return StreamBuilder<List<Product>>(
@@ -69,6 +71,17 @@ class ProductListWidget extends StatelessWidget {
                       trailing: Icon(Icons.delete, color: Colors.white)),
                 ),
                 child: ListTile(
+                  onTap: () async {
+                    await Navigator.of(context).push(
+                      AnimateRoute(
+                        fullscreenDialog: true,
+                        builder: (c) => ProductEditor(
+                              product: _products[i],
+                            ),
+                      ),
+                    );
+                    BlocProvider.of<ProductBloc>(context).refresh();
+                  },
                   leading: new Icon(
                     Icons.shopping_cart,
                     color: Colors.white,

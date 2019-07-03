@@ -1,5 +1,8 @@
 import 'package:faxinapp/bloc/bloc_provider.dart';
+import 'package:faxinapp/common/ui/animate_route.dart';
+import 'package:faxinapp/common/ui/tab_item.dart';
 import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';
+import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
 import 'package:faxinapp/pages/cleaning/widgets/cleaning_editor.dart';
 import 'package:flutter/material.dart';
 
@@ -24,16 +27,17 @@ class CleaningWidget extends StatelessWidget {
             ),
             onPressed: () async {
               var bloc = BlocProvider(
-                bloc: CleaningBloc(),
-                child: CleaningEditor(),
+                bloc: _bloc,
+                child: CleaningEditor(
+                  cleaning: Cleaning(),
+                ),
               );
 
-              await Navigator.of(context).push(
-                  new MaterialPageRoute(
-                      fullscreenDialog: true, builder: (c) => bloc));
+              await Navigator.of(context).push(new AnimateRoute(
+                  fullscreenDialog: true, builder: (c) => bloc));
 
               _bloc.refresh();
             }),
-        body: BlocProvider(bloc: _bloc, child: CleaningList()) );
+        body: BlocProvider(bloc: _bloc, child: CleaningList()));
   }
 }

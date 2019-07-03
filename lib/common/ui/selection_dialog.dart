@@ -132,10 +132,10 @@ class _SelectionDialogState<T> extends State<SelectionDialog<T>> {
 
   @override
   void initState() {
+    super.initState();
     this.selecteds = widget.selecteds;
     multiSelected = selecteds.isNotEmpty;
     filteredElements = widget.elements;
-    super.initState();
   }
 
   void _filterElements(String s) {

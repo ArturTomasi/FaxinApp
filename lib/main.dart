@@ -1,6 +1,5 @@
 import 'package:faxinapp/bloc/bloc_provider.dart';
 import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';
-import 'package:faxinapp/pages/home/bloc/home_bloc.dart';
 import 'package:faxinapp/pages/home/widgets/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:faxinapp/util/AppColors.dart';
@@ -23,8 +22,10 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
+        title: "Faxinap",
         theme: ThemeData(
             canvasColor: Colors.transparent,
+            bottomAppBarColor: Colors.transparent,
             highlightColor: AppColors.SECONDARY,
             accentColor: AppColors.SECONDARY,
             buttonTheme: ButtonThemeData(
@@ -32,6 +33,13 @@ class _MyAppState extends State<MyApp> {
             ),
             floatingActionButtonTheme: FloatingActionButtonThemeData(
               backgroundColor: AppColors.SECONDARY,
+            ),
+            sliderTheme: SliderTheme.of(context).copyWith(
+              disabledActiveTickMarkColor: AppColors.PRIMARY_DARK,
+              disabledInactiveTickMarkColor: AppColors.PRIMARY,
+              disabledActiveTrackColor: AppColors.PRIMARY_DARK,
+              disabledInactiveTrackColor: AppColors.PRIMARY,
+              disabledThumbColor: AppColors.PRIMARY_DARK,
             ),
             primaryColor: AppColors.PRIMARY),
         home: BlocProvider(

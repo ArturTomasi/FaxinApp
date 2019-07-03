@@ -1,5 +1,7 @@
 import 'package:faxinapp/bloc/bloc_provider.dart';
+import 'package:faxinapp/common/ui/animate_route.dart';
 import 'package:faxinapp/pages/tasks/bloc/task_bloc.dart';
+import 'package:faxinapp/pages/tasks/models/task.dart';
 import 'package:faxinapp/pages/tasks/widgets/task_editor.dart';
 import 'package:faxinapp/pages/tasks/widgets/task_list.dart';
 import 'package:flutter/material.dart';
@@ -22,8 +24,14 @@ class TaskWidget extends StatelessWidget {
               color: Colors.white,
             ),
             onPressed: () async {
-              await Navigator.of(context).push(new MaterialPageRoute(
-                  fullscreenDialog: true, builder: (c) => TaskEditor()));
+              await Navigator.of(context).push(
+                new AnimateRoute(
+                  fullscreenDialog: true,
+                  builder: (c) => TaskEditor(
+                        task: Task(),
+                      ),
+                ),
+              );
               _bloc.refresh();
             }),
         body: BlocProvider(bloc: _bloc, child: TaskList()));

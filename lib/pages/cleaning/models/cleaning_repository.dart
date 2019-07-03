@@ -129,6 +129,51 @@ class CleaningRepository {
     return null;
   }
 
+  Future<Map> findTask(Cleaning c) async {
+    var db = await _appDatabase.getDb();
+
+    var fetchTask = await db.query(
+      CleaningTaskTable.table,
+      where: '${CleaningTaskTable.REF_CLEANING} = ? ',
+      whereArgs: [
+        c.id,
+      ],
+    );
+
+    Map result = Map();
+
+    for (Map<String, dynamic> map in fetchTask) {
+      result.putIfAbsent( map[CleaningTaskTable.REF_TASK], () => map[CleaningTaskTable.REALIZED] );
+    }
+
+    return result;
+  }
+
+  Future<Map> findProducts(Cleaning c) async {
+    var db = await _appDatabase.getDb();
+
+    var fetchProduct = await db.query(
+      CleaningProductTable.table,
+      where: '${CleaningProductTable.REF_CLEANING} = ? ',
+      whereArgs: [
+        c.id,
+      ],
+    );
+
+    Map result = Map();
+
+    for (Map<String, dynamic> map in fetchProduct) {
+      result.putIfAbsent(
+          map[CleaningProductTable.REF_PRODUCT],
+          () => [
+                map[CleaningProductTable.REALIZED],
+                map[CleaningProductTable.AMOUNT]
+              ]);
+    }
+
+    return result;
+  }
+
   Future<List<Cleaning>> findPendents() async {
     var db = await _appDatabase.getDb();
 

@@ -16,13 +16,32 @@ class ProductRepository {
   Future<bool> save(Product product) async {
     var db = await _appDatabase.getDb();
 
-    product.id = await db.insert(ProductTable.table, {
-      ProductTable.NAME: product.name,
-      ProductTable.CAPACITY: product.capacity,
-      ProductTable.CURRENT_CAPACITY: product.currentCapacity,
-      ProductTable.BRANDING: product.branding,
-      ProductTable.STATE: product.state
-    });
+    if (product.id == null || product.id == 0) {
+      product.id = await db.insert(
+        ProductTable.table,
+        {
+          ProductTable.NAME: product.name,
+          ProductTable.CAPACITY: product.capacity,
+          ProductTable.CURRENT_CAPACITY: product.currentCapacity,
+          ProductTable.BRANDING: product.branding,
+          ProductTable.STATE: product.state
+        },
+      );
+    } else {
+      await db.update(
+        ProductTable.table,
+        {
+          ProductTable.NAME: product.name,
+          ProductTable.CAPACITY: product.capacity,
+          ProductTable.CURRENT_CAPACITY: product.currentCapacity,
+          ProductTable.BRANDING: product.branding,
+          ProductTable.STATE: product.state
+        },
+        where: '${ProductTable.ID} = ? ',
+        whereArgs: [product.id],
+      );
+    }
+
     return true;
   }
 

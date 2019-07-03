@@ -1,4 +1,5 @@
 import 'package:faxinapp/bloc/bloc_provider.dart';
+import 'package:faxinapp/common/ui/animate_route.dart';
 import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';
 import 'package:faxinapp/pages/cleaning/widgets/cleaning_widget.dart';
 import 'package:faxinapp/pages/products/bloc/product_bloc.dart';
@@ -41,15 +42,14 @@ class HomeDrawer extends StatelessWidget {
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
                 onTap: () async {
-
                   CleaningBloc _bloc = BlocProvider.of(context);
 
-                  var _provider = BlocProvider(
-                      bloc: _bloc, child: CleaningWidget());
+                  var _provider =
+                      BlocProvider(bloc: _bloc, child: CleaningWidget());
 
                   await Navigator.push(
                     context,
-                    MaterialPageRoute<bool>(builder: (context) => _provider),
+                    AnimateRoute<bool>(builder: (context) => _provider),
                   );
 
                   //Navigator.pop(context);
@@ -78,7 +78,7 @@ class HomeDrawer extends StatelessWidget {
 
                   await Navigator.push(
                     context,
-                    MaterialPageRoute<bool>(builder: (context) => bloc),
+                    AnimateRoute<bool>(builder: (context) => bloc),
                   );
 
                   //Navigator.pop(context);
@@ -106,7 +106,7 @@ class HomeDrawer extends StatelessWidget {
 
                   await Navigator.push(
                     context,
-                    MaterialPageRoute<bool>(builder: (context) => bloc),
+                    AnimateRoute<bool>(builder: (context) => bloc),
                   );
 
                   //Navigator.pop(context);

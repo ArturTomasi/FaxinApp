@@ -4,6 +4,8 @@ import 'package:faxinapp/util/AppColors.dart';
 import 'package:flutter/material.dart';
 
 class TaskEditor extends StatefulWidget {
+  final Task task;
+  TaskEditor( {@required this.task} );
   @override
   _TaskEditorState createState() => _TaskEditorState();
 }
@@ -13,7 +15,7 @@ class _TaskEditorState extends State<TaskEditor> {
 
   @override
   Widget build(BuildContext context) {
-    final Task task = new Task();
+    final Task task = widget.task ;
 
     return Scaffold(
         appBar: AppBar(
@@ -75,9 +77,6 @@ class _TaskEditorState extends State<TaskEditor> {
                           initialValue: task.guidelines,
                           maxLength: 4000,
                           style: TextStyle(color: Colors.white),
-                          validator: (value) {
-                            return value.isEmpty ? "Requerido *" : null;
-                          },
                           onSaved: (value) {
                             task.guidelines = value;
                           },

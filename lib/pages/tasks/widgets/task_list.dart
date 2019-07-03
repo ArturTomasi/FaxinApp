@@ -1,6 +1,8 @@
 import 'package:faxinapp/bloc/bloc_provider.dart';
+import 'package:faxinapp/common/ui/animate_route.dart';
 import 'package:faxinapp/pages/tasks/bloc/task_bloc.dart';
 import 'package:faxinapp/pages/tasks/models/task.dart';
+import 'package:faxinapp/pages/tasks/widgets/task_editor.dart';
 import 'package:faxinapp/util/AppColors.dart';
 import 'package:flutter/material.dart';
 
@@ -68,6 +70,17 @@ class TaskListWidget extends StatelessWidget {
                       trailing: Icon(Icons.delete, color: Colors.white)),
                 ),
                 child: ListTile(
+                  onTap: () async {
+                    await Navigator.of(context).push(
+                      new AnimateRoute(
+                        fullscreenDialog: true,
+                        builder: (c) => TaskEditor(
+                              task: _tasks[i],
+                            ),
+                      ),
+                    );
+                    BlocProvider.of<TaskBloc>(context).refresh();
+                  },
                   leading: new Icon(
                     Icons.fitness_center,
                     color: Colors.white,

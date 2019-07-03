@@ -3,8 +3,6 @@ import 'dart:async';
 import 'package:faxinapp/bloc/bloc_provider.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning_repository.dart';
-import 'package:faxinapp/pages/products/models/product.dart';
-import 'package:faxinapp/pages/products/models/product_repository.dart';
 
 class CleaningBloc implements BlocBase {
   StreamController<List<Cleaning>> _controller =
@@ -29,8 +27,7 @@ class CleaningBloc implements BlocBase {
 
   @override
   void dispose() {
-    //_controller.close();
-    //_controllerPendency.close();
+    
   }
 
   refresh() async {

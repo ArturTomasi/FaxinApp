@@ -1,4 +1,5 @@
 import 'package:faxinapp/bloc/bloc_provider.dart';
+import 'package:faxinapp/common/ui/animate_route.dart';
 import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
 import 'package:faxinapp/util/AppColors.dart';
@@ -8,7 +9,6 @@ import 'package:intl/intl.dart';
 import 'cleaning_view.dart';
 
 class CleaningTimeline extends StatelessWidget {
-  
   @override
   Widget build(BuildContext context) {
     CleaningBloc _bloc = BlocProvider.of(context);
@@ -47,6 +47,8 @@ class CleaningTimelineWidget extends StatelessWidget {
     return Container(
         color: AppColors.PRIMARY_LIGHT,
         child: ListView.builder(
+            shrinkWrap: true,
+            primary: true,
             itemBuilder: centerTimelineBuilder,
             itemCount: items.length,
             physics: BouncingScrollPhysics()));
@@ -57,12 +59,23 @@ class CleaningTimelineWidget extends StatelessWidget {
 
     return GestureDetector(
       onTap: () async {
-        Cleaning next = await Navigator.push(context,
-            MaterialPageRoute(builder: (context) => CleaningView(cleaning)));
+        CleaningBloc bloc = BlocProvider.of(context);
 
-        CleaningBloc bloc = BlocProvider.of<CleaningBloc>(context);
-        bloc.update( cleaning, next );
+        var provider = BlocProvider(
+          bloc: bloc,
+          child: CleaningView(
+            cleaning: cleaning,
+          ),
+        );
 
+        Cleaning next = await Navigator.push(
+          context,
+          AnimateRoute(
+            builder: (context) => provider,
+          ),
+        );
+
+        bloc.update(cleaning, next);
       },
       child: Row(
         children: <Widget>[
@@ -72,10 +85,9 @@ class CleaningTimelineWidget extends StatelessWidget {
             decoration: BoxDecoration(
               boxShadow: [
                 new BoxShadow(
-                  color: AppColors.PRIMARY_DARK,
-                  blurRadius: 20.0,
-                  spreadRadius: 1
-                )
+                    color: AppColors.PRIMARY_DARK,
+                    blurRadius: 20.0,
+                    spreadRadius: 1)
               ],
               shape: BoxShape.circle,
               color: AppColors.SECONDARY,
@@ -115,7 +127,7 @@ class CleaningTimelineWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: SizedBox(
-              width: MediaQuery.of(context).size.width - 125,
+              width: MediaQuery.of(context).size.width - 120,
               child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -136,10 +148,24 @@ class CleaningTimelineWidget extends StatelessWidget {
                       Text(
                         cleaning.guidelines,
                         maxLines: 2,
-                        textAlign: TextAlign.center,
+                        textAlign: TextAlign.left,
                       ),
                       const SizedBox(
                         height: 8.0,
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width - 120,
+                        child: Text(
+                          deadline( cleaning ),
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                            
+                            color: color(cleaning),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 4.0,
                       ),
                     ],
                   )),
@@ -148,5 +174,33 @@ class CleaningTimelineWidget extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String deadline( Cleaning c ){
+    DateTime now = DateTime.now();
+
+    Duration duration = c.nextDate.difference( now );
+    if ( duration.inDays > 0 ) {
+      return "Faltam ${duration.inDays} dia${duration.inDays>1?'s':''}";
+    }
+    else if ( duration.inDays < 0 ) {
+      return "${duration.inDays*-1} dia${duration.inDays>1?'s':''} em atraso";
+    } else {
+      return "Hoje";
+    }
+  }
+
+  Color color( Cleaning c ){
+    DateTime now = DateTime.now();
+
+    Duration duration = c.nextDate.difference( now );
+    if ( duration.inDays > 0 ) {
+      return Colors.green;
+    }
+    else if ( duration.inDays < 0 ) {
+      return Colors.red;
+    } else {
+      return AppColors.SECONDARY;
+    }
   }
 }

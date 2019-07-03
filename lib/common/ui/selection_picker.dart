@@ -58,6 +58,7 @@ class _SelectionPickerState<T> extends State<SelectionPicker<T>> {
                 },
                 child: StreamBuilder<List<T>>(
                     stream: bloc.selecteds,
+                    initialData: widget.selecteds,
                     builder: (context, snapshot) {
                       return Container(
                           color: AppColors.PRIMARY_LIGHT,
@@ -131,6 +132,7 @@ class _SelectionPickerState<T> extends State<SelectionPicker<T>> {
   @override
   initState() {
     super.initState();
+    _tempSelecteds = widget.selecteds;
   }
 
   void _publishSelection(List<T> e) {

@@ -1,8 +1,8 @@
-class Task {
+class Task{
   int id;
-  String name;
-  String guidelines;
-  int state;
+  String name = "";
+  String guidelines = "";
+  int state = 1;
 
   Task();
 
@@ -13,8 +13,14 @@ class Task {
     state = map[TaskTable.STATE];
   }
 
-  bool operator(o) => o is Task && o.id == id;
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Task && runtimeType == other.runtimeType && id == other.id;
 
+  @override
+  int get hashCode => runtimeType.hashCode ^ id.hashCode;
+  
   @override
   String toString() => name;
 }

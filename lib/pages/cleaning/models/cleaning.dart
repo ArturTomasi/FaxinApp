@@ -34,8 +34,14 @@ class Frequency {
   String label;
 
   Frequency._(this.index, this.label);
+  
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Frequency && runtimeType == other.runtimeType && index == other.index;
 
-  bool operator(o) => o is Frequency && o.index == index;
+  @override
+  int get hashCode => runtimeType.hashCode ^ index.hashCode;
 
   @override
   String toString() => label;
@@ -43,8 +49,8 @@ class Frequency {
 
 class Cleaning {
   int id;
-  String name;
-  String guidelines;
+  String name = "";
+  String guidelines = "";
   Frequency frequency;
   DateTime nextDate = DateTime.now(), dueDate;
   TimeOfDay estimatedTime = new TimeOfDay(hour: 1, minute: 0);
@@ -98,8 +104,15 @@ class Cleaning {
     );
   }
 
-  bool operator(o) => o is Cleaning && o.id == id;
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Cleaning && runtimeType == other.runtimeType && id == other.id;
 
+  @override
+  int get hashCode => runtimeType.hashCode ^ id.hashCode;
+
+  @override
   String toString() => name;
 }
 

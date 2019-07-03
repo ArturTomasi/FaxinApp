@@ -1,7 +1,12 @@
+import 'package:faxinapp/bloc/bloc_provider.dart';
+import 'package:faxinapp/common/ui/animate_route.dart';
+import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning_product.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning_repository.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning_task.dart';
+import 'package:faxinapp/pages/cleaning/widgets/cleaning_actions.dart';
+import 'package:faxinapp/pages/cleaning/widgets/cleaning_editor.dart';
 import 'package:faxinapp/util/AppColors.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -9,66 +14,107 @@ import 'package:intl/intl.dart';
 class CleaningView extends StatefulWidget {
   final Cleaning cleaning;
 
-  CleaningView(this.cleaning);
+  CleaningView({@required this.cleaning});
 
   @override
   _CleaningViewState createState() => _CleaningViewState();
 }
 
+enum Mode { EDIT, VIEW, DONE }
+
 class _CleaningViewState extends State<CleaningView> {
   List<CleaningProduct> products = [];
   List<CleaningTask> tasks = [];
+
+  Mode mode = Mode.VIEW;
 
   @override
   void initState() {
     super.initState();
 
-    widget.cleaning.tasks.forEach(
-      (t) => tasks.add(
-            CleaningTask(
-              cleaning: widget.cleaning,
-              realized: 0,
-              task: t,
-            ),
-          ),
-    );
+    mode = widget.cleaning.dueDate != null ? Mode.DONE : mode;
 
-    widget.cleaning.products.forEach(
-      (p) => products.add(
-            CleaningProduct(
-              cleaning: widget.cleaning,
-              realized: 0,
-              amount: p.currentCapacity.toInt(),
-              product: p,
+    CleaningRepository.get().findTask(widget.cleaning).then((tsk) {
+      widget.cleaning.tasks.forEach(
+        (t) => tasks.add(
+              CleaningTask(
+                cleaning: widget.cleaning,
+                realized: tsk[t.id],
+                task: t,
+              ),
             ),
-          ),
-    );
+      );
+      setState(() {});
+    });
+
+    CleaningRepository.get().findProducts(widget.cleaning).then((prds) {
+      widget.cleaning.products.forEach(
+        (p) => products.add(
+              CleaningProduct(
+                cleaning: widget.cleaning,
+                realized: prds[p.id][0],
+                amount: prds[p.id][1] != null
+                    ? ( prds[p.id][1] ).toInt()
+                    : p.currentCapacity.toInt(),
+                product: p,
+              ),
+            ),
+      );
+      setState(() {});
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    CleaningBloc bloc = BlocProvider.of(context);
+
     return Scaffold(
       appBar: AppBar(
-          centerTitle: true,
-          iconTheme: new IconThemeData(color: AppColors.SECONDARY),
-          title: Text(
-            "Faxina",
-            style: TextStyle(
-              color: AppColors.SECONDARY,
-              fontSize: 22,
-            ),
-          )),
+        centerTitle: true,
+        iconTheme: new IconThemeData(color: AppColors.SECONDARY),
+        title: Text(
+          "Faxina",
+          style: TextStyle(
+            color: AppColors.SECONDARY,
+            fontSize: 22,
+          ),
+        ),
+      ),
+      floatingActionButton: mode == Mode.VIEW
+          ? CleaningActions(
+              widget.cleaning,
+              onEdit: () async {
+                Navigator.pop(context);
+
+                var provider = BlocProvider(
+                  bloc: bloc,
+                  child: CleaningEditor(
+                    cleaning: widget.cleaning,
+                  ),
+                );
+
+                await Navigator.of(context).push(new AnimateRoute(
+                    fullscreenDialog: true, builder: (c) => provider));
+              },
+              onDone: () => setState(() => mode = Mode.DONE),
+            )
+          : Container(),
       body: Container(
         color: AppColors.PRIMARY_LIGHT,
         child: ListView(
-            physics: BouncingScrollPhysics(),
-            children: []
-              ..addAll(drawHead())
-              ..addAll(drawInfo())
-              ..addAll(drawBody())
-              ..addAll(drawButton())),
+          physics: BouncingScrollPhysics(),
+          children: draw(),
+        ),
       ),
     );
+  }
+
+  List<Widget> draw() {
+    return []
+      ..addAll(drawHead())
+      ..addAll(drawInfo())
+      ..addAll(drawBody())
+      ..addAll(drawButton());
   }
 
   void _save() async {
@@ -91,18 +137,21 @@ class _CleaningViewState extends State<CleaningView> {
 
   List<Widget> drawButton() {
     return [
-      Padding(
-        padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-        child: RaisedButton(
-          shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10))),
-          onPressed: _save,
-          color: AppColors.SECONDARY,
-          textColor: Colors.white,
-          child: Text(widget.cleaning.dueDate == null ? "Concluir" : "Fechar",
-              style: TextStyle(fontSize: 16)),
-        ),
-      ),
+      mode == Mode.DONE
+          ? Padding(
+              padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+              child: RaisedButton(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10))),
+                onPressed: _save,
+                color: AppColors.SECONDARY,
+                textColor: Colors.white,
+                child: Text(
+                    widget.cleaning.dueDate == null ? "Concluir" : "Fechar",
+                    style: TextStyle(fontSize: 16)),
+              ),
+            )
+          : Container(),
     ];
   }
 
@@ -110,13 +159,14 @@ class _CleaningViewState extends State<CleaningView> {
     List<Widget> infos = [];
 
     infos.add(drawRowInfo('Tempo Estimado:',
-        '${widget.cleaning.estimatedTime.hour}:${widget.cleaning.estimatedTime.minute}'));
+        '${MaterialLocalizations.of(context).formatTimeOfDay(widget.cleaning.estimatedTime, alwaysUse24HourFormat: true)}'));
     infos.add(drawRowInfo('Agendado:',
         DateFormat('dd/MM/yyyy hh:mm').format(widget.cleaning.nextDate)));
 
     Frequency frequency = widget.cleaning.frequency;
 
-    infos.add(drawRowInfo('Frequência:', frequency.label));
+    infos.add(drawRowInfo(
+        'Frequência:', frequency != null ? frequency.label : "n/d"));
 
     if (widget.cleaning.dueDate == null) {
       infos.add(drawRowInfo('Próxima faxina:',
@@ -221,7 +271,7 @@ class _CleaningViewState extends State<CleaningView> {
 
   Widget drawTaskItem(CleaningTask item) {
     return SizedBox(
-      child: widget.cleaning.dueDate == null
+      child: mode == Mode.DONE
           ? SwitchListTile(
               secondary: new Icon(
                 Icons.fitness_center,
@@ -237,9 +287,11 @@ class _CleaningViewState extends State<CleaningView> {
                 style: TextStyle(color: Colors.white, fontSize: 15),
               ),
               value: item.realized == 1,
-              onChanged: (bool value) {
-                item.realized = value ? 1 : 0;
-              },
+              onChanged: widget.cleaning.dueDate == null
+                  ? (bool value) {
+                      item.realized = value ? 1 : 0;
+                    }
+                  : null,
             )
           : ListTile(
               leading: new Icon(
@@ -266,13 +318,15 @@ class _CleaningViewState extends State<CleaningView> {
         Icons.shopping_cart,
         color: Colors.white,
       ),
-      subtitle: widget.cleaning.dueDate == null
+      subtitle: mode == Mode.DONE
           ? Slider(
-              onChanged: (value) {
-                setState(() {
-                  item.amount = value.toInt();
-                });
-              },
+              onChanged: widget.cleaning.dueDate == null
+                  ? (value) {
+                      setState(() {
+                        item.amount = value.toInt();
+                      });
+                    }
+                  : null,
               min: 0,
               activeColor: AppColors.SECONDARY,
               max: item.product.capacity,

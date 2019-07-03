@@ -16,15 +16,31 @@ class TaskRepository {
   Future<bool> save(Task task) async {
     var db = await _appDatabase.getDb();
 
-    task.id = await db.insert(TaskTable.table, {
-      TaskTable.NAME: task.name,
-      TaskTable.GUIDELINES: task.guidelines,
-      TaskTable.STATE: task.state
-    });
+    if (task.id == null || task.id == 0) {
+      task.id = await db.insert(
+        TaskTable.table,
+        {
+          TaskTable.NAME: task.name,
+          TaskTable.GUIDELINES: task.guidelines,
+          TaskTable.STATE: task.state,
+        },
+      );
+    } else {
+      await db.update(
+        TaskTable.table,
+        {
+          TaskTable.NAME: task.name,
+          TaskTable.GUIDELINES: task.guidelines,
+          TaskTable.STATE: task.state,
+        },
+        where: '${TaskTable.ID} = ? ',
+        whereArgs: [task.id],
+      );
+    }
 
     return true;
   }
-  
+
   Future delete(Task task) async {
     var db = await _appDatabase.getDb();
 
@@ -35,10 +51,11 @@ class TaskRepository {
   Future<List<Task>> findAll() async {
     var db = await _appDatabase.getDb();
 
-    var result = await db.query(TaskTable.table, where: "${TaskTable.STATE} = 1", orderBy: TaskTable.NAME);
+    var result = await db.query(TaskTable.table,
+        where: "${TaskTable.STATE} = 1", orderBy: TaskTable.NAME);
 
     List<Task> tasks = List();
-    
+
     for (Map<String, dynamic> item in result) {
       tasks.add(Task.fromMap(item));
     }

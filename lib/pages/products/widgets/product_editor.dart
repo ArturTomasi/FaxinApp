@@ -4,6 +4,10 @@ import 'package:faxinapp/util/AppColors.dart';
 import 'package:flutter/material.dart';
 
 class ProductEditor extends StatefulWidget {
+  final Product product;
+
+  ProductEditor({@required this.product});
+
   @override
   _ProductEditorState createState() => _ProductEditorState();
 }
@@ -13,7 +17,7 @@ class _ProductEditorState extends State<ProductEditor> {
 
   @override
   Widget build(BuildContext context) {
-    final Product product = new Product();
+    final Product product = widget.product;
 
     return Scaffold(
         appBar: AppBar(
@@ -73,7 +77,7 @@ class _ProductEditorState extends State<ProductEditor> {
                               labelStyle: TextStyle(color: AppColors.SECONDARY),
                               errorBorder: InputBorder.none),
                           maxLength: 80,
-                          initialValue: product.name,
+                          initialValue: product.branding,
                           style: TextStyle(color: Colors.white),
                           validator: (value) {
                             return value.isEmpty ? "Requerido" : null;
@@ -90,6 +94,7 @@ class _ProductEditorState extends State<ProductEditor> {
                               labelStyle: TextStyle(color: AppColors.SECONDARY),
                               errorBorder: InputBorder.none),
                           style: TextStyle(color: Colors.white),
+                          initialValue: product.capacity.toString(),
                           validator: (value) {
                             return value.isEmpty ? "Requerido" : null;
                           },
@@ -112,7 +117,6 @@ class _ProductEditorState extends State<ProductEditor> {
                                   product.state = 1;
                                   await ProductRepository.get().save(product);
                                   Navigator.pop(context);
-                                  //bloc.refresh();
                                 }
                               },
                               color: AppColors.SECONDARY,

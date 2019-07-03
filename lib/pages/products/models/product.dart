@@ -1,12 +1,12 @@
 class Product {
   int id;
-  String name;
-  String branding;
+  String name = "";
+  String branding = "";
   double capacity = 0;
   double currentCapacity = 0;
-  int state;
+  int state = 1;
 
-  Product();
+  Product({this.id}) : super();
 
   Product.fromMap(Map<String, dynamic> map) {
     id = map[ProductTable.ID];
@@ -17,9 +17,13 @@ class Product {
     state = map[ProductTable.STATE];
   }
 
-  bool operator(o) => o is Product && o.id == id;
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Product && runtimeType == other.runtimeType && id == other.id;
 
-  int get hashcode => id.hashCode;
+  @override
+  int get hashCode => runtimeType.hashCode ^ id.hashCode;
 
   @override
   String toString() => name;

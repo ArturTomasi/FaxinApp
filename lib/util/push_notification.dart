@@ -1,3 +1,4 @@
+import 'package:faxinapp/common/ui/animate_route.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning_repository.dart';
 import 'package:faxinapp/pages/cleaning/widgets/cleaning_view.dart';
@@ -61,7 +62,8 @@ class PushNotification {
       if (cleaning != null) {
         await Navigator.push(
           context,
-          new MaterialPageRoute(builder: (context) => CleaningView(cleaning)),
+          new AnimateRoute(
+              builder: (context) => CleaningView(cleaning: cleaning)),
         );
       }
     }
