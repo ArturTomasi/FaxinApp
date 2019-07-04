@@ -9,7 +9,7 @@ class Secrets {
   static Future<Secrets> instance() async {
     if (_instance == null) {
       _instance = await rootBundle
-          .loadStructuredData<Secrets>('assets/secrets.json', (jsonStr) async {
+          .loadStructuredData<Secrets>('secrets.json', (jsonStr) async {
         return Secrets.fromJson(json.decode(jsonStr));
       });
     }
