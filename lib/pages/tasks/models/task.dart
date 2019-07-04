@@ -1,5 +1,8 @@
+import 'package:uuid/uuid.dart';
+
 class Task{
   int id;
+  String uuid = Uuid().v4();
   String name = "";
   String guidelines = "";
   int state = 1;
@@ -9,6 +12,7 @@ class Task{
   Task.fromMap(Map<String, dynamic> map) {
     id = map[TaskTable.ID];
     name = map[TaskTable.NAME];
+    uuid = map[TaskTable.UUID];
     guidelines = map[TaskTable.GUIDELINES];
     state = map[TaskTable.STATE];
   }
@@ -28,6 +32,7 @@ class Task{
 class TaskTable {
   static const table = "tasks";
   static const ID = "id";
+  static const UUID = "uuid";
   static const NAME = "name";
   static const GUIDELINES = "guidelines";
   static const STATE = "state";

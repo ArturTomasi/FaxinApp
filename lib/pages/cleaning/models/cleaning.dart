@@ -1,6 +1,7 @@
 import 'package:faxinapp/pages/products/models/product.dart';
 import 'package:faxinapp/pages/tasks/models/task.dart';
 import 'package:flutter/material.dart';
+import 'package:uuid/uuid.dart';
 
 class Frequency {
   static final Frequency NONE = Frequency._(0, "Manual");
@@ -34,11 +35,13 @@ class Frequency {
   String label;
 
   Frequency._(this.index, this.label);
-  
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Frequency && runtimeType == other.runtimeType && index == other.index;
+      other is Frequency &&
+          runtimeType == other.runtimeType &&
+          index == other.index;
 
   @override
   int get hashCode => runtimeType.hashCode ^ index.hashCode;
@@ -50,6 +53,7 @@ class Frequency {
 class Cleaning {
   int id;
   String name = "";
+  String uuid = Uuid().v4();
   String guidelines = "";
   Frequency frequency;
   DateTime nextDate = DateTime.now(), dueDate;
@@ -62,6 +66,7 @@ class Cleaning {
   Cleaning.fromMap(Map<String, dynamic> map) {
     id = map[CleaningTable.ID];
     name = map[CleaningTable.NAME];
+    uuid = map[CleaningTable.UUID];
     guidelines = map[CleaningTable.GUIDELINES];
     frequency = Frequency.valueOf(map[CleaningTable.FREQUENCY]);
 
@@ -72,10 +77,20 @@ class Cleaning {
     estimatedTime = new TimeOfDay(
         hour: int.parse(t.substring(0, 2)),
         minute: int.parse(t.substring(2, 4)));
+
     nextDate = DateTime.parse(map[CleaningTable.NEXT_DATE]);
-    dueDate = map[CleaningTable.DUE_DATE] != null
+    dueDate = map[CleaningTable.DUE_DATE] != null &&
+            map[CleaningTable.DUE_DATE].toString().isNotEmpty
         ? DateTime.parse(map[CleaningTable.DUE_DATE])
         : null;
+
+    if (map.containsKey('products') && map['products'] != null) {
+      print(map['products']);
+    }
+
+    if (map.containsKey('tasks') && map['tasks'] != null) {
+      print(map['tasks']);
+    }
   }
 
   DateTime futureDate() {
@@ -104,6 +119,49 @@ class Cleaning {
     );
   }
 
+  Map<String, dynamic> toJson() {
+    List pJson = [];
+    List tJson = [];
+
+    products.forEach((p) {
+      var map = {
+        ProductTable.ID: p.id,
+        ProductTable.NAME: p.name,
+        ProductTable.UUID: p.uuid,
+        ProductTable.STATE: p.state,
+        ProductTable.CAPACITY: p.capacity,
+        ProductTable.CURRENT_CAPACITY: p.currentCapacity,
+        ProductTable.BRANDING: p.branding
+      };
+      pJson.add(map);
+    });
+
+    tasks.forEach((t) {
+      var map = {
+        TaskTable.ID: t.id,
+        TaskTable.UUID: t.uuid,
+        TaskTable.NAME: t.name,
+        TaskTable.STATE: t.state,
+        TaskTable.GUIDELINES: t.guidelines
+      };
+      tJson.add(map);
+    });
+
+    return {
+      CleaningTable.ID: id,
+      CleaningTable.NAME: name,
+      CleaningTable.UUID: uuid,
+      CleaningTable.GUIDELINES: guidelines,
+      CleaningTable.FREQUENCY: frequency.index,
+      CleaningTable.NEXT_DATE: nextDate.toIso8601String(),
+      CleaningTable.DUE_DATE:
+          (dueDate != null ? dueDate.toIso8601String() : null),
+      CleaningTable.ESTIMATED_TIME: estimatedTime.toString(),
+      "products": pJson,
+      "tasks": tJson
+    };
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -120,6 +178,7 @@ class CleaningTable {
   static const table = "cleanings";
   static const ID = "id";
   static const NAME = "name";
+  static const UUID = "uuid";
   static const GUIDELINES = "guidelines";
   static const FREQUENCY = "frequency";
   static const NEXT_DATE = "next_date";

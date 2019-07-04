@@ -21,6 +21,7 @@ class ProductRepository {
         ProductTable.table,
         {
           ProductTable.NAME: product.name,
+          ProductTable.UUID: product.uuid,
           ProductTable.CAPACITY: product.capacity,
           ProductTable.CURRENT_CAPACITY: product.currentCapacity,
           ProductTable.BRANDING: product.branding,
@@ -32,6 +33,7 @@ class ProductRepository {
         ProductTable.table,
         {
           ProductTable.NAME: product.name,
+          ProductTable.UUID: product.uuid,
           ProductTable.CAPACITY: product.capacity,
           ProductTable.CURRENT_CAPACITY: product.currentCapacity,
           ProductTable.BRANDING: product.branding,

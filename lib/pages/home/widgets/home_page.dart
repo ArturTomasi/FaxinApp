@@ -14,6 +14,7 @@ import 'package:faxinapp/pages/tasks/models/task.dart';
 import 'package:faxinapp/pages/tasks/widgets/task_editor.dart';
 import 'package:faxinapp/util/AppColors.dart';
 import 'package:flutter/material.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import 'home_drawer.dart';
 
@@ -55,20 +56,27 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       backgroundColor: AppColors.PRIMARY_LIGHT,
       appBar: bar(),
       drawer: HomeDrawer(),
-      body: Container(
-        padding: EdgeInsets.all(0),
-        color: AppColors.PRIMARY_LIGHT,
-        child: PageView(
-          onPageChanged: (i) {
-            setState(() => pageIx = i);
-            _keyNavigator.currentState.move(i);
-          },
-          controller: pageController,
-          children: pages,
-          physics: BouncingScrollPhysics(),
-        ),
+      body: Stack(
+        alignment: Alignment.bottomCenter,
+        children: <Widget>[
+          Container(
+            color: Colors.transparent,
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
+            padding: EdgeInsets.only(bottom: 50),
+            child: PageView(
+              onPageChanged: (i) {
+                setState(() => pageIx = i);
+                _keyNavigator.currentState.move(i);
+              },
+              controller: pageController,
+              children: pages,
+              physics: BouncingScrollPhysics(),
+            ),
+          ),
+          navigator
+        ],
       ),
-      bottomNavigationBar: navigator,
     );
   }
 
@@ -85,7 +93,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       ),
       actions: <Widget>[
         PopupMenuButton<int>(
-          onSelected: (int result) {
+          onSelected: (int result) async {
             switch (result) {
               case 0:
                 CleaningBloc _bloc = BlocProvider.of(context);
@@ -96,10 +104,14 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       cleaning: Cleaning(),
                     ));
 
-                Navigator.push(
+                Cleaning c = await Navigator.push(
                   context,
                   AnimateRoute(builder: (context) => _provider),
                 );
+
+                if (c != null) {
+                  _bloc.findPendents();
+                }
                 break;
 
               case 1:

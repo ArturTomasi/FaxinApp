@@ -1,16 +1,20 @@
+import 'package:uuid/uuid.dart';
+
 class Product {
   int id;
+  String uuid = Uuid().v4();
   String name = "";
   String branding = "";
   double capacity = 0;
   double currentCapacity = 0;
   int state = 1;
 
-  Product({this.id}) : super();
+  Product();
 
   Product.fromMap(Map<String, dynamic> map) {
     id = map[ProductTable.ID];
     name = map[ProductTable.NAME];
+    uuid = map[ProductTable.UUID];
     branding = map[ProductTable.BRANDING];
     capacity = map[ProductTable.CAPACITY];
     currentCapacity = map[ProductTable.CURRENT_CAPACITY];
@@ -32,6 +36,7 @@ class Product {
 class ProductTable {
   static final table = "products";
   static const ID = "id";
+  static const UUID = "uuid";
   static const NAME = "name";
   static const BRANDING = "branding";
   static const CAPACITY = "capacity";

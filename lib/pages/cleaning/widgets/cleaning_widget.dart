@@ -1,6 +1,5 @@
 import 'package:faxinapp/bloc/bloc_provider.dart';
 import 'package:faxinapp/common/ui/animate_route.dart';
-import 'package:faxinapp/common/ui/tab_item.dart';
 import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
 import 'package:faxinapp/pages/cleaning/widgets/cleaning_editor.dart';

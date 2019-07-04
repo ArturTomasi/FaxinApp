@@ -2,6 +2,7 @@ import 'package:faxinapp/bloc/bloc_provider.dart';
 import 'package:faxinapp/common/ui/animate_route.dart';
 import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';
 import 'package:faxinapp/pages/cleaning/widgets/cleaning_widget.dart';
+import 'package:faxinapp/pages/cleaning/widgets/import_page.dart';
 import 'package:faxinapp/pages/products/bloc/product_bloc.dart';
 import 'package:faxinapp/pages/products/widgets/product_widget.dart';
 import 'package:faxinapp/pages/tasks/bloc/task_bloc.dart';
@@ -27,6 +28,28 @@ class HomeDrawer extends StatelessWidget {
                       color: AppColors.SECONDARY,
                       borderRadius:
                           BorderRadius.vertical(bottom: Radius.circular(30)))),
+              ListTile(
+                leading: new Icon(
+                  Icons.import_export,
+                  color: Colors.white,
+                ),
+                subtitle: Text(
+                  "Importar faxinas",
+                  style: TextStyle(
+                      color: Colors.white, fontStyle: FontStyle.italic),
+                ),
+                title: Text(
+                  "Importar",
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+                onTap: () async {
+                  await Navigator.push(
+                    context,
+                    AnimateRoute<bool>(builder: (context) => ImportPage() ),
+                  );
+                },
+              ),
+              Divider(color: AppColors.SECONDARY),
               ListTile(
                 leading: new Icon(
                   Icons.clear_all,
@@ -55,7 +78,6 @@ class HomeDrawer extends StatelessWidget {
                   //Navigator.pop(context);
                 },
               ),
-              Divider(color: AppColors.SECONDARY),
               ListTile(
                 leading: new Icon(
                   Icons.fitness_center,

@@ -18,6 +18,18 @@ class CleaningRepository {
     return _cleaningRepository;
   }
 
+  Future<bool> import(Cleaning cleaning) async {
+    var db = await _appDatabase.getDb();
+
+    var result = db.query(
+      CleaningTable.table,
+      where: '${CleaningTable.UUID} = ? ',
+      whereArgs: [cleaning.uuid],
+    );
+
+    //if ( result)
+  }
+
   Future<bool> save(Cleaning cleaning) async {
     var db = await _appDatabase.getDb();
 
@@ -25,6 +37,7 @@ class CleaningRepository {
       cleaning.id = await db.insert(CleaningTable.table, {
         CleaningTable.NAME: cleaning.name,
         CleaningTable.GUIDELINES: cleaning.guidelines,
+        CleaningTable.UUID: cleaning.uuid,
         CleaningTable.FREQUENCY: cleaning.frequency.index,
         CleaningTable.NEXT_DATE: cleaning.nextDate.toIso8601String(),
         CleaningTable.DUE_DATE: cleaning.dueDate != null
@@ -38,6 +51,7 @@ class CleaningRepository {
           {
             CleaningTable.NAME: cleaning.name,
             CleaningTable.GUIDELINES: cleaning.guidelines,
+            CleaningTable.UUID: cleaning.uuid,
             CleaningTable.FREQUENCY: cleaning.frequency.index,
             CleaningTable.NEXT_DATE: cleaning.nextDate.toIso8601String(),
             CleaningTable.DUE_DATE: cleaning.dueDate != null
@@ -143,7 +157,8 @@ class CleaningRepository {
     Map result = Map();
 
     for (Map<String, dynamic> map in fetchTask) {
-      result.putIfAbsent( map[CleaningTaskTable.REF_TASK], () => map[CleaningTaskTable.REALIZED] );
+      result.putIfAbsent(map[CleaningTaskTable.REF_TASK],
+          () => map[CleaningTaskTable.REALIZED]);
     }
 
     return result;

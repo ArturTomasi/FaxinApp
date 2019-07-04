@@ -31,7 +31,7 @@ class AppDatabase {
     // Get a location using path_provider
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, "faxinapp.db");
-    _database = await openDatabase(path, version: 7,
+    _database = await openDatabase(path, version: 9,
         onCreate: (Database db, int version) async {
       await _createTaskTable(db);
       await _createProductTable(db);
@@ -58,6 +58,7 @@ class AppDatabase {
     return db.execute("CREATE TABLE ${TaskTable.table} ("
         "${TaskTable.ID} INTEGER PRIMARY KEY AUTOINCREMENT,"
         "${TaskTable.GUIDELINES} TEXT, "
+        "${TaskTable.UUID} TEXT, "
         "${TaskTable.STATE} INTEGER, "
         "${TaskTable.NAME} TEXT);");
   }
@@ -66,6 +67,7 @@ class AppDatabase {
     return db.execute("CREATE TABLE ${ProductTable.table} ("
         "${ProductTable.ID} INTEGER PRIMARY KEY AUTOINCREMENT,"
         "${ProductTable.NAME} TEXT,"
+        "${ProductTable.UUID} TEXT,"
         "${ProductTable.BRANDING} TEXT,"
         "${ProductTable.CAPACITY} DOUBLE,"
         "${ProductTable.CURRENT_CAPACITY} DOUBLE,"
@@ -79,6 +81,7 @@ class AppDatabase {
         "${CleaningTable.FREQUENCY} INTEGER,"
         "${CleaningTable.NEXT_DATE} TEXT,"
         "${CleaningTable.DUE_DATE} TEXT,"
+        "${CleaningTable.UUID} TEXT,"
         "${CleaningTable.ESTIMATED_TIME} TEXT,"
         "${CleaningTable.GUIDELINES} TEXT);");
   }

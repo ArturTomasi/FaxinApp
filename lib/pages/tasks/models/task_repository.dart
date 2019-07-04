@@ -21,6 +21,7 @@ class TaskRepository {
         TaskTable.table,
         {
           TaskTable.NAME: task.name,
+          TaskTable.UUID: task.uuid,
           TaskTable.GUIDELINES: task.guidelines,
           TaskTable.STATE: task.state,
         },
@@ -30,6 +31,7 @@ class TaskRepository {
         TaskTable.table,
         {
           TaskTable.NAME: task.name,
+          TaskTable.UUID: task.uuid,
           TaskTable.GUIDELINES: task.guidelines,
           TaskTable.STATE: task.state,
         },
