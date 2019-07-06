@@ -1,3 +1,4 @@
+import 'package:connectivity/connectivity.dart';
 import 'package:faxinapp/bloc/bloc_provider.dart';
 import 'package:faxinapp/common/ui/animate_route.dart';
 import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';
@@ -5,6 +6,7 @@ import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning_product.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning_repository.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning_task.dart';
+import 'package:faxinapp/pages/cleaning/util/share_util.dart';
 import 'package:faxinapp/pages/cleaning/widgets/cleaning_actions.dart';
 import 'package:faxinapp/pages/cleaning/widgets/cleaning_editor.dart';
 import 'package:faxinapp/util/AppColors.dart';
@@ -54,7 +56,7 @@ class _CleaningViewState extends State<CleaningView> {
                 cleaning: widget.cleaning,
                 realized: prds[p.id][0],
                 amount: prds[p.id][1] != null
-                    ? ( prds[p.id][1] ).toInt()
+                    ? (prds[p.id][1]).toInt()
                     : p.currentCapacity.toInt(),
                 product: p,
               ),
@@ -99,12 +101,31 @@ class _CleaningViewState extends State<CleaningView> {
               onDone: () => setState(() => mode = Mode.DONE),
             )
           : Container(),
-      body: Container(
-        color: AppColors.PRIMARY_LIGHT,
-        child: ListView(
-          physics: BouncingScrollPhysics(),
-          children: draw(),
-        ),
+      body: StreamBuilder<bool>(
+        initialData: false,
+        stream: bloc.loading,
+        builder: (context, snap) {
+          return Stack(
+            alignment: Alignment.center,
+            children: <Widget>[
+              Container(
+                color: AppColors.PRIMARY_LIGHT,
+                child: ListView(
+                  physics: BouncingScrollPhysics(),
+                  children: draw(),
+                ),
+              ),
+              snap.hasData && !snap.data
+                  ? Container()
+                  : Container(
+                      color: AppColors.PRIMARY_LIGHT.withOpacity(0.5),
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -119,6 +140,7 @@ class _CleaningViewState extends State<CleaningView> {
 
   void _save() async {
     if (widget.cleaning.dueDate == null) {
+      widget.cleaning.dueDate = DateTime.now();
       products.forEach((p) {
         p.amount = (p.product.currentCapacity - p.amount).toInt();
         if (p.amount > 0) {
@@ -126,8 +148,18 @@ class _CleaningViewState extends State<CleaningView> {
         }
       });
 
-      Cleaning next = await CleaningRepository.get()
-          .finish(widget.cleaning, tasks, products);
+      if (widget.cleaning.type == CleaningType.IMPORTED) {
+        if (await Connectivity().checkConnectivity() ==
+            ConnectivityResult.none) {
+          show("Verifica sua conexão");
+          return;
+        }
+
+        await SharedUtil.done(widget.cleaning, tasks, products);
+      }
+
+      Cleaning next =
+          await CleaningRepository.get().done(widget.cleaning, tasks, products);
 
       Navigator.of(context).pop(next);
     } else {
@@ -339,6 +371,16 @@ class _CleaningViewState extends State<CleaningView> {
         style: TextStyle(
           color: Colors.white,
           fontSize: 15,
+        ),
+      ),
+    );
+  }
+
+  void show(String msg) {
+    Scaffold.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          msg,
         ),
       ),
     );

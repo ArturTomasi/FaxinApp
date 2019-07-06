@@ -6,7 +6,9 @@ class CleaningTask {
   Cleaning cleaning;
   int realized = 0;
 
-  CleaningTask( {this.cleaning, this.task, this.realized} );
+  CleaningTask({this.cleaning, this.task, this.realized});
+
+  Map<String, dynamic> toJson() => {"uuid": task.uuid, "realized": realized};
 }
 
 class CleaningTaskTable {

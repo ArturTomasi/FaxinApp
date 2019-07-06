@@ -84,6 +84,23 @@ class ProductRepository {
     return products;
   }
 
+  Future import(List<Product> products) async {
+    var db = await _appDatabase.getDb();
+
+    products.forEach((p) async {
+      var result = await db.query(ProductTable.table,
+          where: "${ProductTable.UUID} = ?", whereArgs: [p.uuid]);
+
+      if (result.isNotEmpty) {
+        p.id = result.first['id'];
+      } else {
+        p.id = null;
+      }
+
+      await save(p);
+    });
+  }
+
   Future fill(Product product) async {
     var db = await _appDatabase.getDb();
 

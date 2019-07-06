@@ -1,6 +1,7 @@
 import 'package:faxinapp/bloc/bloc_provider.dart';
 import 'package:faxinapp/common/ui/animate_route.dart';
 import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';
+import 'package:faxinapp/pages/cleaning/util/share_util.dart';
 import 'package:faxinapp/pages/cleaning/widgets/cleaning_widget.dart';
 import 'package:faxinapp/pages/cleaning/widgets/import_page.dart';
 import 'package:faxinapp/pages/products/bloc/product_bloc.dart';
@@ -43,10 +44,34 @@ class HomeDrawer extends StatelessWidget {
                   style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
                 onTap: () async {
+                  CleaningBloc _bloc = BlocProvider.of(context);
+
+                  var _provider =
+                      BlocProvider(bloc: _bloc, child: ImportPage());
+
                   await Navigator.push(
                     context,
-                    AnimateRoute<bool>(builder: (context) => ImportPage() ),
+                    AnimateRoute<bool>(builder: (context) => _provider),
                   );
+                },
+              ),
+               ListTile(
+                leading: new Icon(
+                  Icons.sync,
+                  color: Colors.white,
+                ),
+                subtitle: Text(
+                  "Sincronizar faxinas compartilhadas",
+                  style: TextStyle(
+                      color: Colors.white, fontStyle: FontStyle.italic),
+                ),
+                title: Text(
+                  "Sincronizar",
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+                onTap: () async {
+                  Navigator.pop(context);
+                  SharedUtil.syncronized(context);
                 },
               ),
               Divider(color: AppColors.SECONDARY),

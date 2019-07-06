@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning_product.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning_task.dart';
+import 'package:faxinapp/pages/cleaning/util/share_util.dart';
 import 'package:faxinapp/pages/products/models/product.dart';
 import 'package:faxinapp/pages/tasks/models/task.dart';
 import 'package:path/path.dart';
@@ -28,30 +29,44 @@ class AppDatabase {
   }
 
   Future _init() async {
-    // Get a location using path_provider
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, "faxinapp.db");
-    _database = await openDatabase(path, version: 9,
-        onCreate: (Database db, int version) async {
-      await _createTaskTable(db);
-      await _createProductTable(db);
-      await _createCleaningTable(db);
-      await _createCleaningTaskTable(db);
-      await _createCleaningProductTable(db);
-    }, onUpgrade: (Database db, int oldVersion, int newVersion) async {
-      await db.execute("DROP TABLE IF EXISTS ${TaskTable.table}");
-      await db.execute("DROP TABLE IF EXISTS ${ProductTable.table}");
-      await db.execute("DROP TABLE IF EXISTS ${CleaningTable.table}");
-      await db.execute("DROP TABLE IF EXISTS ${CleaningTaskTable.table}");
-      await db.execute("DROP TABLE IF EXISTS ${CleaningProductTable.table}");
 
-      await _createTaskTable(db);
-      await _createProductTable(db);
-      await _createCleaningTable(db);
-      await _createCleaningTaskTable(db);
-      await _createCleaningProductTable(db);
-    });
+    _database = await openDatabase(
+      path,
+      version: 10,
+      onCreate: (
+        Database db,
+        int version,
+      ) async {
+        await _createTaskTable(db);
+        await _createProductTable(db);
+        await _createCleaningTable(db);
+        await _createCleaningTaskTable(db);
+        await _createCleaningProductTable(db);
+      },
+      onUpgrade: (
+        Database db,
+        int oldVersion,
+        int newVersion,
+      ) async {
+        await db.execute("DROP TABLE IF EXISTS ${TaskTable.table}");
+        await db.execute("DROP TABLE IF EXISTS ${ProductTable.table}");
+        await db.execute("DROP TABLE IF EXISTS ${CleaningTable.table}");
+        await db.execute("DROP TABLE IF EXISTS ${CleaningTaskTable.table}");
+        await db.execute("DROP TABLE IF EXISTS ${CleaningProductTable.table}");
+
+        await _createTaskTable(db);
+        await _createProductTable(db);
+        await _createCleaningTable(db);
+        await _createCleaningTaskTable(db);
+        await _createCleaningProductTable(db);
+      },
+    );
+
     didInit = true;
+
+    SharedUtil.connectFirebase();
   }
 
   Future _createTaskTable(Database db) {
@@ -79,6 +94,7 @@ class AppDatabase {
         "${CleaningTable.ID} INTEGER PRIMARY KEY AUTOINCREMENT,"
         "${CleaningTable.NAME} TEXT,"
         "${CleaningTable.FREQUENCY} INTEGER,"
+        "${CleaningTable.TYPE} INTEGER,"
         "${CleaningTable.NEXT_DATE} TEXT,"
         "${CleaningTable.DUE_DATE} TEXT,"
         "${CleaningTable.UUID} TEXT,"

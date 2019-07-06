@@ -1,10 +1,12 @@
-import 'package:faxinapp/common/data/Secrets.dart';
+import 'package:faxinapp/bloc/bloc_provider.dart';
+import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
+import 'package:faxinapp/pages/cleaning/models/cleaning_repository.dart';
+import 'package:faxinapp/pages/cleaning/util/share_util.dart';
 import 'package:faxinapp/util/AppColors.dart';
+import 'package:faxinapp/util/push_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_reader/qr_reader.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 
 class ImportPage extends StatefulWidget {
   @override
@@ -61,6 +63,8 @@ class _ImportPageState extends State<ImportPage> {
                           .setExecuteAfterPermissionGranted(
                               true) // default true
                           .scan();
+
+                      _save();
                     },
                   ),
                   labelStyle: TextStyle(color: AppColors.SECONDARY),
@@ -95,34 +99,23 @@ class _ImportPageState extends State<ImportPage> {
   }
 
   void _save() async {
-    String msg = "Importado faxina com sucesso!";
+    String msg = "Código inválido!";
 
     if (_codeController.text != null && _codeController.text.isNotEmpty) {
-      Secrets s = await Secrets.instance();
+      Cleaning c = await SharedUtil.obtain(_codeController.text);
 
-      var res = await http.get(
-        '${s.server}/obtain/${_codeController.text}',
-        headers: {
-          'Content-Type': 'application/json',
-          'api_key': s.apiKey,
-        },
-      );
+      if (c != null) {
+        await CleaningRepository.get().import(c);
 
-      if (res.statusCode == 200) {
-        var cleaning = Cleaning.fromMap(json.decode(res.body));
+        PushNotification( context )..initialize()..schedule(c);
+        
+        BlocProvider.of<CleaningBloc>(context).findPendents();
 
-      } else if (res.statusCode == 404) {
-        msg = "Faxina ${_codeController.text} não está compartilhada!";
-      } else if (res.statusCode == 401) {
-        msg = "Sem permissão!";
-      } else if (res.statusCode == 500) {
-        msg = "Ocorreu um erro ao importar faxina!";
-      } else {
-        msg = "Não foi possível importar a sua faxina";
+        msg = "Importado faxina com sucesso!";
       }
-    } else {
-      msg = "Código inválido!";
     }
+
+    _codeController.text = '';
 
     _globalKey.currentState.showSnackBar(
       SnackBar(

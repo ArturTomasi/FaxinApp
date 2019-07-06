@@ -16,8 +16,9 @@ class Product {
     name = map[ProductTable.NAME];
     uuid = map[ProductTable.UUID];
     branding = map[ProductTable.BRANDING];
-    capacity = map[ProductTable.CAPACITY];
-    currentCapacity = map[ProductTable.CURRENT_CAPACITY];
+    capacity = double.parse(map[ProductTable.CAPACITY].toString());
+    currentCapacity =
+        double.parse(map[ProductTable.CURRENT_CAPACITY].toString());
     state = map[ProductTable.STATE];
   }
 

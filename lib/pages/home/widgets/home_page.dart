@@ -3,6 +3,7 @@ import 'package:faxinapp/common/ui/animate_route.dart';
 import 'package:faxinapp/common/ui/fancy_tab_bar.dart';
 import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
+import 'package:faxinapp/pages/cleaning/util/share_util.dart';
 import 'package:faxinapp/pages/cleaning/widgets/cleaning_editor.dart';
 import 'package:faxinapp/pages/cleaning/widgets/cleaning_timeline.dart';
 import 'package:faxinapp/pages/products/bloc/product_bloc.dart';
@@ -14,7 +15,6 @@ import 'package:faxinapp/pages/tasks/models/task.dart';
 import 'package:faxinapp/pages/tasks/widgets/task_editor.dart';
 import 'package:faxinapp/util/AppColors.dart';
 import 'package:flutter/material.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 
 import 'home_drawer.dart';
 
@@ -52,30 +52,46 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
       onChanged: onChanged,
     );
 
+    CleaningBloc bloc = BlocProvider.of<CleaningBloc>(context);
+
     return Scaffold(
       backgroundColor: AppColors.PRIMARY_LIGHT,
       appBar: bar(),
       drawer: HomeDrawer(),
-      body: Stack(
-        alignment: Alignment.bottomCenter,
-        children: <Widget>[
-          Container(
-            color: Colors.transparent,
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            padding: EdgeInsets.only(bottom: 50),
-            child: PageView(
-              onPageChanged: (i) {
-                setState(() => pageIx = i);
-                _keyNavigator.currentState.move(i);
-              },
-              controller: pageController,
-              children: pages,
-              physics: BouncingScrollPhysics(),
-            ),
-          ),
-          navigator
-        ],
+      body: StreamBuilder<bool>(
+        initialData: false,
+        stream: bloc.loading,
+        builder: (context, snap) {
+          return Stack(
+            alignment: Alignment.bottomCenter,
+            children: <Widget>[
+              Container(
+                color: Colors.transparent,
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                padding: EdgeInsets.only(bottom: 50),
+                child: PageView(
+                  onPageChanged: (i) {
+                    setState(() => pageIx = i);
+                    _keyNavigator.currentState.move(i);
+                  },
+                  controller: pageController,
+                  children: pages,
+                  physics: BouncingScrollPhysics(),
+                ),
+              ),
+              navigator,
+              snap.hasData && !snap.data
+                  ? Container()
+                  : Container(
+                      color: AppColors.PRIMARY_LIGHT.withOpacity(0.5),
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    )
+            ],
+          );
+        },
       ),
     );
   }
@@ -139,6 +155,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   AnimateRoute(builder: (context) => bloc),
                 );
                 break;
+
+              case 3:
+                await SharedUtil.syncronized(context);
+                break;
             }
           },
           icon: Icon(Icons.add),
@@ -191,6 +211,24 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     ),
                   ),
                 ),
+                /*
+                const PopupMenuItem<int>(
+                  value: 3,
+                  child: ListTile(
+                    contentPadding: EdgeInsets.all(0),
+                    leading: Icon(
+                      Icons.sync,
+                      color: AppColors.PRIMARY_DARK,
+                    ),
+                    title: Text(
+                      'Sincronizar',
+                      style: TextStyle(
+                        color: AppColors.PRIMARY_DARK,
+                      ),
+                    ),
+                  ),
+                ),
+                */
               ],
         ),
       ],

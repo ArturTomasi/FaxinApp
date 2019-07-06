@@ -3,6 +3,8 @@ import 'package:faxinapp/pages/tasks/models/task.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
+enum CleaningType { IMPORTED, SHARED, COMMON, DONE, DELETED }
+
 class Frequency {
   static final Frequency NONE = Frequency._(0, "Manual");
   static final Frequency DAY = Frequency._(1, "Diário");
@@ -11,8 +13,14 @@ class Frequency {
   static final Frequency MONTH = Frequency._(4, "Mensal");
   static final Frequency YEAR = Frequency._(5, "Anual");
 
-  static List<Frequency> values() =>
-      [NONE, DAY, WEEKLY, BI_WEEKLY, MONTH, YEAR];
+  static List<Frequency> values() => [
+        NONE,
+        DAY,
+        WEEKLY,
+        BI_WEEKLY,
+        MONTH,
+        YEAR,
+      ];
 
   static Frequency valueOf(int index) {
     switch (index) {
@@ -56,6 +64,7 @@ class Cleaning {
   String uuid = Uuid().v4();
   String guidelines = "";
   Frequency frequency;
+  CleaningType type = CleaningType.COMMON;
   DateTime nextDate = DateTime.now(), dueDate;
   TimeOfDay estimatedTime = new TimeOfDay(hour: 1, minute: 0);
   List<Product> products;
@@ -67,6 +76,8 @@ class Cleaning {
     id = map[CleaningTable.ID];
     name = map[CleaningTable.NAME];
     uuid = map[CleaningTable.UUID];
+    type = CleaningType.values.elementAt(
+        map[CleaningTable.TYPE] != null ? map[CleaningTable.TYPE] : 2);
     guidelines = map[CleaningTable.GUIDELINES];
     frequency = Frequency.valueOf(map[CleaningTable.FREQUENCY]);
 
@@ -85,11 +96,13 @@ class Cleaning {
         : null;
 
     if (map.containsKey('products') && map['products'] != null) {
-      print(map['products']);
+      products = [];
+      map['products'].forEach((m) => products.add(Product.fromMap(m)));
     }
 
     if (map.containsKey('tasks') && map['tasks'] != null) {
-      print(map['tasks']);
+      tasks = [];
+      map['tasks'].forEach((m) => tasks.add(Task.fromMap(m)));
     }
   }
 
@@ -151,6 +164,7 @@ class Cleaning {
       CleaningTable.ID: id,
       CleaningTable.NAME: name,
       CleaningTable.UUID: uuid,
+      CleaningTable.TYPE: type.index,
       CleaningTable.GUIDELINES: guidelines,
       CleaningTable.FREQUENCY: frequency.index,
       CleaningTable.NEXT_DATE: nextDate.toIso8601String(),
@@ -184,4 +198,5 @@ class CleaningTable {
   static const NEXT_DATE = "next_date";
   static const DUE_DATE = "due_date";
   static const ESTIMATED_TIME = "estimated_time";
+  static const TYPE = "type";
 }

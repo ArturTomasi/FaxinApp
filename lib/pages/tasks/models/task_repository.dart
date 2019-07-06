@@ -64,4 +64,21 @@ class TaskRepository {
 
     return tasks;
   }
+
+  Future import(List<Task> tasks) async {
+    var db = await _appDatabase.getDb();
+
+    tasks.forEach((t) async {
+      var result = await db.query(TaskTable.table,
+          where: "${TaskTable.UUID} = ?", whereArgs: [t.uuid]);
+
+      if (result.isNotEmpty) {
+        t.id = result.first['id'];
+      } else {
+        t.id = null;
+      }
+
+      await save(t);
+    });
+  }
 }

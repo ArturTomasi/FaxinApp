@@ -3,13 +3,16 @@ import 'package:flutter/services.dart' show rootBundle;
 
 class Secrets {
   static Secrets _instance;
-  final String apiKey;
-  final String server;
+  String firebase;
+  String key;
+  String email;
+  String password;
+  String token;
 
   static Future<Secrets> instance() async {
     if (_instance == null) {
       _instance = await rootBundle
-          .loadStructuredData<Secrets>('secrets.json', (jsonStr) async {
+          .loadStructuredData<Secrets>('secrets.json', (jsonStr) async{
         return Secrets.fromJson(json.decode(jsonStr));
       });
     }
@@ -17,12 +20,14 @@ class Secrets {
     return _instance;
   }
 
-  Secrets({this.apiKey, this.server});
+  Secrets({this.firebase, this.key, this.email, this.password});
 
   factory Secrets.fromJson(Map<String, dynamic> jsonMap) {
     return new Secrets(
-      apiKey: jsonMap["api_key"],
-      server: jsonMap["server"],
+      key: jsonMap["key"],
+      firebase: jsonMap["firebase"],
+      email: jsonMap["email"],
+      password: jsonMap["password"],
     );
   }
 }

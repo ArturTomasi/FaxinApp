@@ -7,6 +7,8 @@ class CleaningProduct {
   int realized, amount;
 
   CleaningProduct({this.cleaning, this.product, this.amount, this.realized});
+  Map<String, dynamic> toJson() =>
+      {"uuid": product.uuid, "realized": realized, "amoun": amount};
 }
 
 class CleaningProductTable {

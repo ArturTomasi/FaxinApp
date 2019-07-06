@@ -1,7 +1,8 @@
 import 'dart:math' as math;
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:faxinapp/common/data/Secrets.dart';
+import 'package:connectivity/connectivity.dart';
+import 'package:faxinapp/bloc/bloc_provider.dart';
+import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';
+import 'package:faxinapp/pages/cleaning/util/share_util.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
 import 'package:faxinapp/util/AppColors.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,7 @@ class _CleaningActionsState extends State<CleaningActions>
 
   @override
   Widget build(BuildContext context) {
+    CleaningBloc bloc = BlocProvider.of(context);
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.end,
@@ -73,6 +75,10 @@ class _CleaningActionsState extends State<CleaningActions>
                   mini: true,
                   heroTag: 'done',
                   onPressed: () async {
+                    if (widget.cleaning.type == CleaningType.SHARED) {
+                      show('Faxina compartilhada não pode ser concluida!');
+                      return false;
+                    }
                     widget.onDone();
                   },
                   child: Icon(
@@ -119,6 +125,10 @@ class _CleaningActionsState extends State<CleaningActions>
                   heroTag: 'edit',
                   mini: true,
                   onPressed: () async {
+                    if (widget.cleaning.type == CleaningType.IMPORTED) {
+                      show('Faxina importada não pode ser executada!');
+                      return false;
+                    }
                     widget.onEdit();
                   },
                   child: Icon(
@@ -165,60 +175,58 @@ class _CleaningActionsState extends State<CleaningActions>
                   heroTag: 'share',
                   mini: true,
                   onPressed: () async {
-                    Secrets s = await Secrets.instance();
+                    try {
+                      if ( await Connectivity().checkConnectivity() == ConnectivityResult.none )  {
+                        show( "Verifica sua conexão");
+                        return false;
+                      }
 
-                    await http.post(
-                      '${s.server}/share/',
-                      headers: {
-                        'Content-Type': 'application/json',
-                        'api_key': s.apiKey
-                      },
-                      body: json.encode(widget.cleaning),
-                      encoding: Encoding.getByName("UTF-8"),
-                    );
-
-                    await showDialog(
-                      context: context,
-                      builder: (_) => SimpleDialog(
-                            elevation: 0,
-                            backgroundColor: Colors.white,
-                            contentPadding: EdgeInsets.all(20),
-                            children: <Widget>[
-                              Container(
-                                width: math.min(
-                                    MediaQuery.of(context).size.width,
-                                    MediaQuery.of(context).size.height),
-                                child: QrImage(
-                                  backgroundColor: Colors.white,
-                                  data:
-                                      '${widget.cleaning.uuid}',
-                                ),
-                              ),
-                              GestureDetector(
-                                onLongPress: () {
-                                  Clipboard.setData(
-                                    ClipboardData(
-                                      text: '${widget.cleaning.uuid}',
-                                    ),
-                                  );
-                                  Scaffold.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text('Código copiado!'),
-                                    ),
-                                  );
-                                },
-                                child: Text(
-                                  '${widget.cleaning.uuid}',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    height: 2
+                      bloc.setLoading(true);
+                      await SharedUtil.share(widget.cleaning);
+                      bloc.setLoading(false);
+                      await showDialog(
+                        context: context,
+                        builder: (_) => SimpleDialog(
+                              elevation: 0,
+                              backgroundColor: Colors.white,
+                              contentPadding: EdgeInsets.all(20),
+                              children: <Widget>[
+                                Container(
+                                  width: math.min(
+                                      MediaQuery.of(context).size.width,
+                                      MediaQuery.of(context).size.height),
+                                  child: QrImage(
+                                    foregroundColor: AppColors.PRIMARY,
+                                    backgroundColor: Colors.white,
+                                    data: '${widget.cleaning.uuid}',
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                    );
+                                RaisedButton(
+                                  color: AppColors.PRIMARY,
+                                  onPressed: () {
+                                    Clipboard.setData(
+                                      ClipboardData(
+                                        text: '${widget.cleaning.uuid}',
+                                      ),
+                                    );
+
+                                    Navigator.pop(context);
+
+                                    show('Código copiado!');
+                                  },
+                                  child: Text(
+                                    "Copiar código",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                      );
+                    } catch (ex) {
+                      show(ex.toString());
+                    }
                   },
                   child: Icon(
                     Icons.share,
@@ -252,6 +260,16 @@ class _CleaningActionsState extends State<CleaningActions>
           ),
         ),
       ],
+    );
+  }
+
+  void show(String msg) {
+    Scaffold.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          msg,
+        ),
+      ),
     );
   }
 }

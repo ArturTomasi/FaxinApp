@@ -94,14 +94,29 @@ class _ProductEditorState extends State<ProductEditor> {
                               labelStyle: TextStyle(color: AppColors.SECONDARY),
                               errorBorder: InputBorder.none),
                           style: TextStyle(color: Colors.white),
-                          initialValue: product.capacity.toString(),
+                          initialValue: product.capacity > 0
+                              ? product.capacity.toString()
+                              : '',
                           validator: (value) {
-                            return value.isEmpty ? "Requerido" : null;
+                            if (value.isEmpty) {
+                              return "Requerido";
+                            } else {
+                              try {
+                                if (double.parse(value) <= 0) {
+                                  return "Capacidade deve ser maior que zero";
+                                }
+                              } catch (ex) {
+                                return "Número inválido";
+                              }
+                            }
+
+                            return null;
                           },
                           onSaved: (value) {
                             product.capacity = double.parse(value);
                           },
-                          keyboardType: TextInputType.number,
+                          keyboardType:
+                              TextInputType.numberWithOptions(decimal: true),
                         ),
                         SizedBox(height: 50),
                         SizedBox(
