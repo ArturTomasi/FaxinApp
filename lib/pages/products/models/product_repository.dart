@@ -108,4 +108,32 @@ class ProductRepository {
         ProductTable.table, {ProductTable.CURRENT_CAPACITY: product.capacity},
         where: ProductTable.ID + " = ? ", whereArgs: [product.id]);
   }
+
+  Future<List> getCharProducts() async {
+
+    var db = await _appDatabase.getDb();
+
+    return db.rawQuery(
+      "select "
+        " P.name, ( CP.used / P.capacity ) as value"
+      " from " 
+        " products P "
+      " inner join "
+      " ( " 
+        " select "
+          " sum( amount ) as used,  "
+          " ref_product "
+        " from "
+          " cleaning_products "
+        " where "
+          " realized = 1 "
+        " group by "
+          "ref_product "
+      " ) as CP "
+      " on " 
+        " CP.ref_product = P.id "
+      " where "
+        " P.state = 1 "
+    );
+  }
 }

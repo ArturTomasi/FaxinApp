@@ -17,7 +17,7 @@ class CleaningEditor extends StatefulWidget {
   CleaningEditor({@required this.cleaning});
 
   @override
-  State<StatefulWidget> createState() => _CleaningEditorState();
+  State<StatefulWidget> createState() => _CleaningEditorState(this.cleaning);
 }
 
 class _CleaningEditorState extends State<CleaningEditor> {
@@ -27,16 +27,17 @@ class _CleaningEditorState extends State<CleaningEditor> {
   final _guidelinesTextController = TextEditingController();
 
   final GlobalKey<FormState> _formState = GlobalKey<FormState>();
+  final Cleaning cleaning;
 
-  _CleaningEditorState();
+  _CleaningEditorState(this.cleaning);
 
   void initState() {
     super.initState();
 
     notification = PushNotification(context);
 
-    _nameTextController.text = widget.cleaning.name;
-    _guidelinesTextController.text = widget.cleaning.guidelines;
+    _nameTextController.text = cleaning.name;
+    _guidelinesTextController.text = cleaning.guidelines;
   }
 
   @override
@@ -45,124 +46,128 @@ class _CleaningEditorState extends State<CleaningEditor> {
       appBar: AppBar(
         centerTitle: true,
         iconTheme: new IconThemeData(color: AppColors.SECONDARY),
-        title: Text( widget.cleaning.id != null ? "Editar Faxina" : "Nova Faxina",
+        title: Text(cleaning.id != null ? "Editar Faxina" : "Nova Faxina",
             style: TextStyle(color: AppColors.SECONDARY, fontSize: 22)),
         actions: <Widget>[
           FlatButton(
             onPressed: () async {
-              save(widget.cleaning);
+              save(cleaning);
             },
             child: Text("SALVAR", style: TextStyle(color: AppColors.SECONDARY)),
           )
         ],
       ),
       body: Container(
-          padding: EdgeInsets.only(top: 10, left: 20, right: 20),
-          color: AppColors.PRIMARY_LIGHT,
-          child: SafeArea(
-            right: true,
-            left: true,
-            child: Form(
-              key: _formState,
-              child: ListView(
-                children: <Widget>[
-                  TextFormField(
-                    decoration: InputDecoration(
-                        labelText: "Nome",
-                        labelStyle: TextStyle(color: AppColors.SECONDARY),
-                        counterStyle: TextStyle(color: AppColors.SECONDARY),
-                        errorBorder: InputBorder.none),
-                    maxLength: 80,
-                    controller: _nameTextController,
-                    style: TextStyle(color: Colors.white),
-                    validator: (value) {
-                      return value.isEmpty ? "Requerido *" : null;
-                    },
-                  ),
-                  TextFormField(
-                    decoration: InputDecoration(
-                        labelText: "Instruções",
-                        labelStyle: TextStyle(color: AppColors.SECONDARY),
-                        counterStyle: TextStyle(color: AppColors.SECONDARY),
-                        errorBorder: InputBorder.none),
-                    minLines: 2,
-                    maxLines: 8,
-                    controller: _guidelinesTextController,
-                    maxLength: 4000,
-                    style: TextStyle(color: Colors.white),
-                    onSaved: (value) {
-                      widget.cleaning.guidelines = value;
-                    },
-                  ),
-                  DatePicker(
-                    initialValue: widget.cleaning.nextDate,
-                    title: "Agendamento",
-                    onChanged: (value) {
-                      widget.cleaning.nextDate = value;
-                    },
-                  ),
-                  DatePicker(
-                    initialValue: DateTime(1, 1, 1, 1, 0),
-                    title: "Tempo estimado",
-                    showDate: false,
-                    onChanged: (value) {
-                      widget.cleaning.estimatedTime = TimeOfDay.fromDateTime(value);
-                    },
-                  ),
-                  SelectionPicker<Frequency>(
-                    onChanged: (f) =>
-                        widget.cleaning.frequency = f != null ? f.first : null,
-                    elements: Frequency.values(),
-                    selecteds: widget.cleaning.frequency != null ? ( []..add(  widget.cleaning.frequency ) ) : null,
-                    singleSelected: true,
-                    renderer: FrequencySelector(),
-                    title: "Frequência",
-                  ),
-                  FutureBuilder<List<Product>>(
-                      future: ProductRepository.get().findAll(),
-                      builder: (x, y) => SelectionPicker<Product>(
-                            onChanged: (value) {
-                              widget.cleaning.products = value;
-                            },
-                            title: "Produtos",
-                            selecteds: widget.cleaning.products,
-                            renderer: ProductSelector(),
-                            elements: y.data,
-                          )),
-                  FutureBuilder<List<Task>>(
-                      future: TaskRepository.get().findAll(),
-                      builder: (x, y) => SelectionPicker<Task>(
-                            onChanged: (value) {
-                              widget.cleaning.tasks = value;
-                            },
-                            title: "Tarefas",
-                            selecteds: widget.cleaning.tasks,
-                            renderer: TaskSelector(),
-                            elements: y.data,
-                          )),
-                  SizedBox(
-                    height: 50,
-                  ),
-                  SizedBox(
-                      width: MediaQuery.of(context).size.width,
-                      child: RaisedButton(
-                        shape: RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(10))),
-                        onPressed: () async {
-                          save(widget.cleaning);
-                        },
-                        color: AppColors.SECONDARY,
-                        textColor: Colors.white,
-                        child: Text("Salvar", style: TextStyle(fontSize: 16)),
-                      )),
-                  SizedBox(
-                    height: 50,
-                  ),
-                ],
-              ),
+        padding: EdgeInsets.only(top: 10, left: 20, right: 20),
+        color: AppColors.PRIMARY_LIGHT,
+        child: SafeArea(
+          right: true,
+          left: true,
+          child: Form(
+            key: _formState,
+            child: ListView(
+              children: <Widget>[
+                TextFormField(
+                  decoration: InputDecoration(
+                      labelText: "Nome",
+                      labelStyle: TextStyle(color: AppColors.SECONDARY),
+                      counterStyle: TextStyle(color: AppColors.SECONDARY),
+                      errorBorder: InputBorder.none),
+                  maxLength: 80,
+                  autofocus: true,
+                  controller: _nameTextController,
+                  style: TextStyle(color: Colors.white),
+                  validator: (value) {
+                    return value.isEmpty ? "Requerido *" : null;
+                  },
+                ),
+                TextFormField(
+                  decoration: InputDecoration(
+                      labelText: "Instruções",
+                      labelStyle: TextStyle(color: AppColors.SECONDARY),
+                      counterStyle: TextStyle(color: AppColors.SECONDARY),
+                      errorBorder: InputBorder.none),
+                  minLines: 2,
+                  maxLines: 8,
+                  controller: _guidelinesTextController,
+                  maxLength: 4000,
+                  style: TextStyle(color: Colors.white),
+                  onSaved: (value) {
+                    cleaning.guidelines = value;
+                  },
+                ),
+                DatePicker(
+                  initialValue: cleaning.nextDate,
+                  title: "Agendamento",
+                  onChanged: (value) {
+                    cleaning.nextDate = value;
+                  },
+                ),
+                DatePicker(
+                  initialValue: DateTime(1, 1, 1, 1, 0),
+                  title: "Tempo estimado",
+                  showDate: false,
+                  onChanged: (value) {
+                    cleaning.estimatedTime = TimeOfDay.fromDateTime(value);
+                  },
+                ),
+                SelectionPicker<Frequency>(
+                  onChanged: (f) {
+                      cleaning.frequency = f != null ? f.first : null;
+                      },
+                  elements: Frequency.values(),
+                  selecteds: cleaning.frequency != null
+                      ? ([]..add(cleaning.frequency))
+                      : null,
+                  singleSelected: true,
+                  renderer: FrequencySelector(),
+                  title: "Frequência",
+                ),
+                FutureBuilder<List<Product>>(
+                    future: ProductRepository.get().findAll(),
+                    builder: (x, y) => SelectionPicker<Product>(
+                          onChanged: (value) {
+                            cleaning.products = value;
+                          },
+                          title: "Produtos",
+                          selecteds: cleaning.products,
+                          renderer: ProductSelector(),
+                          elements: y.data,
+                        )),
+                FutureBuilder<List<Task>>(
+                    future: TaskRepository.get().findAll(),
+                    builder: (x, y) => SelectionPicker<Task>(
+                          onChanged: (value) {
+                            cleaning.tasks = value;
+                          },
+                          title: "Tarefas",
+                          selecteds: cleaning.tasks,
+                          renderer: TaskSelector(),
+                          elements: y.data,
+                        )),
+                SizedBox(
+                  height: 50,
+                ),
+                SizedBox(
+                    width: MediaQuery.of(context).size.width,
+                    child: RaisedButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
+                      onPressed: () async {
+                        save(cleaning);
+                      },
+                      color: AppColors.SECONDARY,
+                      textColor: Colors.white,
+                      child: Text("Salvar", style: TextStyle(fontSize: 16)),
+                    )),
+                SizedBox(
+                  height: 50,
+                ),
+              ],
             ),
-          )),
+          ),
+        ),
+      ),
     );
   }
 
@@ -185,15 +190,16 @@ class _CleaningEditorState extends State<CleaningEditor> {
       Navigator.of(context).pop(cleaning);
     } else {
       showDialog(
-          context: context,
-          builder: (_) => SimpleDialog(
-                title: Center(child: Text("Aviso")),
-                backgroundColor: AppColors.SECONDARY.withOpacity(0.8),
-                contentPadding: EdgeInsets.all(20),
-                children: <Widget>[
-                  Center(child: Text("Preencha todos os campos"))
-                ],
-              ));
+        context: context,
+        builder: (_) => SimpleDialog(
+              title: Center(child: Text("Aviso")),
+              backgroundColor: AppColors.SECONDARY.withOpacity(0.8),
+              contentPadding: EdgeInsets.all(20),
+              children: <Widget>[
+                Center(child: Text("Preencha todos os campos"))
+              ],
+            ),
+      );
     }
   }
 }

@@ -39,12 +39,12 @@ class _CleaningViewState extends State<CleaningView> {
     CleaningRepository.get().findTask(widget.cleaning).then((tsk) {
       widget.cleaning.tasks.forEach(
         (t) => tasks.add(
-              CleaningTask(
-                cleaning: widget.cleaning,
-                realized: tsk[t.id],
-                task: t,
-              ),
-            ),
+          CleaningTask(
+            cleaning: widget.cleaning,
+            realized: tsk[t.id],
+            task: t,
+          ),
+        ),
       );
       setState(() {});
     });
@@ -52,15 +52,15 @@ class _CleaningViewState extends State<CleaningView> {
     CleaningRepository.get().findProducts(widget.cleaning).then((prds) {
       widget.cleaning.products.forEach(
         (p) => products.add(
-              CleaningProduct(
-                cleaning: widget.cleaning,
-                realized: prds[p.id][0],
-                amount: prds[p.id][1] != null
-                    ? (prds[p.id][1]).toInt()
-                    : p.currentCapacity.toInt(),
-                product: p,
-              ),
-            ),
+          CleaningProduct(
+            cleaning: widget.cleaning,
+            realized: prds[p.id][0],
+            amount: prds[p.id][1] != null && prds[p.id][1] != 0
+                ? (prds[p.id][1]).toInt()
+                : p.currentCapacity.toInt(),
+            product: p,
+          ),
+        ),
       );
       setState(() {});
     });

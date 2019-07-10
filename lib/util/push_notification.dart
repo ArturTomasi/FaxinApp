@@ -1,4 +1,6 @@
+import 'package:faxinapp/bloc/bloc_provider.dart';
 import 'package:faxinapp/common/ui/animate_route.dart';
+import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning_repository.dart';
 import 'package:faxinapp/pages/cleaning/widgets/cleaning_view.dart';
@@ -56,14 +58,21 @@ class PushNotification {
 
   Future onSelectNotification(String payload) async {
     if (payload != null && payload.startsWith('faxinapp:')) {
-      Cleaning cleaning = await CleaningRepository.get()
-          .find(int.parse(payload.substring('faxinapp:'.length)));
+      Cleaning cleaning = await CleaningRepository.get().find(
+        int.parse(
+          payload.substring('faxinapp:'.length),
+        ),
+      );
 
       if (cleaning != null) {
-        await Navigator.push(
+        var provider = BlocProvider(
+          bloc: CleaningBloc(),
+          child: CleaningView(cleaning: cleaning),
+        );
+
+        Navigator.push(
           context,
-          new AnimateRoute(
-              builder: (context) => CleaningView(cleaning: cleaning)),
+          AnimateRoute(builder: (context) => provider),
         );
       }
     }

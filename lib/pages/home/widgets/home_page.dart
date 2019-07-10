@@ -1,6 +1,7 @@
 import 'package:faxinapp/bloc/bloc_provider.dart';
 import 'package:faxinapp/common/ui/animate_route.dart';
 import 'package:faxinapp/common/ui/fancy_tab_bar.dart';
+import 'package:faxinapp/pages/charts/dashboard.dart';
 import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
 import 'package:faxinapp/pages/cleaning/util/share_util.dart';
@@ -27,15 +28,20 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final GlobalKey<FancyTabBarState> _keyNavigator =
       GlobalKey<FancyTabBarState>();
   final List<Widget> pages = [];
-  final PageController pageController = PageController(initialPage: 0);
-  int pageIx = 0;
+  int pageIx = 1;
+  final PageController pageController = PageController(
+    initialPage: 1,
+  );
+  bool _propagateAnimations = true;
 
   _HomePageState() {
+    pages.add(Dashboard());
     pages.add(CleaningTimeline());
     pages.add(ProductEmpty());
   }
 
   void onChanged(int idx) {
+    _propagateAnimations = false;
     pageController.animateToPage(
       idx,
       duration: const Duration(
@@ -73,7 +79,10 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 child: PageView(
                   onPageChanged: (i) {
                     setState(() => pageIx = i);
-                    _keyNavigator.currentState.move(i);
+                    if (_propagateAnimations == true) {
+                      _keyNavigator.currentState.move(i);
+                    }
+                    _propagateAnimations = true;
                   },
                   controller: pageController,
                   children: pages,

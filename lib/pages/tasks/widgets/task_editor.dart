@@ -56,6 +56,7 @@ class _TaskEditorState extends State<TaskEditor> {
                                   TextStyle(color: AppColors.SECONDARY),
                               errorBorder: InputBorder.none),
                           maxLength: 80,
+                          autofocus: true,
                           initialValue: task.name,
                           style: TextStyle(color: Colors.white),
                           validator: (value) {

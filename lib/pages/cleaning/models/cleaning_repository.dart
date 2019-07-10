@@ -332,7 +332,6 @@ class CleaningRepository {
         CleaningTable.table,
         {
           CleaningTable.DUE_DATE: cleaning.dueDate.toIso8601String(),
-          CleaningTable.TYPE: CleaningType.DONE.index,
         },
         where: '${CleaningTable.ID} = ? ',
         whereArgs: [cleaning.id]);
@@ -379,5 +378,51 @@ class CleaningRepository {
     await this.save(newCleaning);
 
     return newCleaning;
+  }
+
+  Future<List> getDonutData() async {
+    var db = await _appDatabase.getDb();
+
+    return db.rawQuery(
+        "SELECT ${CleaningTable.TYPE}, count(*) as count from ${CleaningTable.table} group by ${CleaningTable.TYPE}");
+  }
+
+  Future<List> getFrequencyData() async {
+    var db = await _appDatabase.getDb();
+
+    var result = await db.rawQuery(" select "
+        " substr( C.due_date, 0, 8 ) as date, "
+        " count(*) as value"
+        " from "
+        " cleanings C "
+        " where "
+        " C.due_date is not null "
+        " group by "
+        " 1 ");
+    var data = [];
+
+    result.forEach(
+      (d) {
+        var dt = d['date'].split("-");
+
+        data.add(
+          {
+            "date": DateTime(int.parse(dt[0]), int.parse(dt[1]), 1),
+            "value": d["value"]
+          },
+        );
+      },
+    );
+
+    return data;
+
+    /*
+    return [
+      {'date': new DateTime(2017, 9, 19), 'value': 5},
+      {'date': new DateTime(2017, 9, 26), 'value': 25},
+      {'date': new DateTime(2017, 10, 3), 'value': 100},
+      {'date': new DateTime(2017, 10, 10), 'value': 75},
+    ];
+    */
   }
 }

@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:connectivity/connectivity.dart';
-
 import 'package:faxinapp/bloc/bloc_provider.dart';
 import 'package:faxinapp/common/data/Secrets.dart';
 import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';
@@ -14,7 +13,7 @@ import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 
 class SharedUtil {
-  static StreamSubscription listener = null;
+  static StreamSubscription listener;
 
   static Future connectFirebase() async {
     try {
@@ -70,6 +69,7 @@ class SharedUtil {
     c.type = CleaningType.SHARED;
 
     CleaningRepository.get().save(c);
+
     return c.uuid;
   }
 

@@ -24,6 +24,7 @@ class _ImportPageState extends State<ImportPage> {
 
   @override
   Widget build(BuildContext context) {
+    CleaningBloc _bloc = BlocProvider.of(context);
     return Scaffold(
       key: _globalKey,
       appBar: AppBar(
@@ -37,61 +38,79 @@ class _ImportPageState extends State<ImportPage> {
           ),
         ),
       ),
-      body: Container(
-        padding: EdgeInsets.only(top: 10, left: 20, right: 20),
-        color: AppColors.PRIMARY_LIGHT,
-        child: ListView(
+      body: StreamBuilder<bool>(
+        initialData: false,
+        stream: _bloc.loading,
+        builder: (_, snap) => Stack(
+          alignment: Alignment.center,
           children: <Widget>[
-            SizedBox(
-              height: 25,
-            ),
-            TextFormField(
-              decoration: InputDecoration(
-                  labelText: "Código",
-                  icon: GestureDetector(
-                    child: Icon(
-                      Icons.camera_alt,
-                      size: 40,
-                      color: AppColors.SECONDARY,
-                    ),
-                    onTap: () async {
-                      _codeController.text = await QRCodeReader()
-                          .setAutoFocusIntervalInMs(200) // default 5000
-                          .setForceAutoFocus(true) // default false
-                          .setTorchEnabled(true) // default false
-                          .setHandlePermissions(true) // default true
-                          .setExecuteAfterPermissionGranted(
-                              true) // default true
-                          .scan();
+            Container(
+              padding: EdgeInsets.only(top: 10, left: 20, right: 20),
+              color: AppColors.PRIMARY_LIGHT,
+              child: ListView(
+                children: <Widget>[
+                  SizedBox(
+                    height: 25,
+                  ),
+                  TextFormField(
+                    decoration: InputDecoration(
+                        labelText: "Código",
+                        icon: GestureDetector(
+                          child: Icon(
+                            Icons.camera_alt,
+                            size: 40,
+                            color: AppColors.SECONDARY,
+                          ),
+                          onTap: () async {
+                            _codeController.text = await QRCodeReader()
+                                .setAutoFocusIntervalInMs(200) // default 5000
+                                .setForceAutoFocus(true) // default false
+                                .setTorchEnabled(true) // default false
+                                .setHandlePermissions(true) // default true
+                                .setExecuteAfterPermissionGranted(
+                                    true) // default true
+                                .scan();
 
-                      _save();
+                            _save();
+                          },
+                        ),
+                        labelStyle: TextStyle(color: AppColors.SECONDARY),
+                        counterStyle: TextStyle(color: AppColors.SECONDARY),
+                        errorBorder: InputBorder.none),
+                    controller: _codeController,
+                    style: TextStyle(color: Colors.white),
+                    validator: (value) {
+                      return value.isEmpty ? "Requerido *" : null;
                     },
                   ),
-                  labelStyle: TextStyle(color: AppColors.SECONDARY),
-                  counterStyle: TextStyle(color: AppColors.SECONDARY),
-                  errorBorder: InputBorder.none),
-              controller: _codeController,
-              style: TextStyle(color: Colors.white),
-              validator: (value) {
-                return value.isEmpty ? "Requerido *" : null;
-              },
+                  SizedBox(
+                    height: 50,
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.8,
+                    child: RaisedButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
+                      onPressed: _save,
+                      color: AppColors.SECONDARY,
+                      textColor: Colors.white,
+                      child: Text("Importar", style: TextStyle(fontSize: 16)),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 50,
+                  ),
+                ],
+              ),
             ),
-            SizedBox(
-              height: 50,
-            ),
-            SizedBox(
-                width: MediaQuery.of(context).size.width * 0.8,
-                child: RaisedButton(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10))),
-                  onPressed: _save,
-                  color: AppColors.SECONDARY,
-                  textColor: Colors.white,
-                  child: Text("Importar", style: TextStyle(fontSize: 16)),
-                )),
-            SizedBox(
-              height: 50,
-            ),
+            snap.hasData && !snap.data
+                  ? Container()
+                  : Container(
+                      color: AppColors.PRIMARY_LIGHT.withOpacity(0.5),
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
           ],
         ),
       ),
@@ -102,17 +121,23 @@ class _ImportPageState extends State<ImportPage> {
     String msg = "Código inválido!";
 
     if (_codeController.text != null && _codeController.text.isNotEmpty) {
+      CleaningBloc _bloc = BlocProvider.of(context);
+      _bloc.setLoading(true);
       Cleaning c = await SharedUtil.obtain(_codeController.text);
 
       if (c != null) {
+
         await CleaningRepository.get().import(c);
 
-        PushNotification( context )..initialize()..schedule(c);
-        
+        PushNotification(context)
+          ..initialize()
+          ..schedule(c);
+
         BlocProvider.of<CleaningBloc>(context).findPendents();
 
         msg = "Importado faxina com sucesso!";
       }
+      _bloc.setLoading(false);
     }
 
     _codeController.text = '';

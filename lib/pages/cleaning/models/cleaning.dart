@@ -3,7 +3,7 @@ import 'package:faxinapp/pages/tasks/models/task.dart';
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 
-enum CleaningType { IMPORTED, SHARED, COMMON, DONE, DELETED }
+enum CleaningType { IMPORTED, SHARED, COMMON }
 
 class Frequency {
   static final Frequency NONE = Frequency._(0, "Manual");

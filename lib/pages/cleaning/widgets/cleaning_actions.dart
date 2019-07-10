@@ -74,12 +74,12 @@ class _CleaningActionsState extends State<CleaningActions>
                   backgroundColor: Colors.white,
                   mini: true,
                   heroTag: 'done',
-                  onPressed: () async {
+                  onPressed: () {
                     if (widget.cleaning.type == CleaningType.SHARED) {
                       show('Faxina compartilhada não pode ser concluida!');
-                      return false;
+                    } else {
+                      widget.onDone();
                     }
-                    widget.onDone();
                   },
                   child: Icon(
                     Icons.done,
@@ -124,12 +124,12 @@ class _CleaningActionsState extends State<CleaningActions>
                   backgroundColor: Colors.white,
                   heroTag: 'edit',
                   mini: true,
-                  onPressed: () async {
+                  onPressed: () {
                     if (widget.cleaning.type == CleaningType.IMPORTED) {
                       show('Faxina importada não pode ser executada!');
-                      return false;
+                    } else {
+                      widget.onEdit();
                     }
-                    widget.onEdit();
                   },
                   child: Icon(
                     Icons.edit,
@@ -176,54 +176,54 @@ class _CleaningActionsState extends State<CleaningActions>
                   mini: true,
                   onPressed: () async {
                     try {
-                      if ( await Connectivity().checkConnectivity() == ConnectivityResult.none )  {
-                        show( "Verifica sua conexão");
-                        return false;
-                      }
+                      if (await Connectivity().checkConnectivity() ==
+                          ConnectivityResult.none) {
+                        show("Verifica sua conexão");
+                      } else {
+                        bloc.setLoading(true);
+                        await SharedUtil.share(widget.cleaning);
+                        bloc.setLoading(false);
+                        await showDialog(
+                          context: context,
+                          builder: (_) => SimpleDialog(
+                            elevation: 0,
+                            backgroundColor: Colors.white,
+                            contentPadding: EdgeInsets.all(20),
+                            children: <Widget>[
+                              Container(
+                                width: math.min(
+                                    MediaQuery.of(context).size.width,
+                                    MediaQuery.of(context).size.height),
+                                child: QrImage(
+                                  foregroundColor: AppColors.PRIMARY,
+                                  backgroundColor: Colors.white,
+                                  data: '${widget.cleaning.uuid}',
+                                ),
+                              ),
+                              RaisedButton(
+                                color: AppColors.PRIMARY,
+                                onPressed: () {
+                                  Clipboard.setData(
+                                    ClipboardData(
+                                      text: '${widget.cleaning.uuid}',
+                                    ),
+                                  );
 
-                      bloc.setLoading(true);
-                      await SharedUtil.share(widget.cleaning);
-                      bloc.setLoading(false);
-                      await showDialog(
-                        context: context,
-                        builder: (_) => SimpleDialog(
-                              elevation: 0,
-                              backgroundColor: Colors.white,
-                              contentPadding: EdgeInsets.all(20),
-                              children: <Widget>[
-                                Container(
-                                  width: math.min(
-                                      MediaQuery.of(context).size.width,
-                                      MediaQuery.of(context).size.height),
-                                  child: QrImage(
-                                    foregroundColor: AppColors.PRIMARY,
-                                    backgroundColor: Colors.white,
-                                    data: '${widget.cleaning.uuid}',
+                                  Navigator.pop(context);
+
+                                  show('Código copiado!');
+                                },
+                                child: Text(
+                                  "Copiar código",
+                                  style: TextStyle(
+                                    color: Colors.white,
                                   ),
                                 ),
-                                RaisedButton(
-                                  color: AppColors.PRIMARY,
-                                  onPressed: () {
-                                    Clipboard.setData(
-                                      ClipboardData(
-                                        text: '${widget.cleaning.uuid}',
-                                      ),
-                                    );
-
-                                    Navigator.pop(context);
-
-                                    show('Código copiado!');
-                                  },
-                                  child: Text(
-                                    "Copiar código",
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                )
-                              ],
-                            ),
-                      );
+                              )
+                            ],
+                          ),
+                        );
+                      }
                     } catch (ex) {
                       show(ex.toString());
                     }

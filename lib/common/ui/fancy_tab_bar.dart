@@ -29,14 +29,17 @@ class FancyTabBarState extends State<FancyTabBar>
   IconData nextIcon = Icons.shopping_cart;
   IconData activeIcon = Icons.clear_all;
 
-  int currentSelected = -1;
+  int currentSelected = 1;
 
   void move(int idx) {
     switch (idx) {
       case 0:
-        moveCleaning();
+        moveChart();
         break;
       case 1:
+        moveCleaning();
+        break;
+      case 2:
         moveProduct();
         break;
     }
@@ -50,7 +53,7 @@ class FancyTabBarState extends State<FancyTabBar>
     _fadeOutController = AnimationController(
         vsync: this, duration: Duration(milliseconds: (ANIM_DURATION ~/ 5)));
 
-    _positionTween = Tween<double>(begin: -1, end: -1);
+    _positionTween = Tween<double>(begin: 0, end: 0);
 
     _positionAnimation = _positionTween.animate(
         CurvedAnimation(parent: _animationController, curve: Curves.easeOut))
@@ -84,22 +87,31 @@ class FancyTabBarState extends State<FancyTabBar>
       });
   }
 
-  void moveProduct() {
+  void moveChart() {
     setState(() {
-      nextIcon = Icons.shopping_cart;
-      currentSelected = 1;
+      nextIcon = Icons.insert_chart;
+      currentSelected = 0;
     });
 
-    _initAnimationAndStart(_positionAnimation.value, 1);
+    _initAnimationAndStart(_positionAnimation.value, -1);
   }
 
   void moveCleaning() {
     setState(() {
       nextIcon = Icons.clear_all;
-      currentSelected = -1;
+      currentSelected = 1;
     });
 
-    _initAnimationAndStart(_positionAnimation.value, -1);
+    _initAnimationAndStart(_positionAnimation.value, 0);
+  }
+
+  void moveProduct() {
+    setState(() {
+      nextIcon = Icons.shopping_cart;
+      currentSelected = 2;
+    });
+
+    _initAnimationAndStart(_positionAnimation.value, 1);
   }
 
   @override
@@ -119,20 +131,28 @@ class FancyTabBarState extends State<FancyTabBar>
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
                 TabItem(
-                    selected: currentSelected == -1,
-                    iconData: Icons.clear_all,
-                    title: "Faxinas",
+                    selected: currentSelected == 0,
+                    iconData: Icons.insert_chart,
+                    title: "Gráficos",
                     callbackFunction: () {
-                      moveCleaning();
+                      moveChart();
                       widget.onChanged(0);
                     }),
                 TabItem(
                     selected: currentSelected == 1,
+                    iconData: Icons.clear_all,
+                    title: "Faxinas",
+                    callbackFunction: () {
+                      moveCleaning();
+                      widget.onChanged(1);
+                    }),
+                TabItem(
+                    selected: currentSelected == 2,
                     iconData: Icons.shopping_cart,
                     title: "Produto",
                     callbackFunction: () {
                       moveProduct();
-                      widget.onChanged(1);
+                      widget.onChanged(2);
                     }),
               ],
             ),
@@ -144,7 +164,7 @@ class FancyTabBarState extends State<FancyTabBar>
                 heightFactor: 1,
                 alignment: Alignment(_positionAnimation.value, 0),
                 child: FractionallySizedBox(
-                  widthFactor: 1 / 2,
+                  widthFactor: 1 / 3,
                   child: Stack(
                     alignment: Alignment.center,
                     children: <Widget>[

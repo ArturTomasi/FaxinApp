@@ -21,30 +21,31 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: "Faxinap",
-        theme: ThemeData(
-            canvasColor: Colors.transparent,
-            bottomAppBarColor: Colors.transparent,
-            highlightColor: AppColors.SECONDARY,
-            accentColor: AppColors.SECONDARY,
-            buttonTheme: ButtonThemeData(
-              textTheme: ButtonTextTheme.accent,
-            ),
-            floatingActionButtonTheme: FloatingActionButtonThemeData(
-              backgroundColor: AppColors.SECONDARY,
-            ),
-            sliderTheme: SliderTheme.of(context).copyWith(
-              disabledActiveTickMarkColor: AppColors.PRIMARY_DARK,
-              disabledInactiveTickMarkColor: AppColors.PRIMARY,
-              disabledActiveTrackColor: AppColors.PRIMARY_DARK,
-              disabledInactiveTrackColor: AppColors.PRIMARY,
-              disabledThumbColor: AppColors.PRIMARY_DARK,
-            ),
-            primaryColor: AppColors.PRIMARY),
-        home: BlocProvider(
-          bloc: _cleaningBloc,
-          child: HomePage(),
-        ));
+      debugShowCheckedModeBanner: false,
+      title: "Faxinap",
+      theme: ThemeData(
+          canvasColor: Colors.transparent,
+          bottomAppBarColor: Colors.transparent,
+          highlightColor: AppColors.SECONDARY,
+          accentColor: AppColors.SECONDARY,
+          buttonTheme: ButtonThemeData(
+            textTheme: ButtonTextTheme.accent,
+          ),
+          floatingActionButtonTheme: FloatingActionButtonThemeData(
+            backgroundColor: AppColors.SECONDARY,
+          ),
+          sliderTheme: SliderTheme.of(context).copyWith(
+            disabledActiveTickMarkColor: AppColors.PRIMARY_DARK,
+            disabledInactiveTickMarkColor: AppColors.PRIMARY,
+            disabledActiveTrackColor: AppColors.PRIMARY_DARK,
+            disabledInactiveTrackColor: AppColors.PRIMARY,
+            disabledThumbColor: AppColors.PRIMARY_DARK,
+          ),
+          primaryColor: AppColors.PRIMARY),
+      home: BlocProvider(
+        bloc: _cleaningBloc,
+        child: HomePage(),
+      ),
+    );
   }
 }

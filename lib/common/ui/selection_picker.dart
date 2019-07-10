@@ -31,108 +31,105 @@ class SelectionPicker<T> extends StatefulWidget {
 }
 
 class _SelectionPickerState<T> extends State<SelectionPicker<T>> {
+  final SelectionBloc<T> bloc = new SelectionBloc<T>();
   List<T> _tempSelecteds;
+
   @override
-  Widget build(BuildContext context) {
-    final SelectionBloc<T> bloc = new SelectionBloc<T>();
-
+  void initState() {
+    super.initState();
+    _tempSelecteds = widget.selecteds;
     bloc.selecteds.listen((data) => _publishSelection(_tempSelecteds = data));
-
-    return BlocProvider(
-        bloc: bloc,
-        child: Center(
-            child: GestureDetector(
-                onTap: () async {
-                  List<T> value = await showDialog(
-                      context: context,
-                      builder: (c) {
-                        return SelectionDialog<T>(
-                          widget.elements,
-                          singleSelected: widget.singleSelected,
-                          selecteds: _tempSelecteds,
-                          renderer: widget.renderer,
-                        );
-                      });
-
-                  bloc.add(value);
-                },
-                child: StreamBuilder<List<T>>(
-                    stream: bloc.selecteds,
-                    initialData: widget.selecteds,
-                    builder: (context, snapshot) {
-                      return Container(
-                          color: AppColors.PRIMARY_LIGHT,
-                          padding: EdgeInsets.only(top: 20),
-                          width: double.infinity,
-                          child: Center(
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: <Widget>[
-                                Row(
-                                  children: <Widget>[
-                                    Text(widget.title,
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            color: AppColors.SECONDARY),
-                                        textAlign: TextAlign.start)
-                                  ],
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(top: 10),
-                                ),
-                                snapshot.hasData
-                                    ? Wrap(
-                                        alignment: WrapAlignment.start,
-                                        spacing: 10,
-                                        crossAxisAlignment:
-                                            WrapCrossAlignment.start,
-                                        runSpacing: 5,
-                                        children: <Widget>[]..addAll(snapshot
-                                            .data
-                                            .map<Chip>((p) => Chip(
-                                                labelStyle: TextStyle(
-                                                    color:
-                                                        AppColors.PRIMARY_DARK),
-                                                backgroundColor:
-                                                    AppColors.SECONDARY,
-                                                labelPadding:
-                                                    EdgeInsets.symmetric(
-                                                        vertical: 2,
-                                                        horizontal: 10),
-                                                label: Text(p.toString())))
-                                            .toList()),
-                                      )
-                                    : Flex(
-                                        direction: Axis.horizontal,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          Text("Toque para selecionar",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 14))
-                                        ],
-                                      ),
-                                Padding(
-                                  padding: EdgeInsets.only(top: 10),
-                                ),
-                                Container(
-                                  color: AppColors.PRIMARY_DARK,
-                                  width: double.infinity,
-                                  height: 1,
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(top: 10),
-                                ),
-                              ])));
-                    }))));
   }
 
   @override
-  initState() {
-    super.initState();
-    _tempSelecteds = widget.selecteds;
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      bloc: bloc,
+      child: Center(
+        child: GestureDetector(
+          onTap: () async {
+            List<T> value = await showDialog(
+                context: context,
+                builder: (c) {
+                  return SelectionDialog<T>(
+                    widget.elements,
+                    singleSelected: widget.singleSelected,
+                    selecteds: _tempSelecteds,
+                    renderer: widget.renderer,
+                  );
+                });
+
+            bloc.add(value);
+          },
+          child: StreamBuilder<List<T>>(
+            stream: bloc.selecteds,
+            initialData: widget.selecteds,
+            builder: (context, snapshot) {
+              return Container(
+                color: AppColors.PRIMARY_LIGHT,
+                padding: EdgeInsets.only(top: 20),
+                width: double.infinity,
+                child: Center(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          Text(widget.title,
+                              style: TextStyle(
+                                  fontSize: 16, color: AppColors.SECONDARY),
+                              textAlign: TextAlign.start)
+                        ],
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 10),
+                      ),
+                      snapshot.hasData
+                          ? Wrap(
+                              alignment: WrapAlignment.start,
+                              spacing: 10,
+                              crossAxisAlignment: WrapCrossAlignment.start,
+                              runSpacing: 5,
+                              children: <Widget>[]..addAll(snapshot.data
+                                  .map<Chip>((p) => Chip(
+                                      labelStyle: TextStyle(
+                                          color: AppColors.PRIMARY_DARK),
+                                      backgroundColor: AppColors.SECONDARY,
+                                      labelPadding: EdgeInsets.symmetric(
+                                          vertical: 2, horizontal: 10),
+                                      label: Text(p.toString())))
+                                  .toList()),
+                            )
+                          : Flex(
+                              direction: Axis.horizontal,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text("Toque para selecionar",
+                                    style: TextStyle(
+                                        color: Colors.white, fontSize: 14))
+                              ],
+                            ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 10),
+                      ),
+                      Container(
+                        color: AppColors.PRIMARY_DARK,
+                        width: double.infinity,
+                        height: 1,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 10),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
   }
 
   void _publishSelection(List<T> e) {
