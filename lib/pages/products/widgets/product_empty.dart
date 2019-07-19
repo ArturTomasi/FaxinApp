@@ -20,10 +20,28 @@ class ProductEmpty extends StatelessWidget {
               return ProductListEmptyWidget(snapshot.data);
             } else {
               return Container(
+                padding: EdgeInsets.symmetric(horizontal: 50),
                 color: AppColors.PRIMARY_LIGHT,
                 child: Center(
-                    child: Icon(Icons.shopping_cart,
-                        size: 100, color: AppColors.SECONDARY)),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Icon(
+                        Icons.shopping_cart,
+                        size: 100,
+                        color: AppColors.SECONDARY,
+                      ),
+                      Text(
+                        "Serão exibidos aqui produtos com 25% ou menos de sua capacidade!",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          color: AppColors.SECONDARY,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
               );
             }
           } else {
@@ -99,13 +117,13 @@ class ProductListEmptyWidget extends StatelessWidget {
                         ),
                       )),
                   subtitle: new Text(
-                    _products[i].branding.toLowerCase(),
+                    _products[i].branding,
                     style: TextStyle(
                         color: AppColors.SECONDARY,
                         fontStyle: FontStyle.italic),
                   ),
                   title: new Text(
-                    _products[i].name.toUpperCase(),
+                    _products[i].name,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20,

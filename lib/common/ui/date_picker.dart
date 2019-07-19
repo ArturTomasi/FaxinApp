@@ -27,11 +27,13 @@ class _DatePickerState extends State<DatePicker> {
   TimeOfDay _time;
 
   Future _selectDate() async {
+    DateTime date = _date??DateTime.now();
+
     _date = await showDatePicker(
         context: context,
-        initialDate: _date,
-        firstDate: DateTime(_date.year),
-        lastDate: DateTime(_date.year + 5),
+        initialDate: date,
+        firstDate: DateTime(date.year),
+        lastDate: DateTime(date.year + 5),
         initialDatePickerMode: DatePickerMode.day);
 
     setState(() {
@@ -45,7 +47,10 @@ class _DatePickerState extends State<DatePicker> {
   }
 
   Future _selectTime() async {
-    _time = await showTimePicker(context: context, initialTime: _time);
+    _time = await showTimePicker(
+      context: context,
+      initialTime: _time ?? TimeOfDay(hour: 1, minute: 0),
+    );
     setState(() {
       if (_time != null) {
         _timeString = DateFormat.Hm()

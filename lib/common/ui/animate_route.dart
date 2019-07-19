@@ -18,7 +18,7 @@ class AnimateRoute<T> extends MaterialPageRoute<T> {
 
     return ScaleTransition(
       scale: animation,
-      alignment: Alignment.center,
+      alignment: Alignment.bottomCenter,
       child: child,
     );
   }

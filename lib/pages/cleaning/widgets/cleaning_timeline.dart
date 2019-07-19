@@ -70,7 +70,7 @@ class CleaningTimelineWidget extends StatelessWidget {
 
     return GestureDetector(
       onTap: () async {
-        CleaningBloc bloc = BlocProvider.of(context);
+        CleaningBloc bloc = BlocProvider.of<CleaningBloc>(context);
 
         var provider = BlocProvider(
           bloc: bloc,

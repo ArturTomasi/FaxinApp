@@ -53,6 +53,8 @@ class HomeDrawer extends StatelessWidget {
                     context,
                     AnimateRoute<bool>(builder: (context) => _provider),
                   );
+
+                  Navigator.pop(context);
                 },
               ),
                ListTile(

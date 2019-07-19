@@ -95,13 +95,13 @@ class ProductListWidget extends StatelessWidget {
                         ),
                       )),
                   subtitle: new Text(
-                    _products[i].branding.toLowerCase(),
+                    _products[i].branding,
                     style: TextStyle(
                         color: AppColors.SECONDARY,
                         fontStyle: FontStyle.italic),
                   ),
                   title: new Text(
-                    _products[i].name.toUpperCase(),
+                    _products[i].name,
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 20,

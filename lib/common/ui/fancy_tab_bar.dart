@@ -149,7 +149,7 @@ class FancyTabBarState extends State<FancyTabBar>
                 TabItem(
                     selected: currentSelected == 2,
                     iconData: Icons.shopping_cart,
-                    title: "Produto",
+                    title: "Produtos",
                     callbackFunction: () {
                       moveProduct();
                       widget.onChanged(2);

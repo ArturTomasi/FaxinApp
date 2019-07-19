@@ -29,6 +29,12 @@ class _CleaningEditorState extends State<CleaningEditor> {
   final GlobalKey<FormState> _formState = GlobalKey<FormState>();
   final Cleaning cleaning;
 
+  DateTime _nextDate;
+  TimeOfDay _estimatedTime;
+  Frequency _frequency;
+  List<Product> _products;
+  List<Task> _tasks;
+
   _CleaningEditorState(this.cleaning);
 
   void initState() {
@@ -38,6 +44,12 @@ class _CleaningEditorState extends State<CleaningEditor> {
 
     _nameTextController.text = cleaning.name;
     _guidelinesTextController.text = cleaning.guidelines;
+
+    _nextDate = cleaning.nextDate;
+    _estimatedTime = cleaning.estimatedTime;
+    _products = cleaning.products;
+    _tasks = cleaning.tasks;
+    _frequency = cleaning.frequency;
   }
 
   @override
@@ -97,10 +109,10 @@ class _CleaningEditorState extends State<CleaningEditor> {
                   },
                 ),
                 DatePicker(
-                  initialValue: cleaning.nextDate,
+                  initialValue: _nextDate,
                   title: "Agendamento",
                   onChanged: (value) {
-                    cleaning.nextDate = value;
+                    _nextDate = value;
                   },
                 ),
                 DatePicker(
@@ -108,17 +120,15 @@ class _CleaningEditorState extends State<CleaningEditor> {
                   title: "Tempo estimado",
                   showDate: false,
                   onChanged: (value) {
-                    cleaning.estimatedTime = TimeOfDay.fromDateTime(value);
+                    _estimatedTime = TimeOfDay.fromDateTime(value);
                   },
                 ),
                 SelectionPicker<Frequency>(
                   onChanged: (f) {
-                      cleaning.frequency = f != null ? f.first : null;
-                      },
+                    _frequency = f != null ? f.first : null;
+                  },
                   elements: Frequency.values(),
-                  selecteds: cleaning.frequency != null
-                      ? ([]..add(cleaning.frequency))
-                      : null,
+                  selecteds: _frequency != null ? ([]..add(_frequency)) : null,
                   singleSelected: true,
                   renderer: FrequencySelector(),
                   title: "Frequência",
@@ -127,10 +137,10 @@ class _CleaningEditorState extends State<CleaningEditor> {
                     future: ProductRepository.get().findAll(),
                     builder: (x, y) => SelectionPicker<Product>(
                           onChanged: (value) {
-                            cleaning.products = value;
+                            _products = value;
                           },
                           title: "Produtos",
-                          selecteds: cleaning.products,
+                          selecteds: _products,
                           renderer: ProductSelector(),
                           elements: y.data,
                         )),
@@ -138,10 +148,10 @@ class _CleaningEditorState extends State<CleaningEditor> {
                     future: TaskRepository.get().findAll(),
                     builder: (x, y) => SelectionPicker<Task>(
                           onChanged: (value) {
-                            cleaning.tasks = value;
+                            _tasks = value;
                           },
                           title: "Tarefas",
-                          selecteds: cleaning.tasks,
+                          selecteds: _tasks,
                           renderer: TaskSelector(),
                           elements: y.data,
                         )),
@@ -172,9 +182,10 @@ class _CleaningEditorState extends State<CleaningEditor> {
   }
 
   void save(Cleaning cleaning) async {
-    bool valid = cleaning.tasks != null &&
-        cleaning.tasks.isNotEmpty &&
-        cleaning.nextDate != null &&
+    bool valid = _tasks.isNotEmpty &&
+        _frequency != null &&
+        _nextDate != null &&
+        _estimatedTime != null &&
         _formState.currentState.validate();
 
     if (valid) {
@@ -182,6 +193,11 @@ class _CleaningEditorState extends State<CleaningEditor> {
 
       cleaning.name = _nameTextController.text;
       cleaning.guidelines = _guidelinesTextController.text;
+      cleaning.estimatedTime = _estimatedTime;
+      cleaning.nextDate = _nextDate;
+      cleaning.tasks = _tasks;
+      cleaning.frequency = _frequency;
+      cleaning.products = _products;
 
       await CleaningRepository.get().save(cleaning);
 
@@ -192,13 +208,11 @@ class _CleaningEditorState extends State<CleaningEditor> {
       showDialog(
         context: context,
         builder: (_) => SimpleDialog(
-              title: Center(child: Text("Aviso")),
-              backgroundColor: AppColors.SECONDARY.withOpacity(0.8),
-              contentPadding: EdgeInsets.all(20),
-              children: <Widget>[
-                Center(child: Text("Preencha todos os campos"))
-              ],
-            ),
+          title: Center(child: Text("Aviso")),
+          backgroundColor: AppColors.SECONDARY.withOpacity(0.8),
+          contentPadding: EdgeInsets.all(20),
+          children: <Widget>[Center(child: Text("Preencha todos os campos"))],
+        ),
       );
     }
   }
@@ -211,9 +225,7 @@ class FrequencySelector implements ItemRenderer<Frequency> {
         alignment: Alignment(-0.8, 0),
         height: 50,
         color: !sel ? AppColors.PRIMARY_LIGHT : AppColors.PRIMARY,
-        child: Text(
-            p.label.substring(0, 1).toUpperCase() +
-                p.label.substring(1, p.label.length).toLowerCase(),
+        child: Text(p.label,
             textAlign: TextAlign.left,
             style: TextStyle(color: Colors.white, fontSize: 20)));
   }
@@ -226,9 +238,7 @@ class ProductSelector implements ItemRenderer<Product> {
         alignment: Alignment(-0.8, 0),
         height: 50,
         color: !sel ? AppColors.PRIMARY_LIGHT : AppColors.PRIMARY,
-        child: Text(
-            p.name.substring(0, 1).toUpperCase() +
-                p.name.substring(1, p.name.length).toLowerCase(),
+        child: Text(p.name,
             textAlign: TextAlign.left,
             style: TextStyle(color: Colors.white, fontSize: 20)));
   }
@@ -241,9 +251,7 @@ class TaskSelector implements ItemRenderer<Task> {
         alignment: Alignment(-0.8, 0),
         height: 50,
         color: !sel ? AppColors.PRIMARY_LIGHT : AppColors.PRIMARY,
-        child: Text(
-            p.name.substring(0, 1).toUpperCase() +
-                p.name.substring(1, p.name.length).toLowerCase(),
+        child: Text(p.name,
             textAlign: TextAlign.left,
             style: TextStyle(color: Colors.white, fontSize: 20)));
   }

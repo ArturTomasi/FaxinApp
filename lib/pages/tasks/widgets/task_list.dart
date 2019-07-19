@@ -86,13 +86,13 @@ class TaskListWidget extends StatelessWidget {
                     color: Colors.white,
                   ),
                   subtitle: new Text(
-                    _tasks[i].guidelines.toLowerCase(),
+                    _tasks[i].guidelines,
                     style: TextStyle(
                         color: AppColors.SECONDARY,
                         fontStyle: FontStyle.italic),
                   ),
                   title: new Text(
-                    _tasks[i].name.toUpperCase(),
+                    _tasks[i].name,
                     style: TextStyle(color: Colors.white, fontSize: 20),
                   ),
                 ),

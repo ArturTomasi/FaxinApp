@@ -8,6 +8,7 @@ import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning_product.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning_repository.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning_task.dart';
+import 'package:faxinapp/util/push_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
@@ -126,7 +127,7 @@ class SharedUtil {
       return false;
     }
 
-    CleaningBloc _bloc = BlocProvider.of(context);
+    CleaningBloc _bloc = BlocProvider.of<CleaningBloc>(context);
 
     if (show) {
       _bloc.setLoading(true);
@@ -186,6 +187,8 @@ class SharedUtil {
             Cleaning cn =
                 await CleaningRepository.get().done(c, tasks, products);
             _bloc.update(c, cn);
+
+            await new PushNotification(context).cancel(c);
 
             http.delete(
               '${secrets.firebase}/done/${c.uuid}.json?auth=${secrets.token}',

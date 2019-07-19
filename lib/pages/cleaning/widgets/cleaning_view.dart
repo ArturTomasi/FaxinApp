@@ -10,6 +10,7 @@ import 'package:faxinapp/pages/cleaning/util/share_util.dart';
 import 'package:faxinapp/pages/cleaning/widgets/cleaning_actions.dart';
 import 'package:faxinapp/pages/cleaning/widgets/cleaning_editor.dart';
 import 'package:faxinapp/util/AppColors.dart';
+import 'package:faxinapp/util/push_notification.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -25,15 +26,18 @@ class CleaningView extends StatefulWidget {
 enum Mode { EDIT, VIEW, DONE }
 
 class _CleaningViewState extends State<CleaningView> {
+  final GlobalKey<ScaffoldState> key = new GlobalKey();
   List<CleaningProduct> products = [];
   List<CleaningTask> tasks = [];
 
   Mode mode = Mode.VIEW;
+  PushNotification notification;
 
   @override
   void initState() {
     super.initState();
 
+    notification = PushNotification(context);
     mode = widget.cleaning.dueDate != null ? Mode.DONE : mode;
 
     CleaningRepository.get().findTask(widget.cleaning).then((tsk) {
@@ -68,9 +72,10 @@ class _CleaningViewState extends State<CleaningView> {
 
   @override
   Widget build(BuildContext context) {
-    CleaningBloc bloc = BlocProvider.of(context);
+    CleaningBloc bloc = BlocProvider.of<CleaningBloc>(context);
 
     return Scaffold(
+      key: key,
       appBar: AppBar(
         centerTitle: true,
         iconTheme: new IconThemeData(color: AppColors.SECONDARY),
@@ -86,8 +91,6 @@ class _CleaningViewState extends State<CleaningView> {
           ? CleaningActions(
               widget.cleaning,
               onEdit: () async {
-                Navigator.pop(context);
-
                 var provider = BlocProvider(
                   bloc: bloc,
                   child: CleaningEditor(
@@ -97,6 +100,8 @@ class _CleaningViewState extends State<CleaningView> {
 
                 await Navigator.of(context).push(new AnimateRoute(
                     fullscreenDialog: true, builder: (c) => provider));
+
+                Navigator.pop(context);
               },
               onDone: () => setState(() => mode = Mode.DONE),
             )
@@ -148,20 +153,30 @@ class _CleaningViewState extends State<CleaningView> {
         }
       });
 
+      Cleaning next;
+
       if (widget.cleaning.type == CleaningType.IMPORTED) {
         if (await Connectivity().checkConnectivity() ==
             ConnectivityResult.none) {
           show("Verifica sua conexão");
-          return;
+        } else {
+          await SharedUtil.done(widget.cleaning, tasks, products);
+
+          next = await CleaningRepository.get()
+              .done(widget.cleaning, tasks, products);
+
+          await notification.cancel(widget.cleaning);
+
+          Navigator.of(context).pop(next);
         }
+      } else {
+        next = await CleaningRepository.get()
+            .done(widget.cleaning, tasks, products);
 
-        await SharedUtil.done(widget.cleaning, tasks, products);
+        await notification.cancel(widget.cleaning);
+
+        Navigator.of(context).pop(next);
       }
-
-      Cleaning next =
-          await CleaningRepository.get().done(widget.cleaning, tasks, products);
-
-      Navigator.of(context).pop(next);
     } else {
       Navigator.of(context).pop();
     }
@@ -193,7 +208,7 @@ class _CleaningViewState extends State<CleaningView> {
     infos.add(drawRowInfo('Tempo Estimado:',
         '${MaterialLocalizations.of(context).formatTimeOfDay(widget.cleaning.estimatedTime, alwaysUse24HourFormat: true)}'));
     infos.add(drawRowInfo('Agendado:',
-        DateFormat('dd/MM/yyyy hh:mm').format(widget.cleaning.nextDate)));
+        DateFormat('dd/MM/yyyy HH:MM').format(widget.cleaning.nextDate)));
 
     Frequency frequency = widget.cleaning.frequency;
 
@@ -202,10 +217,10 @@ class _CleaningViewState extends State<CleaningView> {
 
     if (widget.cleaning.dueDate == null) {
       infos.add(drawRowInfo('Próxima faxina:',
-          DateFormat('dd/MM/yyyy hh:mm').format(widget.cleaning.futureDate())));
+          DateFormat('dd/MM/yyyy HH:MM').format(widget.cleaning.futureDate())));
     } else {
       infos.add(drawRowInfo('Realizada em: ',
-          DateFormat('dd/MM/yyyy hh:mm').format(widget.cleaning.dueDate)));
+          DateFormat('dd/MM/yyyy HH:MM').format(widget.cleaning.dueDate)));
     }
 
     return infos;
@@ -310,18 +325,18 @@ class _CleaningViewState extends State<CleaningView> {
                 color: Colors.white,
               ),
               subtitle: new Text(
-                item.task.guidelines.toLowerCase(),
+                item.task.guidelines,
                 style: TextStyle(
                     color: AppColors.SECONDARY, fontStyle: FontStyle.italic),
               ),
               title: new Text(
-                item.task.name.toUpperCase(),
+                item.task.name,
                 style: TextStyle(color: Colors.white, fontSize: 15),
               ),
               value: item.realized == 1,
               onChanged: widget.cleaning.dueDate == null
                   ? (bool value) {
-                      item.realized = value ? 1 : 0;
+                      setState(() => item.realized = value ? 1 : 0);
                     }
                   : null,
             )
@@ -331,12 +346,12 @@ class _CleaningViewState extends State<CleaningView> {
                 color: Colors.white,
               ),
               subtitle: new Text(
-                item.task.guidelines.toLowerCase(),
+                item.task.guidelines,
                 style: TextStyle(
                     color: AppColors.SECONDARY, fontStyle: FontStyle.italic),
               ),
               title: new Text(
-                item.task.name.toUpperCase(),
+                item.task.name,
                 style: TextStyle(color: Colors.white, fontSize: 15),
               ),
             ),
@@ -352,6 +367,7 @@ class _CleaningViewState extends State<CleaningView> {
       ),
       subtitle: mode == Mode.DONE
           ? Slider(
+              divisions: item.product.capacity.toInt(),
               onChanged: widget.cleaning.dueDate == null
                   ? (value) {
                       setState(() {
@@ -362,12 +378,13 @@ class _CleaningViewState extends State<CleaningView> {
               min: 0,
               activeColor: AppColors.SECONDARY,
               max: item.product.capacity,
-              label: '${item.amount.toDouble()}',
+              label:
+                  '${((item.amount / item.product.capacity) * 100).toInt()}%',
               value: item.amount.toDouble(),
             )
           : Container(),
       title: new Text(
-        item.product.name.toUpperCase(),
+        item.product.name,
         style: TextStyle(
           color: Colors.white,
           fontSize: 15,
@@ -377,7 +394,7 @@ class _CleaningViewState extends State<CleaningView> {
   }
 
   void show(String msg) {
-    Scaffold.of(context).showSnackBar(
+    key.currentState.showSnackBar(
       SnackBar(
         content: Text(
           msg,

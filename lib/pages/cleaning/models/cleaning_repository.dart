@@ -365,17 +365,20 @@ class CleaningRepository {
 
     products.forEach((product) => {});
 
-    //cria nova a limpeza
-    Cleaning newCleaning = Cleaning();
-    newCleaning.estimatedTime = cleaning.estimatedTime;
-    newCleaning.frequency = cleaning.frequency;
-    newCleaning.guidelines = cleaning.guidelines;
-    newCleaning.name = cleaning.name;
-    newCleaning.tasks = cleaning.tasks;
-    newCleaning.products = cleaning.products;
-    newCleaning.nextDate = cleaning.futureDate();
+    Cleaning newCleaning;
+    
+    if ( cleaning.type != CleaningType.IMPORTED ) {
+      newCleaning =  Cleaning();
+      newCleaning.estimatedTime = cleaning.estimatedTime;
+      newCleaning.frequency = cleaning.frequency;
+      newCleaning.guidelines = cleaning.guidelines;
+      newCleaning.name = cleaning.name;
+      newCleaning.tasks = cleaning.tasks;
+      newCleaning.products = cleaning.products;
+      newCleaning.nextDate = cleaning.futureDate();
 
-    await this.save(newCleaning);
+      await this.save(newCleaning); 
+    }
 
     return newCleaning;
   }
@@ -415,14 +418,5 @@ class CleaningRepository {
     );
 
     return data;
-
-    /*
-    return [
-      {'date': new DateTime(2017, 9, 19), 'value': 5},
-      {'date': new DateTime(2017, 9, 26), 'value': 25},
-      {'date': new DateTime(2017, 10, 3), 'value': 100},
-      {'date': new DateTime(2017, 10, 10), 'value': 75},
-    ];
-    */
   }
 }

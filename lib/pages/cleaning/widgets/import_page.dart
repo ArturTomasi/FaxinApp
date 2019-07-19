@@ -151,5 +151,7 @@ class _ImportPageState extends State<ImportPage> {
         ),
       ),
     );
+
+    Navigator.of(context).pop();
   }
 }

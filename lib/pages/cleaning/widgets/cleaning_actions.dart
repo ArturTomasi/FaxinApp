@@ -74,9 +74,16 @@ class _CleaningActionsState extends State<CleaningActions>
                   backgroundColor: Colors.white,
                   mini: true,
                   heroTag: 'done',
-                  onPressed: () {
+                  onPressed: () async {
                     if (widget.cleaning.type == CleaningType.SHARED) {
                       show('Faxina compartilhada não pode ser concluida!');
+                    } else if (widget.cleaning.type == CleaningType.IMPORTED) {
+                      if (await Connectivity().checkConnectivity() ==
+                          ConnectivityResult.none) {
+                        show("Verifica sua conexão");
+                      } else {
+                        widget.onDone();
+                      }
                     } else {
                       widget.onDone();
                     }
@@ -176,7 +183,10 @@ class _CleaningActionsState extends State<CleaningActions>
                   mini: true,
                   onPressed: () async {
                     try {
-                      if (await Connectivity().checkConnectivity() ==
+                      if ( widget.cleaning.type == CleaningType.IMPORTED )
+                      {
+                        show("Faxina importada não pode ser compartilhada");
+                      } else if (await Connectivity().checkConnectivity() ==
                           ConnectivityResult.none) {
                         show("Verifica sua conexão");
                       } else {
