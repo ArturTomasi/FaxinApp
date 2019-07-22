@@ -32,7 +32,7 @@ class SimpleLineChart extends StatelessWidget {
               renderSpec: new charts.GridlineRendererSpec(
                 lineStyle: charts.LineStyleSpec(dashPattern: [3]),
                 labelStyle: charts.TextStyleSpec(
-                  color: charts.Color.white,
+                  color: charts.ColorUtil.fromDartColor(AppColors.PRIMARY),
                 ),
                 axisLineStyle: charts.LineStyleSpec(
                   color: charts.ColorUtil.fromDartColor(AppColors.SECONDARY),
@@ -58,7 +58,7 @@ class SimpleLineChart extends StatelessWidget {
               charts.ChartTitle(
                 "Frequência de Faxinas",
                 titleStyleSpec: charts.TextStyleSpec(
-                  color: charts.Color.white,
+                  color: charts.ColorUtil.fromDartColor(AppColors.PRIMARY),
                 ),
               ),
             ],
@@ -70,7 +70,7 @@ class SimpleLineChart extends StatelessWidget {
               child: Text(
                 "Sem dados",
                 style: TextStyle(
-                  color: Colors.white,
+                  color: AppColors.PRIMARY,
                 ),
               ),
             ),

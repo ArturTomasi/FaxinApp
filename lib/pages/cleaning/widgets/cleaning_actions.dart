@@ -56,7 +56,7 @@ class _CleaningActionsState extends State<CleaningActions>
                   height: 30,
                   width: 60,
                   decoration: BoxDecoration(
-                    color: AppColors.PRIMARY,
+                    color: AppColors.SECONDARY,
                     borderRadius: BorderRadius.horizontal(
                       left: Radius.elliptical(10, 10),
                       right: Radius.elliptical(10, 10),
@@ -90,7 +90,7 @@ class _CleaningActionsState extends State<CleaningActions>
                   },
                   child: Icon(
                     Icons.done,
-                    color: Theme.of(context).primaryColor,
+                    color: AppColors.SECONDARY,
                   ),
                 ),
               ],
@@ -113,7 +113,7 @@ class _CleaningActionsState extends State<CleaningActions>
                   height: 30,
                   width: 60,
                   decoration: BoxDecoration(
-                    color: AppColors.PRIMARY,
+                    color: AppColors.SECONDARY,
                     borderRadius: BorderRadius.horizontal(
                       left: Radius.elliptical(10, 10),
                       right: Radius.elliptical(10, 10),
@@ -140,7 +140,7 @@ class _CleaningActionsState extends State<CleaningActions>
                   },
                   child: Icon(
                     Icons.edit,
-                    color: Theme.of(context).primaryColor,
+                    color: AppColors.SECONDARY,
                   ),
                 ),
               ],
@@ -163,7 +163,7 @@ class _CleaningActionsState extends State<CleaningActions>
                   height: 30,
                   width: 90,
                   decoration: BoxDecoration(
-                    color: AppColors.PRIMARY,
+                    color: AppColors.SECONDARY,
                     borderRadius: BorderRadius.horizontal(
                       left: Radius.elliptical(10, 10),
                       right: Radius.elliptical(10, 10),
@@ -183,8 +183,7 @@ class _CleaningActionsState extends State<CleaningActions>
                   mini: true,
                   onPressed: () async {
                     try {
-                      if ( widget.cleaning.type == CleaningType.IMPORTED )
-                      {
+                      if (widget.cleaning.type == CleaningType.IMPORTED) {
                         show("Faxina importada não pode ser compartilhada");
                       } else if (await Connectivity().checkConnectivity() ==
                           ConnectivityResult.none) {
@@ -205,13 +204,12 @@ class _CleaningActionsState extends State<CleaningActions>
                                     MediaQuery.of(context).size.width,
                                     MediaQuery.of(context).size.height),
                                 child: QrImage(
-                                  foregroundColor: AppColors.PRIMARY,
                                   backgroundColor: Colors.white,
                                   data: '${widget.cleaning.uuid}',
                                 ),
                               ),
                               RaisedButton(
-                                color: AppColors.PRIMARY,
+                                color: AppColors.SECONDARY,
                                 onPressed: () {
                                   Clipboard.setData(
                                     ClipboardData(
@@ -238,10 +236,7 @@ class _CleaningActionsState extends State<CleaningActions>
                       show(ex.toString());
                     }
                   },
-                  child: Icon(
-                    Icons.share,
-                    color: Theme.of(context).primaryColor,
-                  ),
+                  child: Icon(Icons.share, color: AppColors.SECONDARY),
                 ),
               ],
             ),

@@ -63,12 +63,12 @@ class Cleaning {
   String name = "";
   String uuid = Uuid().v4();
   String guidelines = "";
-  Frequency frequency;
+  Frequency frequency = Frequency.NONE;
   CleaningType type = CleaningType.COMMON;
   DateTime nextDate = DateTime.now(), dueDate;
   TimeOfDay estimatedTime = new TimeOfDay(hour: 1, minute: 0);
-  List<Product> products;
-  List<Task> tasks;
+  List<Product> products = [];
+  List<Task> tasks = [];
 
   Cleaning();
 

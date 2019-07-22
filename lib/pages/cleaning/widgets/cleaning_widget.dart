@@ -15,28 +15,33 @@ class CleaningWidget extends StatelessWidget {
     CleaningBloc _bloc = BlocProvider.of<CleaningBloc>(context);
 
     return Scaffold(
-        key: _scaffoldKey,
-        appBar: AppBar(
-          title: Text("Faxinas"),
-        ),
-        floatingActionButton: FloatingActionButton(
-            child: Icon(
-              Icons.add,
-              color: Colors.white,
-            ),
-            onPressed: () async {
-              var bloc = BlocProvider(
-                bloc: _bloc,
-                child: CleaningEditor(
-                  cleaning: Cleaning(),
-                ),
-              );
+      key: _scaffoldKey,
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text("Faxinas"),
+      ),
+      floatingActionButton: FloatingActionButton(
+          child: Icon(
+            Icons.add,
+            color: Colors.white,
+          ),
+          onPressed: () async {
+            var bloc = BlocProvider(
+              bloc: _bloc,
+              child: CleaningEditor(
+                cleaning: Cleaning(),
+              ),
+            );
 
-              await Navigator.of(context).push(new AnimateRoute(
-                  fullscreenDialog: true, builder: (c) => bloc));
+            await Navigator.of(context).push(
+                new AnimateRoute(fullscreenDialog: true, builder: (c) => bloc));
 
-              _bloc.refresh();
-            }),
-        body: BlocProvider(bloc: _bloc, child: CleaningList()));
+            _bloc.refresh();
+          }),
+      body: BlocProvider(
+        bloc: _bloc,
+        child: CleaningList(),
+      ),
+    );
   }
 }

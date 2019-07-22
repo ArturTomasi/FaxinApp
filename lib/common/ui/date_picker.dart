@@ -118,7 +118,7 @@ class _DatePickerState extends State<DatePicker> {
                                   : 'dd/mm/yyy',
                               textAlign: TextAlign.start,
                               style:
-                                  TextStyle(color: Colors.white, fontSize: 14),
+                                  TextStyle(fontSize: 14),
                             ))
                       ],
                     ),
@@ -139,7 +139,7 @@ class _DatePickerState extends State<DatePicker> {
                                   ? _timeString
                                   : 'hh:mm',
                               style:
-                                  TextStyle(color: Colors.white, fontSize: 14),
+                                  TextStyle(fontSize: 14),
                             )),
                       ],
                     ),
@@ -151,8 +151,8 @@ class _DatePickerState extends State<DatePicker> {
           padding: EdgeInsets.only(top: 10),
         ),
         Container(
-          color: AppColors.PRIMARY_DARK,
           width: double.infinity,
+          color:Colors.black45,
           height: 1,
         ),
         Padding(

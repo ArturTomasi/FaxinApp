@@ -31,7 +31,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: "Faxinapp",
+      title: "Meu Lar",
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -46,7 +46,7 @@ class _MyAppState extends State<MyApp> {
         highlightColor: AppColors.SECONDARY,
         accentColor: AppColors.SECONDARY,
         buttonTheme: ButtonThemeData(
-          buttonColor: AppColors.SECONDARY,
+          buttonColor: AppColors.PRIMARY_LIGHT,
           textTheme: ButtonTextTheme.accent,
         ),
         fontFamily: 'BreeSerif',
@@ -60,6 +60,20 @@ class _MyAppState extends State<MyApp> {
           disabledInactiveTrackColor: AppColors.PRIMARY,
           disabledThumbColor: AppColors.PRIMARY_DARK,
         ),
+        appBarTheme: AppBarTheme(
+            iconTheme: IconThemeData(
+              color: AppColors.PRIMARY_LIGHT,
+            ),
+            textTheme: TextTheme(
+              title: TextStyle(
+                fontSize: 28,
+                color: AppColors.PRIMARY_LIGHT,
+                fontFamily: 'BelovedTeacher',
+              ),
+            ),
+            actionsIconTheme: IconThemeData(
+              color: AppColors.PRIMARY_LIGHT,
+            )),
         primaryColor: AppColors.PRIMARY,
       ),
       home: widget.splash

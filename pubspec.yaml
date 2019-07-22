@@ -50,13 +50,13 @@ flutter:
   uses-material-design: true
   
   assets:
-    - assets/images/banner.jpg
-    - assets/images/banner1.jpg
-    - assets/images/banner2.jpg
-    - assets/images/logo.png
+    - assets/images/
     - secrets.json
 
   fonts:
     - family: BreeSerif
       fonts:
        - asset: assets/fonts/BreeSerif-Regular.ttf
+    - family: BelovedTeacher
+      fonts:
+       - asset: assets/fonts/BelovedTeacher.ttf

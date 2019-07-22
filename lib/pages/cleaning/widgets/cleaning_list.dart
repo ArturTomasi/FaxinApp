@@ -29,8 +29,11 @@ class CleaningList extends StatelessWidget {
           return CleaningListWidget(snapshot.data);
         } else {
           return Container(
-              color: AppColors.PRIMARY_LIGHT,
-              child: Center(child: CircularProgressIndicator()));
+            color: AppColors.PRIMARY_LIGHT,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
         }
       },
     );
@@ -47,70 +50,75 @@ class CleaningListWidget extends StatelessWidget {
     PushNotification notification = PushNotification(context);
 
     return Container(
-        color: AppColors.PRIMARY_LIGHT,
-        child: ListView.builder(
-            itemCount: _cleaning.length,
-            itemBuilder: (BuildContext context, int i) {
-              return Dismissible(
-                  key: ObjectKey(_cleaning[i]),
-                  direction: DismissDirection.endToStart,
-                  confirmDismiss: (d) {
-                    if (_cleaning[i].dueDate == null) {
-                      return Future.value(true);
-                    }
-                    Scaffold.of(context).showSnackBar(
-                      SnackBar(
-                        backgroundColor: AppColors.SECONDARY,
-                        content: Text(
-                          "Faxina concluida não pode ser excluida",
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
-                    );
-
-                    return Future.value(false);
-                  },
-                  onDismissed: (direction) async {
-                    if (direction == DismissDirection.endToStart) {
-                      CleaningBloc _bloc =
-                          BlocProvider.of<CleaningBloc>(context);
-                      await notification.cancel(_cleaning[i]);
-                      _bloc.delete(_cleaning[i]);
-                      _bloc.refresh();
-
-                      Scaffold.of(context).showSnackBar(
-                        SnackBar(
-                          backgroundColor: AppColors.SECONDARY,
-                          content: Text(
-                            "Faxina excluida com sucesso!",
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      );
-                    }
-                  },
-                  background: Container(
-                    color: Colors.red,
-                    child: ListTile(
-                        trailing: Icon(Icons.delete, color: Colors.white)),
+      color: AppColors.PRIMARY_LIGHT,
+      child: ListView.builder(
+        itemCount: _cleaning.length,
+        itemBuilder: (BuildContext context, int i) {
+          return Dismissible(
+            key: ObjectKey(_cleaning[i]),
+            direction: DismissDirection.endToStart,
+            confirmDismiss: (d) {
+              if (_cleaning[i].dueDate == null) {
+                return Future.value(true);
+              }
+              Scaffold.of(context).showSnackBar(
+                SnackBar(
+                  backgroundColor: AppColors.SECONDARY,
+                  content: Text(
+                    "Faxina concluida não pode ser excluida",
+                    style: TextStyle(fontSize: 16),
                   ),
-                  child: GestureDetector(
-                      onTap: () async {
-                        var provider = BlocProvider(
-                          bloc: BlocProvider.of<CleaningBloc>(context),
-                          child: CleaningView(
-                            cleaning: _cleaning[i],
-                          ),
-                        );
+                ),
+              );
 
-                        await Navigator.of(context).push(new AnimateRoute(
-                            fullscreenDialog: true, builder: (c) => provider));
-                      },
-                      child: item(
-                        context,
-                        _cleaning[i],
-                      )));
-            }));
+              return Future.value(false);
+            },
+            onDismissed: (direction) async {
+              if (direction == DismissDirection.endToStart) {
+                CleaningBloc _bloc = BlocProvider.of<CleaningBloc>(context);
+                await notification.cancel(_cleaning[i]);
+                _bloc.delete(_cleaning[i]);
+                _bloc.refresh();
+
+                Scaffold.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: AppColors.SECONDARY,
+                    content: Text(
+                      "Faxina excluida com sucesso!",
+                      style: TextStyle(
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                );
+              }
+            },
+            background: Container(
+              color: Colors.red,
+              child:
+                  ListTile(trailing: Icon(Icons.delete, color: Colors.white)),
+            ),
+            child: GestureDetector(
+              onTap: () async {
+                var provider = BlocProvider(
+                  bloc: BlocProvider.of<CleaningBloc>(context),
+                  child: CleaningView(
+                    cleaning: _cleaning[i],
+                  ),
+                );
+
+                await Navigator.of(context).push(new AnimateRoute(
+                    fullscreenDialog: true, builder: (c) => provider));
+              },
+              child: item(
+                context,
+                _cleaning[i],
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   Widget item(BuildContext context, Cleaning cleaning) {
@@ -135,11 +143,12 @@ class CleaningListWidget extends StatelessWidget {
                 Icon(
                   cleaning.dueDate == null ? Icons.access_time : Icons.done,
                   size: 40,
-                  color: AppColors.PRIMARY_DARK,
+                  color: AppColors.PRIMARY_LIGHT,
                 ),
                 Text(
                   '${cleaning.nextDate.day}/${DateFormat.MMM().format(cleaning.nextDate)}',
                   style: TextStyle(
+                    color: AppColors.PRIMARY_LIGHT,
                     fontSize: 20,
                   ),
                 ),
@@ -156,7 +165,6 @@ class CleaningListWidget extends StatelessWidget {
                 child: Text(
                   cleaning.name,
                   style: TextStyle(
-                    color: Colors.white,
                     fontSize: 22,
                   ),
                 ),
@@ -172,7 +180,6 @@ class CleaningListWidget extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   maxLines: 2,
                   style: TextStyle(
-                    color: Colors.white,
                     fontSize: 15,
                   ),
                 ),

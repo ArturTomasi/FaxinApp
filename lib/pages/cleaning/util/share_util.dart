@@ -82,14 +82,17 @@ class SharedUtil {
       headers: {'Content-Type': 'application/json'},
     );
 
-    if (res.statusCode == 200) {
-      if (res.body != null && res.body.isNotEmpty) {
-        Cleaning c = Cleaning.fromMap(json.decode(res.body));
-        c.type = CleaningType.IMPORTED;
+    try {
+      if (res.statusCode == 200) {
+        if (res.body != null && res.body.isNotEmpty && res.body != 'null') {
+          Cleaning c = Cleaning.fromMap(json.decode(res.body));
+          c.type = CleaningType.IMPORTED;
 
-        return c;
+          return c;
+        }
       }
-    }
+    } catch (e) {}
+    
     return null;
   }
 

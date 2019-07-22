@@ -44,71 +44,72 @@ class ProductListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        color: AppColors.PRIMARY_LIGHT,
-        child: ListView.builder(
-            itemCount: _products.length,
-            itemBuilder: (BuildContext context, int i) {
-              return Dismissible(
-                key: ObjectKey(_products[i]),
-                direction: DismissDirection.endToStart,
-                onDismissed: (direction) {
-                  if (direction == DismissDirection.endToStart) {
-                    ProductBloc _bloc = BlocProvider.of<ProductBloc>(context);
-                    _bloc.delete(_products[i]);
-                    _bloc.refresh();
+      color: AppColors.PRIMARY_LIGHT,
+      child: ListView.builder(
+        itemCount: _products.length,
+        itemBuilder: (BuildContext context, int i) {
+          return Dismissible(
+            key: ObjectKey(_products[i]),
+            direction: DismissDirection.endToStart,
+            onDismissed: (direction) {
+              if (direction == DismissDirection.endToStart) {
+                ProductBloc _bloc = BlocProvider.of<ProductBloc>(context);
+                _bloc.delete(_products[i]);
+                _bloc.refresh();
 
-                    Scaffold.of(context).showSnackBar(SnackBar(
-                        backgroundColor: AppColors.SECONDARY,
-                        content: Text(
-                          "Produto excluida com sucesso!",
-                          style: TextStyle(fontSize: 16),
-                        )));
-                  }
-                },
-                background: Container(
-                  color: Colors.red,
-                  child: ListTile(
-                      trailing: Icon(Icons.delete, color: Colors.white)),
-                ),
-                child: ListTile(
-                  onTap: () async {
-                    await Navigator.of(context).push(
-                      AnimateRoute(
-                        fullscreenDialog: true,
-                        builder: (c) => ProductEditor(
-                              product: _products[i],
-                            ),
-                      ),
-                    );
-                    BlocProvider.of<ProductBloc>(context).refresh();
-                  },
-                  leading: new Icon(
-                    Icons.shopping_cart,
-                    color: Colors.white,
-                  ),
-                  trailing: Chip(
-                      backgroundColor: AppColors.SECONDARY,
-                      label: Text(
-                        '${((_products[i].currentCapacity / _products[i].capacity) * 100).round()}%',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      )),
-                  subtitle: new Text(
-                    _products[i].branding,
-                    style: TextStyle(
-                        color: AppColors.SECONDARY,
-                        fontStyle: FontStyle.italic),
-                  ),
-                  title: new Text(
-                    _products[i].name,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
+                Scaffold.of(context).showSnackBar(SnackBar(
+                    backgroundColor: AppColors.SECONDARY,
+                    content: Text(
+                      "Produto excluida com sucesso!",
+                      style: TextStyle(fontSize: 16),
+                    )));
+              }
+            },
+            background: Container(
+              color: Colors.red,
+              child:
+                  ListTile(trailing: Icon(Icons.delete, color: Colors.white)),
+            ),
+            child: ListTile(
+              onTap: () async {
+                await Navigator.of(context).push(
+                  AnimateRoute(
+                    fullscreenDialog: true,
+                    builder: (c) => ProductEditor(
+                      product: _products[i],
                     ),
                   ),
+                );
+                BlocProvider.of<ProductBloc>(context).refresh();
+              },
+              leading: new Icon(
+                Icons.shopping_cart,
+                color: AppColors.SECONDARY,
+              ),
+              trailing: Chip(
+                  backgroundColor: AppColors.SECONDARY,
+                  label: Text(
+                    '${((_products[i].currentCapacity / _products[i].capacity) * 100).round()}%',
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                  )),
+              subtitle: new Text(
+                _products[i].branding,
+                style: TextStyle(
+                  fontStyle: FontStyle.italic,
                 ),
-              );
-            }));
+              ),
+              title: new Text(
+                _products[i].name,
+                style: TextStyle(
+                  fontSize: 20,
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 }

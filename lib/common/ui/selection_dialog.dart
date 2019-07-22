@@ -57,12 +57,18 @@ class _SelectionDialogState<T> extends State<SelectionDialog<T>> {
       children: <Widget>[
         TextField(
           decoration: InputDecoration(
-              prefixIcon: Icon(Icons.search, color: AppColors.SECONDARY),
-              labelText: "Procurar",
-              border: OutlineInputBorder(
-                  borderSide: BorderSide(width: 5, color: AppColors.SECONDARY)),
-              labelStyle: TextStyle(color: AppColors.SECONDARY)),
-          style: TextStyle(color: Colors.white),
+            prefixIcon: Icon(Icons.search, color: AppColors.PRIMARY),
+            labelText: "Procurar",
+            border: OutlineInputBorder(
+              borderSide: BorderSide(
+                width: 5,
+                color: AppColors.PRIMARY,
+              ),
+            ),
+            labelStyle: TextStyle(
+              color: AppColors.PRIMARY,
+            ),
+          ),
           onChanged: _filterElements,
         ),
       ],
@@ -74,18 +80,22 @@ class _SelectionDialogState<T> extends State<SelectionDialog<T>> {
       return [widget.emptyWidget.widget()];
     } else {
       return filteredElements
-          .map((e) => GestureDetector(
+          .map(
+            (e) => GestureDetector(
               onLongPress: () {
-                setState(() {
-                  multiSelected = ! widget.singleSelected;
-                  selecteds.add(e);
-                });
+                setState(
+                  () {
+                    multiSelected = !widget.singleSelected;
+                    selecteds.add(e);
+                  },
+                );
               },
               child: SimpleDialogOption(
-                  child: widget.renderer.renderer(e, selecteds.contains(e)),
-                  onPressed: () {
-                    setState(() {
-                      if ( ! widget.singleSelected &&  multiSelected) {
+                child: widget.renderer.renderer(e, selecteds.contains(e)),
+                onPressed: () {
+                  setState(
+                    () {
+                      if (!widget.singleSelected && multiSelected) {
                         if (!selecteds.contains(e)) {
                           selecteds.add(e);
                         } else {
@@ -94,8 +104,12 @@ class _SelectionDialogState<T> extends State<SelectionDialog<T>> {
                       } else {
                         _selectItem(e);
                       }
-                    });
-                  })))
+                    },
+                  );
+                },
+              ),
+            ),
+          )
           .toList();
     }
   }
@@ -114,7 +128,7 @@ class _SelectionDialogState<T> extends State<SelectionDialog<T>> {
       child: Text("Cancelar", style: TextStyle(fontSize: 14)),
     ));
 
-    if ( ! widget.singleSelected && multiSelected) {
+    if (!widget.singleSelected && multiSelected) {
       buttons.add(RaisedButton(
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(10))),
@@ -167,9 +181,17 @@ abstract class ItemRenderer<T> {
 }
 
 class EmptyWidget {
-  Widget widget() => Center(
+  Widget widget() => Container(
+        padding: EdgeInsets.symmetric(
+          vertical: 25,
+        ),
+        child: Center(
           child: Text(
-        'Sem elementos para selecionar',
-        style: TextStyle(color: AppColors.SECONDARY),
-      ));
+            'Sem elementos para selecionar',
+            style: TextStyle(
+              color: AppColors.PRIMARY,
+            ),
+          ),
+        ),
+      );
 }

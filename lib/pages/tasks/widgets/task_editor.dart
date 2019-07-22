@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 class TaskEditor extends StatefulWidget {
   final Task task;
-  TaskEditor( {@required this.task} );
+  TaskEditor({@required this.task});
   @override
   _TaskEditorState createState() => _TaskEditorState();
 }
@@ -15,14 +15,12 @@ class _TaskEditorState extends State<TaskEditor> {
 
   @override
   Widget build(BuildContext context) {
-    final Task task = widget.task ;
+    final Task task = widget.task;
 
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          iconTheme: new IconThemeData(color: AppColors.SECONDARY),
-          title: Text("Tarefa",
-              style: TextStyle(color: AppColors.SECONDARY, fontSize: 22)),
+          title: Text("Tarefa"),
           actions: <Widget>[
             FlatButton(
               onPressed: () async {
@@ -33,8 +31,10 @@ class _TaskEditorState extends State<TaskEditor> {
                   Navigator.pop(context);
                 }
               },
-              child:
-                  Text("SALVAR", style: TextStyle(color: AppColors.SECONDARY)),
+              child: Text("SALVAR",
+                  style: TextStyle(
+                    color: AppColors.PRIMARY_LIGHT,
+                  )),
             )
           ],
         ),
@@ -58,7 +58,6 @@ class _TaskEditorState extends State<TaskEditor> {
                           maxLength: 80,
                           autofocus: true,
                           initialValue: task.name,
-                          style: TextStyle(color: Colors.white),
                           validator: (value) {
                             return value.isEmpty ? "Requerido *" : null;
                           },
@@ -77,7 +76,6 @@ class _TaskEditorState extends State<TaskEditor> {
                           maxLines: 8,
                           initialValue: task.guidelines,
                           maxLength: 4000,
-                          style: TextStyle(color: Colors.white),
                           onSaved: (value) {
                             task.guidelines = value;
                           },

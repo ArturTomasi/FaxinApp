@@ -90,113 +90,117 @@ class CleaningTimelineWidget extends StatelessWidget {
       },
       child: OrientationBuilder(
         builder: (context, i) => Row(
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.all(5),
-                  margin: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    boxShadow: [
-                      new BoxShadow(
-                          color: AppColors.PRIMARY_DARK,
-                          blurRadius: 20.0,
-                          spreadRadius: 1)
-                    ],
-                    shape: BoxShape.circle,
-                    color: AppColors.SECONDARY,
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.all(5),
+              margin: EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                boxShadow: [
+                  new BoxShadow(
+                      color: AppColors.PRIMARY_DARK,
+                      blurRadius: 20.0,
+                      spreadRadius: 1)
+                ],
+                shape: BoxShape.circle,
+                color: AppColors.SECONDARY,
+              ),
+              width: 75,
+              height: 75,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Text(
+                    '${cleaning.nextDate.day}',
+                    style: TextStyle(
+                      fontSize: 30,
+                      color: AppColors.PRIMARY_LIGHT,
+                    ),
                   ),
-                  width: 75,
-                  height: 75,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        '${cleaning.nextDate.day}',
-                        style: TextStyle(
-                          fontSize: 30,
-                        ),
-                      ),
-                      Container(
-                        height: 1,
-                        color: AppColors.PRIMARY_DARK,
-                        width: 30,
-                      ),
-                      Text(
-                        DateFormat.MMM().format(cleaning.nextDate),
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ],
+                  Container(
+                    height: 2,
+                    color: AppColors.PRIMARY_LIGHT,
+                    width: 30,
                   ),
-                ),
-                Card(
-                  borderOnForeground: false,
-                  clipBehavior: Clip.antiAlias,
-                  elevation: 9,
-                  semanticContainer: false,
-                  margin: EdgeInsets.symmetric(
-                    vertical: 16.0,
+                  Text(
+                    DateFormat.MMM().format(cleaning.nextDate),
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: AppColors.PRIMARY_LIGHT,
+                    ),
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width - 120,
-                    child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Align(
-                              heightFactor: 0,
-                              alignment: Alignment.topRight,
-                              child: cleaning.type == CleaningType.COMMON
-                                  ? Container()
-                                  : Icon(
-                                      cleaning.type == CleaningType.IMPORTED
-                                          ? Icons.cloud_download
-                                          : Icons.share,
-                                      color: AppColors.PRIMARY,
-                                      size: 18,
-                                    ),
-                            ),
-                            Text(
-                              cleaning.name,
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                color: AppColors.PRIMARY_DARK,
-                                fontSize: 22,
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 8.0,
-                            ),
-                            Text(
-                              cleaning.guidelines,
-                              maxLines: 2,
-                              textAlign: TextAlign.left,
-                            ),
-                            const SizedBox(
-                              height: 8.0,
-                            ),
-                            SizedBox(
-                              width: MediaQuery.of(context).size.width - 120,
-                              child: Text(
-                                deadline(cleaning),
-                                textAlign: TextAlign.right,
-                                style: TextStyle(
-                                  color: color(cleaning),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(
-                              height: 4.0,
-                            ),
-                          ],
-                        )),
-                  ),
-                )
-              ],
+                ],
+              ),
             ),
+            Card(
+              borderOnForeground: false,
+              clipBehavior: Clip.antiAlias,
+              elevation: 9,
+              semanticContainer: false,
+              color: AppColors.PRIMARY_DARK,
+              margin: EdgeInsets.symmetric(
+                vertical: 16.0,
+              ),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width - 120,
+                child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Align(
+                          heightFactor: 0,
+                          alignment: Alignment.topRight,
+                          child: cleaning.type == CleaningType.COMMON
+                              ? Container()
+                              : Icon(
+                                  cleaning.type == CleaningType.IMPORTED
+                                      ? Icons.cloud_download
+                                      : Icons.share,
+                                  color: AppColors.PRIMARY,
+                                  size: 18,
+                                ),
+                        ),
+                        Text(
+                          cleaning.name,
+                          textAlign: TextAlign.left,
+                          style: TextStyle(
+                            fontSize: 22,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 8.0,
+                        ),
+                        Text(
+                          cleaning.guidelines,
+                          maxLines: 2,
+                          textAlign: TextAlign.left,
+                        ),
+                        const SizedBox(
+                          height: 8.0,
+                        ),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width - 120,
+                          child: Text(
+                            deadline(cleaning),
+                            textAlign: TextAlign.right,
+                            style: TextStyle(
+                              color: color(cleaning),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 4.0,
+                        ),
+                      ],
+                    )),
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -223,7 +227,7 @@ class CleaningTimelineWidget extends StatelessWidget {
     } else if (duration.inDays < 0) {
       return Colors.red;
     } else {
-      return AppColors.SECONDARY;
+      return Colors.yellow.shade700;
     }
   }
 }

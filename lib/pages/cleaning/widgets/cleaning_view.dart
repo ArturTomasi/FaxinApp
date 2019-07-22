@@ -78,13 +78,8 @@ class _CleaningViewState extends State<CleaningView> {
       key: key,
       appBar: AppBar(
         centerTitle: true,
-        iconTheme: new IconThemeData(color: AppColors.SECONDARY),
         title: Text(
           "Faxina",
-          style: TextStyle(
-            color: AppColors.SECONDARY,
-            fontSize: 22,
-          ),
         ),
       ),
       floatingActionButton: mode == Mode.VIEW
@@ -97,7 +92,6 @@ class _CleaningViewState extends State<CleaningView> {
                     cleaning: widget.cleaning,
                   ),
                 );
-
                 await Navigator.of(context).push(new AnimateRoute(
                     fullscreenDialog: true, builder: (c) => provider));
 
@@ -216,8 +210,14 @@ class _CleaningViewState extends State<CleaningView> {
         'Frequência:', frequency != null ? frequency.label : "n/d"));
 
     if (widget.cleaning.dueDate == null) {
-      infos.add(drawRowInfo('Próxima faxina:',
-          DateFormat('dd/MM/yyyy HH:MM').format(widget.cleaning.futureDate())));
+      if (widget.cleaning.frequency != Frequency.NONE) {
+        infos.add(
+          drawRowInfo(
+            'Próxima faxina:',
+            DateFormat('dd/MM/yyyy HH:MM').format(widget.cleaning.futureDate()),
+          ),
+        );
+      }
     } else {
       infos.add(drawRowInfo('Realizada em: ',
           DateFormat('dd/MM/yyyy HH:MM').format(widget.cleaning.dueDate)));
@@ -237,7 +237,7 @@ class _CleaningViewState extends State<CleaningView> {
               key,
               style: TextStyle(
                 fontSize: 15,
-                color: AppColors.SECONDARY,
+                color: AppColors.PRIMARY,
                 fontStyle: FontStyle.normal,
                 decoration: TextDecoration.none,
               ),
@@ -251,7 +251,6 @@ class _CleaningViewState extends State<CleaningView> {
             value,
             style: TextStyle(
               fontSize: 15,
-              color: Colors.white,
               fontStyle: FontStyle.normal,
               decoration: TextDecoration.none,
             ),
@@ -270,23 +269,22 @@ class _CleaningViewState extends State<CleaningView> {
           widget.cleaning.name,
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: Colors.white,
             fontSize: 30,
           ),
         ),
       ),
       Padding(
-          padding: EdgeInsets.only(bottom: 30, left: 20, right: 20),
-          child: Text(
-            widget.cleaning.guidelines,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.justify,
-            maxLines: 8,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 15,
-            ),
-          ))
+        padding: EdgeInsets.only(bottom: 30, left: 20, right: 20),
+        child: Text(
+          widget.cleaning.guidelines,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.justify,
+          maxLines: 8,
+          style: TextStyle(
+            fontSize: 15,
+          ),
+        ),
+      )
     ];
   }
 
@@ -306,7 +304,6 @@ class _CleaningViewState extends State<CleaningView> {
           value,
           style: TextStyle(
             fontSize: 20,
-            color: AppColors.SECONDARY,
             fontStyle: FontStyle.normal,
             decoration: TextDecoration.none,
           ),
@@ -322,16 +319,21 @@ class _CleaningViewState extends State<CleaningView> {
           ? SwitchListTile(
               secondary: new Icon(
                 Icons.fitness_center,
-                color: Colors.white,
+                color: AppColors.SECONDARY,
               ),
               subtitle: new Text(
                 item.task.guidelines,
                 style: TextStyle(
-                    color: AppColors.SECONDARY, fontStyle: FontStyle.italic),
+                  color: AppColors.SECONDARY,
+                  fontStyle: FontStyle.italic,
+                ),
               ),
               title: new Text(
                 item.task.name,
-                style: TextStyle(color: Colors.white, fontSize: 15),
+                style: TextStyle(
+                  color: AppColors.SECONDARY,
+                  fontSize: 15,
+                ),
               ),
               value: item.realized == 1,
               onChanged: widget.cleaning.dueDate == null
@@ -343,16 +345,20 @@ class _CleaningViewState extends State<CleaningView> {
           : ListTile(
               leading: new Icon(
                 Icons.fitness_center,
-                color: Colors.white,
+                color: AppColors.SECONDARY,
               ),
               subtitle: new Text(
                 item.task.guidelines,
                 style: TextStyle(
-                    color: AppColors.SECONDARY, fontStyle: FontStyle.italic),
+                  fontStyle: FontStyle.italic,
+                ),
               ),
               title: new Text(
                 item.task.name,
-                style: TextStyle(color: Colors.white, fontSize: 15),
+                style: TextStyle(
+                  color: AppColors.PRIMARY,
+                  fontSize: 15,
+                ),
               ),
             ),
       width: 150,
@@ -363,16 +369,18 @@ class _CleaningViewState extends State<CleaningView> {
     return ListTile(
       leading: new Icon(
         Icons.shopping_cart,
-        color: Colors.white,
+        color: AppColors.SECONDARY,
       ),
       subtitle: mode == Mode.DONE
           ? Slider(
               divisions: item.product.capacity.toInt(),
               onChanged: widget.cleaning.dueDate == null
                   ? (value) {
-                      setState(() {
-                        item.amount = value.toInt();
-                      });
+                      setState(
+                        () {
+                          item.amount = value.toInt();
+                        },
+                      );
                     }
                   : null,
               min: 0,
@@ -386,7 +394,7 @@ class _CleaningViewState extends State<CleaningView> {
       title: new Text(
         item.product.name,
         style: TextStyle(
-          color: Colors.white,
+          color: AppColors.PRIMARY,
           fontSize: 15,
         ),
       ),

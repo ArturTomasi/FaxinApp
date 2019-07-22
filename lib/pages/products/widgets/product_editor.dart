@@ -22,9 +22,7 @@ class _ProductEditorState extends State<ProductEditor> {
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          iconTheme: new IconThemeData(color: AppColors.SECONDARY),
-          title: Text("Produtos",
-              style: TextStyle(color: AppColors.SECONDARY, fontSize: 22)),
+          title: Text("Produtos"),
           actions: <Widget>[
             FlatButton(
               onPressed: () async {
@@ -36,8 +34,10 @@ class _ProductEditorState extends State<ProductEditor> {
                   Navigator.pop(context);
                 }
               },
-              child:
-                  Text("SALVAR", style: TextStyle(color: AppColors.SECONDARY)),
+              child: Text("SALVAR",
+                  style: TextStyle(
+                    color: AppColors.PRIMARY_LIGHT,
+                  )),
             )
           ],
         ),
@@ -61,7 +61,6 @@ class _ProductEditorState extends State<ProductEditor> {
                           maxLength: 80,
                           autofocus: true,
                           initialValue: product.name,
-                          style: TextStyle(color: Colors.white),
                           validator: (value) {
                             return value.isEmpty ? "Requerido *" : null;
                           },
@@ -78,7 +77,6 @@ class _ProductEditorState extends State<ProductEditor> {
                               errorBorder: InputBorder.none),
                           maxLength: 80,
                           initialValue: product.branding,
-                          style: TextStyle(color: Colors.white),
                           validator: (value) {
                             return value.isEmpty ? "Requerido" : null;
                           },
@@ -93,7 +91,6 @@ class _ProductEditorState extends State<ProductEditor> {
                                   TextStyle(color: AppColors.SECONDARY),
                               labelStyle: TextStyle(color: AppColors.SECONDARY),
                               errorBorder: InputBorder.none),
-                          style: TextStyle(color: Colors.white),
                           initialValue: product.capacity > 0
                               ? product.capacity.toString()
                               : '',

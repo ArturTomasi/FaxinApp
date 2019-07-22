@@ -63,74 +63,74 @@ class ProductListEmptyWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        color: AppColors.PRIMARY_LIGHT,
-        child: ListView.builder(
-            itemCount: _products.length,
-            itemBuilder: (BuildContext context, int i) {
-              return Dismissible(
-                key: ObjectKey(_products[i]),
-                direction: DismissDirection.endToStart,
-                onDismissed: (direction) {
-                  if (direction == DismissDirection.endToStart) {
-                    ProductBloc _bloc = BlocProvider.of<ProductBloc>(context);
-                    _bloc.fill(_products[i]);
-                    _bloc.getEmpty();
+      color: AppColors.PRIMARY_LIGHT,
+      child: ListView.builder(
+        itemCount: _products.length,
+        itemBuilder: (BuildContext context, int i) {
+          return Dismissible(
+            key: ObjectKey(_products[i]),
+            direction: DismissDirection.endToStart,
+            onDismissed: (direction) {
+              if (direction == DismissDirection.endToStart) {
+                ProductBloc _bloc = BlocProvider.of<ProductBloc>(context);
+                _bloc.fill(_products[i]);
+                _bloc.getEmpty();
 
-                    Scaffold.of(context).showSnackBar(
-                      SnackBar(
-                        backgroundColor: AppColors.SECONDARY,
-                        content: Text(
-                          "Produto reposto com sucesso!",
-                          style: TextStyle(
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-                },
-                background: Container(
-                  color: Colors.lightGreen,
-                  child: ListTile(
-                    trailing: Text(
-                      "Repor produto",
-                      textAlign: TextAlign.center,
+                Scaffold.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: AppColors.SECONDARY,
+                    content: Text(
+                      "Produto reposto com sucesso!",
                       style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
                       ),
                     ),
                   ),
-                ),
-                child: ListTile(
-                  leading: new Icon(
-                    Icons.shopping_cart,
+                );
+              }
+            },
+            background: Container(
+              color: Colors.lightGreen,
+              child: ListTile(
+                trailing: Text(
+                  "Repor produto",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
                     color: Colors.white,
-                  ),
-                  trailing: Chip(
-                      backgroundColor: AppColors.SECONDARY,
-                      label: Text(
-                        '${((_products[i].currentCapacity / _products[i].capacity) * 100).round()}%',
-                        style: TextStyle(
-                          color: Colors.white,
-                        ),
-                      )),
-                  subtitle: new Text(
-                    _products[i].branding,
-                    style: TextStyle(
-                        color: AppColors.SECONDARY,
-                        fontStyle: FontStyle.italic),
-                  ),
-                  title: new Text(
-                    _products[i].name,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                    ),
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              );
-            }));
+              ),
+            ),
+            child: ListTile(
+              leading: new Icon(
+                Icons.shopping_cart,
+                color: AppColors.SECONDARY,
+              ),
+              trailing: Chip(
+                backgroundColor: AppColors.SECONDARY,
+                label: Text(
+                  '${((_products[i].currentCapacity / _products[i].capacity) * 100).round()}%',
+                  style: TextStyle(),
+                ),
+              ),
+              subtitle: new Text(
+                _products[i].branding,
+                style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+              title: new Text(
+                _products[i].name,
+                style: TextStyle(
+                  fontSize: 20,
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 }

@@ -26,10 +26,12 @@ class SimpleBarChart extends StatelessWidget {
                   return x;
                 },
                 measureFn: (p, _) => p['value'],
-                outsideLabelStyleAccessorFn: (_, __) =>
-                    charts.TextStyleSpec(color: charts.Color.white),
-                insideLabelStyleAccessorFn: (_, __) =>
-                    charts.TextStyleSpec(color: charts.Color.white),
+                outsideLabelStyleAccessorFn: (_, __) => charts.TextStyleSpec(
+                  color: charts.ColorUtil.fromDartColor(AppColors.PRIMARY),
+                ),
+                insideLabelStyleAccessorFn: (_, __) => charts.TextStyleSpec(
+                  color: charts.ColorUtil.fromDartColor(AppColors.PRIMARY),
+                ),
                 data: data.data,
               )
             ],
@@ -41,7 +43,7 @@ class SimpleBarChart extends StatelessWidget {
               renderSpec: new charts.GridlineRendererSpec(
                 lineStyle: charts.LineStyleSpec(dashPattern: [3]),
                 labelStyle: charts.TextStyleSpec(
-                  color: charts.Color.white,
+                  color: charts.ColorUtil.fromDartColor(AppColors.PRIMARY),
                 ),
                 axisLineStyle: charts.LineStyleSpec(
                   color: charts.ColorUtil.fromDartColor(AppColors.SECONDARY),
@@ -63,7 +65,7 @@ class SimpleBarChart extends StatelessWidget {
               charts.ChartTitle(
                 "Consumo de Produtos",
                 titleStyleSpec: charts.TextStyleSpec(
-                  color: charts.Color.white,
+                  color: charts.ColorUtil.fromDartColor(AppColors.PRIMARY),
                 ),
               ),
             ],

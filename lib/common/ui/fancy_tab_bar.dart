@@ -172,34 +172,40 @@ class FancyTabBarState extends State<FancyTabBar>
                         height: 90,
                         width: 90,
                         child: ClipRect(
-                            clipper: HalfClipper(),
-                            child: Container(
-                              child: Center(
-                                child: Container(
-                                    width: 70,
-                                    height: 70,
-                                    decoration: BoxDecoration(
-                                        color: AppColors.PRIMARY,
-                                        shape: BoxShape.circle,
-                                        boxShadow: [
-                                          BoxShadow(
-                                              color: AppColors.PRIMARY,
-                                              blurRadius: 8)
-                                        ])),
+                          clipper: HalfClipper(),
+                          child: Container(
+                            child: Center(
+                              child: Container(
+                                width: 70,
+                                height: 65,
+                                decoration: BoxDecoration(
+                                  color: AppColors.PRIMARY,
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppColors.PRIMARY,
+                                      blurRadius: 8,
+                                    )
+                                  ],
+                                ),
                               ),
-                            )),
+                            ),
+                          ),
+                        ),
                       ),
                       SizedBox(
                         height: 60,
                         width: 60,
                         child: Container(
                           decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: PURPLE,
-                              border: Border.all(
-                                  color: AppColors.PRIMARY,
-                                  width: 5,
-                                  style: BorderStyle.none)),
+                            shape: BoxShape.circle,
+                            color: PURPLE,
+                            border: Border.all(
+                              color: AppColors.PRIMARY,
+                              width: 5,
+                              style: BorderStyle.none,
+                            ),
+                          ),
                           child: Padding(
                             padding: const EdgeInsets.all(0.0),
                             child: Opacity(
@@ -207,6 +213,7 @@ class FancyTabBarState extends State<FancyTabBar>
                               child: Icon(
                                 activeIcon,
                                 color: Colors.white,
+                                size: 35,
                               ),
                             ),
                           ),
@@ -236,15 +243,10 @@ class FancyTabBarState extends State<FancyTabBar>
 
 class HalfClipper extends CustomClipper<Rect> {
   @override
-  Rect getClip(Size size) {
-    final rect = Rect.fromLTWH(0, 0, size.width, size.height / 2);
-    return rect;
-  }
+  Rect getClip(Size size) => Rect.fromLTWH(0, 0, size.width, size.height / 2);
 
   @override
-  bool shouldReclip(CustomClipper<Rect> oldClipper) {
-    return true;
-  }
+  bool shouldReclip(CustomClipper<Rect> oldClipper) => true;
 }
 
 class HalfPainter extends CustomPainter {
@@ -268,7 +270,5 @@ class HalfPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) {
-    return true;
-  }
+  bool shouldRepaint(CustomPainter oldDelegate) => true;
 }

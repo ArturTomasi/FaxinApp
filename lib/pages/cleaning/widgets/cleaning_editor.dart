@@ -57,15 +57,20 @@ class _CleaningEditorState extends State<CleaningEditor> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        iconTheme: new IconThemeData(color: AppColors.SECONDARY),
-        title: Text(cleaning.id != null ? "Editar Faxina" : "Nova Faxina",
-            style: TextStyle(color: AppColors.SECONDARY, fontSize: 22)),
+        title: Text(
+          cleaning.id != null ? "Editar Faxina" : "Nova Faxina",
+        ),
         actions: <Widget>[
           FlatButton(
             onPressed: () async {
               save(cleaning);
             },
-            child: Text("SALVAR", style: TextStyle(color: AppColors.SECONDARY)),
+            child: Text(
+              "SALVAR",
+              style: TextStyle(
+                color: AppColors.PRIMARY_LIGHT,
+              ),
+            ),
           )
         ],
       ),
@@ -88,7 +93,6 @@ class _CleaningEditorState extends State<CleaningEditor> {
                   maxLength: 80,
                   autofocus: true,
                   controller: _nameTextController,
-                  style: TextStyle(color: Colors.white),
                   validator: (value) {
                     return value.isEmpty ? "Requerido *" : null;
                   },
@@ -103,7 +107,6 @@ class _CleaningEditorState extends State<CleaningEditor> {
                   maxLines: 8,
                   controller: _guidelinesTextController,
                   maxLength: 4000,
-                  style: TextStyle(color: Colors.white),
                   onSaved: (value) {
                     cleaning.guidelines = value;
                   },
@@ -222,12 +225,21 @@ class FrequencySelector implements ItemRenderer<Frequency> {
   @override
   Widget renderer(Frequency p, bool sel) {
     return Container(
-        alignment: Alignment(-0.8, 0),
-        height: 50,
-        color: !sel ? AppColors.PRIMARY_LIGHT : AppColors.PRIMARY,
-        child: Text(p.label,
-            textAlign: TextAlign.left,
-            style: TextStyle(color: Colors.white, fontSize: 20)));
+      padding: EdgeInsets.symmetric(
+        horizontal: 15,
+        vertical: 10,
+      ),
+      alignment: Alignment.centerLeft,
+      color: !sel ? AppColors.PRIMARY_LIGHT : AppColors.PRIMARY,
+      child: Text(
+        p.label,
+        textAlign: TextAlign.justify,
+        style: TextStyle(
+          color: !sel ? AppColors.PRIMARY : AppColors.PRIMARY_LIGHT,
+          fontSize: 20,
+        ),
+      ),
+    );
   }
 }
 
@@ -235,12 +247,21 @@ class ProductSelector implements ItemRenderer<Product> {
   @override
   Widget renderer(Product p, bool sel) {
     return Container(
-        alignment: Alignment(-0.8, 0),
-        height: 50,
-        color: !sel ? AppColors.PRIMARY_LIGHT : AppColors.PRIMARY,
-        child: Text(p.name,
-            textAlign: TextAlign.left,
-            style: TextStyle(color: Colors.white, fontSize: 20)));
+      padding: EdgeInsets.symmetric(
+        horizontal: 15,
+        vertical: 10,
+      ),
+      alignment: Alignment.centerLeft,
+      color: !sel ? AppColors.PRIMARY_LIGHT : AppColors.PRIMARY,
+      child: Text(
+        p.name,
+        textAlign: TextAlign.justify,
+        style: TextStyle(
+          color: !sel ? AppColors.PRIMARY : AppColors.PRIMARY_LIGHT,
+          fontSize: 20,
+        ),
+      ),
+    );
   }
 }
 
@@ -248,11 +269,20 @@ class TaskSelector implements ItemRenderer<Task> {
   @override
   Widget renderer(Task p, bool sel) {
     return Container(
-        alignment: Alignment(-0.8, 0),
-        height: 50,
-        color: !sel ? AppColors.PRIMARY_LIGHT : AppColors.PRIMARY,
-        child: Text(p.name,
-            textAlign: TextAlign.left,
-            style: TextStyle(color: Colors.white, fontSize: 20)));
+      padding: EdgeInsets.symmetric(
+        horizontal: 15,
+        vertical: 10,
+      ),
+      alignment: Alignment.centerLeft,
+      color: !sel ? AppColors.PRIMARY_LIGHT : AppColors.PRIMARY,
+      child: Text(
+        p.name,
+        textAlign: TextAlign.justify,
+        style: TextStyle(
+          color: !sel ? AppColors.PRIMARY : AppColors.PRIMARY_LIGHT,
+          fontSize: 20,
+        ),
+      ),
+    );
   }
 }

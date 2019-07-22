@@ -367,7 +367,7 @@ class CleaningRepository {
 
     Cleaning newCleaning;
     
-    if ( cleaning.type != CleaningType.IMPORTED ) {
+    if ( cleaning.type != CleaningType.IMPORTED && cleaning.frequency != Frequency.NONE ) {
       newCleaning =  Cleaning();
       newCleaning.estimatedTime = cleaning.estimatedTime;
       newCleaning.frequency = cleaning.frequency;

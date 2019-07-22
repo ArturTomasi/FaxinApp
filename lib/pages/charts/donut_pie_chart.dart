@@ -31,11 +31,11 @@ class DonutPieChart extends StatelessWidget {
                 colorFn: (s, i) {
                   switch (s['type']) {
                     case 0:
-                      return charts.Color.fromHex(code: "#ffe83b");
+                      return charts.Color.fromHex(code: "#a8f0db");
                     case 1:
-                      return charts.Color.fromHex(code: "#fdc107");
+                      return charts.Color.fromHex(code: "#77bda9");
                     case 2:
-                      return charts.Color.fromHex(code: "#f69704");
+                      return charts.Color.fromHex(code: "#478d7a");
                     default:
                       return charts.Color.white;
                   }
@@ -53,20 +53,22 @@ class DonutPieChart extends StatelessWidget {
               arcWidth: 40,
               arcRendererDecorators: [
                 new charts.ArcLabelDecorator(
-                    labelPosition: charts.ArcLabelPosition.outside,
-                    outsideLabelStyleSpec: charts.TextStyleSpec(
-                        color: charts.Color.white,
-                        fontFamily: '',
-                        fontSize: 12),
-                    labelPadding: 0,
-                    showLeaderLines: false)
+                  labelPosition: charts.ArcLabelPosition.outside,
+                  outsideLabelStyleSpec: charts.TextStyleSpec(
+                    color: charts.ColorUtil.fromDartColor(AppColors.PRIMARY),
+                    fontFamily: '',
+                    fontSize: 12,
+                  ),
+                  labelPadding: 0,
+                  showLeaderLines: false,
+                ),
               ],
             ),
             behaviors: [
               charts.ChartTitle(
                 "Tipos de Faxina",
                 titleStyleSpec: charts.TextStyleSpec(
-                  color: charts.Color.white,
+                  color: charts.ColorUtil.fromDartColor(AppColors.PRIMARY),
                 ),
               ),
             ],
@@ -78,7 +80,7 @@ class DonutPieChart extends StatelessWidget {
               child: Text(
                 "Sem dados",
                 style: TextStyle(
-                  color: Colors.white,
+                  color: AppColors.PRIMARY,
                 ),
               ),
             ),

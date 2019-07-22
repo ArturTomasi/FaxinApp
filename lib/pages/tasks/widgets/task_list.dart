@@ -20,15 +20,22 @@ class TaskList extends StatelessWidget {
             return Container(
               color: AppColors.PRIMARY_LIGHT,
               child: Center(
-                  child: Icon(Icons.fitness_center,
-                      size: 100, color: AppColors.SECONDARY)),
+                child: Icon(
+                  Icons.fitness_center,
+                  size: 100,
+                  color: AppColors.SECONDARY,
+                ),
+              ),
             );
           }
           return TaskListWidget(snapshot.data);
         } else {
           return Container(
-              color: AppColors.PRIMARY_LIGHT,
-              child: Center(child: CircularProgressIndicator()));
+            color: AppColors.PRIMARY_LIGHT,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
         }
       },
     );
@@ -43,60 +50,64 @@ class TaskListWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        color: AppColors.PRIMARY_LIGHT,
-        child: ListView.builder(
-            itemCount: _tasks.length,
-            itemBuilder: (BuildContext context, int i) {
-              return Dismissible(
-                key: ObjectKey(_tasks[i]),
-                direction: DismissDirection.endToStart,
-                onDismissed: (direction) {
-                  if (direction == DismissDirection.endToStart) {
-                    TaskBloc _bloc = BlocProvider.of<TaskBloc>(context);
-                    _bloc.delete(_tasks[i]);
-                    _bloc.refresh();
+      color: AppColors.PRIMARY_LIGHT,
+      child: ListView.builder(
+        itemCount: _tasks.length,
+        itemBuilder: (BuildContext context, int i) {
+          return Dismissible(
+            key: ObjectKey(_tasks[i]),
+            direction: DismissDirection.endToStart,
+            onDismissed: (direction) {
+              if (direction == DismissDirection.endToStart) {
+                TaskBloc _bloc = BlocProvider.of<TaskBloc>(context);
+                _bloc.delete(_tasks[i]);
+                _bloc.refresh();
 
-                    Scaffold.of(context).showSnackBar(SnackBar(
-                        backgroundColor: AppColors.SECONDARY,
-                        content: Text(
-                          "Tarefa excluida com sucesso!",
-                          style: TextStyle(fontSize: 16),
-                        )));
-                  }
-                },
-                background: Container(
-                  color: Colors.red,
-                  child: ListTile(
-                      trailing: Icon(Icons.delete, color: Colors.white)),
+                Scaffold.of(context).showSnackBar(SnackBar(
+                    backgroundColor: AppColors.SECONDARY,
+                    content: Text(
+                      "Tarefa excluida com sucesso!",
+                      style: TextStyle(fontSize: 16),
+                    )));
+              }
+            },
+            background: Container(
+              color: Colors.red,
+              child:
+                  ListTile(trailing: Icon(Icons.delete, color: Colors.white)),
+            ),
+            child: ListTile(
+              onTap: () async {
+                await Navigator.of(context).push(
+                  new AnimateRoute(
+                    fullscreenDialog: true,
+                    builder: (c) => TaskEditor(
+                      task: _tasks[i],
+                    ),
+                  ),
+                );
+                BlocProvider.of<TaskBloc>(context).refresh();
+              },
+              leading: new Icon(
+                Icons.fitness_center,
+                color: AppColors.SECONDARY,
+              ),
+              subtitle: new Text(
+                _tasks[i].guidelines,
+                style: TextStyle(
+                  fontStyle: FontStyle.italic,
                 ),
-                child: ListTile(
-                  onTap: () async {
-                    await Navigator.of(context).push(
-                      new AnimateRoute(
-                        fullscreenDialog: true,
-                        builder: (c) => TaskEditor(
-                              task: _tasks[i],
-                            ),
-                      ),
-                    );
-                    BlocProvider.of<TaskBloc>(context).refresh();
-                  },
-                  leading: new Icon(
-                    Icons.fitness_center,
-                    color: Colors.white,
-                  ),
-                  subtitle: new Text(
-                    _tasks[i].guidelines,
-                    style: TextStyle(
-                        color: AppColors.SECONDARY,
-                        fontStyle: FontStyle.italic),
-                  ),
-                  title: new Text(
-                    _tasks[i].name,
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
+              ),
+              title: new Text(
+                _tasks[i].name,
+                style: TextStyle(
+                  fontSize: 20,
                 ),
-              );
-            }));
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 }

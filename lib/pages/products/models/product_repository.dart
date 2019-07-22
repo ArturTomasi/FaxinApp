@@ -73,7 +73,7 @@ class ProductRepository {
 
     var result = await db.query(ProductTable.table,
         where:
-            "${ProductTable.STATE} = 1 and ((${ProductTable.CURRENT_CAPACITY} / ${ProductTable.CAPACITY}) * 100) < 30",
+            "${ProductTable.STATE} = 1 and ((${ProductTable.CURRENT_CAPACITY} / ${ProductTable.CAPACITY}) * 100) < 25",
         orderBy: ProductTable.NAME);
 
     List<Product> products = List();

@@ -107,15 +107,33 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
   AppBar bar() {
     return AppBar(
-      title: Text(
-        'FaxinApp',
-        style: TextStyle(
-            color: AppColors.SECONDARY, letterSpacing: 3.5, fontSize: 30),
+      title: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Image.asset(
+            "assets/images/logo.png",
+            width: 32,
+          ),
+          Container(
+            alignment: Alignment.bottomCenter,
+            padding: EdgeInsets.only(
+              bottom: 2,
+              left: 10,
+            ),
+            child: Text(
+              'Meu Lar',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'BelovedTeacher',
+                color: AppColors.PRIMARY_LIGHT,
+                fontSize: 32,
+              ),
+            ),
+          ),
+        ],
       ),
       centerTitle: true,
-      iconTheme: const IconThemeData(
-        color: AppColors.SECONDARY,
-      ),
       actions: <Widget>[
         PopupMenuButton<int>(
           onSelected: (int result) async {
@@ -124,10 +142,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 CleaningBloc _bloc = BlocProvider.of(context);
 
                 var _provider = BlocProvider(
-                    bloc: _bloc,
-                    child: CleaningEditor(
-                      cleaning: Cleaning(),
-                    ));
+                  bloc: _bloc,
+                  child: CleaningEditor(
+                    cleaning: Cleaning(),
+                  ),
+                );
 
                 Cleaning c = await Navigator.push(
                   context,
@@ -172,73 +191,46 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           },
           icon: Icon(Icons.add),
           itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
-                const PopupMenuItem<int>(
-                  value: 0,
-                  child: ListTile(
-                    contentPadding: EdgeInsets.all(0),
-                    leading: Icon(
-                      Icons.clear_all,
-                      color: AppColors.PRIMARY_DARK,
-                    ),
-                    title: Text(
-                      'Faxinas',
-                      style: TextStyle(
-                        color: AppColors.PRIMARY_DARK,
-                      ),
-                    ),
-                  ),
+            const PopupMenuItem<int>(
+              value: 0,
+              child: ListTile(
+                contentPadding: EdgeInsets.all(0),
+                leading: Icon(
+                  Icons.clear_all,
+                  color: AppColors.SECONDARY,
                 ),
-                const PopupMenuItem<int>(
-                  value: 1,
-                  child: ListTile(
-                    contentPadding: EdgeInsets.all(0),
-                    leading: Icon(
-                      Icons.fitness_center,
-                      color: AppColors.PRIMARY_DARK,
-                    ),
-                    title: Text(
-                      'Tarefas',
-                      style: TextStyle(
-                        color: AppColors.PRIMARY_DARK,
-                      ),
-                    ),
-                  ),
+                title: Text(
+                  'Faxinas',
                 ),
-                const PopupMenuItem<int>(
-                  value: 2,
-                  child: ListTile(
-                    contentPadding: EdgeInsets.all(0),
-                    leading: Icon(
-                      Icons.shopping_cart,
-                      color: AppColors.PRIMARY_DARK,
-                    ),
-                    title: Text(
-                      'Produtos',
-                      style: TextStyle(
-                        color: AppColors.PRIMARY_DARK,
-                      ),
-                    ),
-                  ),
+              ),
+            ),
+            const PopupMenuItem<int>(
+              value: 1,
+              child: ListTile(
+                contentPadding: EdgeInsets.all(0),
+                leading: Icon(
+                  Icons.fitness_center,
+                  color: AppColors.SECONDARY,
                 ),
-                /*
-                const PopupMenuItem<int>(
-                  value: 3,
-                  child: ListTile(
-                    contentPadding: EdgeInsets.all(0),
-                    leading: Icon(
-                      Icons.sync,
-                      color: AppColors.PRIMARY_DARK,
-                    ),
-                    title: Text(
-                      'Sincronizar',
-                      style: TextStyle(
-                        color: AppColors.PRIMARY_DARK,
-                      ),
-                    ),
-                  ),
+                title: Text(
+                  'Tarefas',
                 ),
-                */
-              ],
+              ),
+            ),
+            const PopupMenuItem<int>(
+              value: 2,
+              child: ListTile(
+                contentPadding: EdgeInsets.all(0),
+                leading: Icon(
+                  Icons.shopping_cart,
+                  color: AppColors.SECONDARY,
+                ),
+                title: Text(
+                  'Produtos',
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     );

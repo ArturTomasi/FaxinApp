@@ -27,9 +27,7 @@ const int ANIM_DURATION = 300;
 //const Color PURPLE = Color(0xFF8c77ec);
 const Color PURPLE = AppColors.SECONDARY;
 
-
 class _TabItemState extends State<TabItem> {
-
   double iconYAlign = ICON_ON;
   double textYAlign = TEXT_OFF;
   double iconAlpha = ALPHA_ON;
@@ -64,15 +62,19 @@ class _TabItemState extends State<TabItem> {
             height: double.infinity,
             width: double.infinity,
             child: AnimatedAlign(
-                duration: Duration(milliseconds: ANIM_DURATION),
-                alignment: Alignment(0, textYAlign),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    widget.title,
-                    style: TextStyle(fontWeight: FontWeight.w600,color: Colors.white, ),
+              duration: Duration(milliseconds: ANIM_DURATION),
+              alignment: Alignment(0, textYAlign),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  widget.title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white,
                   ),
-                )),
+                ),
+              ),
+            ),
           ),
           Container(
             height: double.infinity,
@@ -92,10 +94,9 @@ class _TabItemState extends State<TabItem> {
                   icon: Icon(
                     widget.iconData,
                     color: Colors.white,
+                    size: 30,
                   ),
-                  onPressed: () {
-                    widget.callbackFunction();
-                  },
+                  onPressed: widget.callbackFunction,
                 ),
               ),
             ),

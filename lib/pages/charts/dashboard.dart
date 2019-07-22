@@ -14,7 +14,6 @@ class Dashboard extends StatelessWidget {
       color: AppColors.PRIMARY_LIGHT,
       child: ListView(
         physics: BouncingScrollPhysics(),
-        //padding: EdgeInsets.only(bottom: 50),
         children: <Widget>[
           SizedBox(
             height: 20,

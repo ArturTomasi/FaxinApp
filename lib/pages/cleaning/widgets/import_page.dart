@@ -24,18 +24,13 @@ class _ImportPageState extends State<ImportPage> {
 
   @override
   Widget build(BuildContext context) {
-    CleaningBloc _bloc = BlocProvider.of(context);
+    CleaningBloc _bloc = BlocProvider.of<CleaningBloc>(context);
     return Scaffold(
       key: _globalKey,
       appBar: AppBar(
         centerTitle: true,
-        iconTheme: new IconThemeData(color: AppColors.SECONDARY),
         title: Text(
           "Importar Faxina",
-          style: TextStyle(
-            color: AppColors.SECONDARY,
-            fontSize: 22,
-          ),
         ),
       ),
       body: StreamBuilder<bool>(
@@ -45,7 +40,11 @@ class _ImportPageState extends State<ImportPage> {
           alignment: Alignment.center,
           children: <Widget>[
             Container(
-              padding: EdgeInsets.only(top: 10, left: 20, right: 20),
+              padding: EdgeInsets.only(
+                top: 10,
+                left: 20,
+                right: 20,
+              ),
               color: AppColors.PRIMARY_LIGHT,
               child: ListView(
                 children: <Widget>[
@@ -78,7 +77,6 @@ class _ImportPageState extends State<ImportPage> {
                         counterStyle: TextStyle(color: AppColors.SECONDARY),
                         errorBorder: InputBorder.none),
                     controller: _codeController,
-                    style: TextStyle(color: Colors.white),
                     validator: (value) {
                       return value.isEmpty ? "Requerido *" : null;
                     },
@@ -104,13 +102,13 @@ class _ImportPageState extends State<ImportPage> {
               ),
             ),
             snap.hasData && !snap.data
-                  ? Container()
-                  : Container(
-                      color: AppColors.PRIMARY_LIGHT.withOpacity(0.5),
-                      child: Center(
-                        child: CircularProgressIndicator(),
-                      ),
+                ? Container()
+                : Container(
+                    color: AppColors.PRIMARY_LIGHT.withOpacity(0.5),
+                    child: Center(
+                      child: CircularProgressIndicator(),
                     ),
+                  ),
           ],
         ),
       ),
@@ -126,7 +124,6 @@ class _ImportPageState extends State<ImportPage> {
       Cleaning c = await SharedUtil.obtain(_codeController.text);
 
       if (c != null) {
-
         await CleaningRepository.get().import(c);
 
         PushNotification(context)
@@ -137,6 +134,9 @@ class _ImportPageState extends State<ImportPage> {
 
         msg = "Importado faxina com sucesso!";
       }
+
+      Navigator.of(context).pop();
+
       _bloc.setLoading(false);
     }
 
@@ -151,7 +151,5 @@ class _ImportPageState extends State<ImportPage> {
         ),
       ),
     );
-
-    Navigator.of(context).pop();
   }
 }

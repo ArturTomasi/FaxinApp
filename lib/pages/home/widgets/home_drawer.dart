@@ -15,152 +15,189 @@ class HomeDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-        child: Container(
-            color: AppColors.PRIMARY_LIGHT,
-            child: ListView(padding: EdgeInsets.zero, children: <Widget>[
-              new DrawerHeader(
-                  child: Center(
-                      child: Text("FaxinApp",
-                          style: TextStyle(
-                              color: AppColors.PRIMARY_DARK,
-                              letterSpacing: 3.5,
-                              fontSize: 30))),
-                  decoration: BoxDecoration(
-                      color: AppColors.SECONDARY,
-                      borderRadius:
-                          BorderRadius.vertical(bottom: Radius.circular(30)))),
-              ListTile(
-                leading: new Icon(
-                  Icons.import_export,
-                  color: Colors.white,
+      child: Container(
+        color: AppColors.PRIMARY_DARK,
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            new DrawerHeader(
+              child: Center(
+                child: Column(
+                  children: <Widget>[
+                    Image.asset(
+                      "assets/images/logo.png",
+                      width: 75,
+                    ),
+                    Text(
+                      "Meu Lar",
+                      style: TextStyle(
+                        color: AppColors.PRIMARY_LIGHT,
+                        fontFamily: 'BelovedTeacher',
+                        fontSize: 30,
+                      ),
+                    ),
+                  ],
                 ),
-                subtitle: Text(
-                  "Importar faxinas",
-                  style: TextStyle(
-                      color: Colors.white, fontStyle: FontStyle.italic),
-                ),
-                title: Text(
-                  "Importar",
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                ),
-                onTap: () async {
-                  CleaningBloc _bloc = BlocProvider.of(context);
-
-                  var _provider =
-                      BlocProvider(bloc: _bloc, child: ImportPage());
-
-                  await Navigator.push(
-                    context,
-                    AnimateRoute<bool>(builder: (context) => _provider),
-                  );
-
-                  Navigator.pop(context);
-                },
               ),
-               ListTile(
-                leading: new Icon(
-                  Icons.sync,
-                  color: Colors.white,
-                ),
-                subtitle: Text(
-                  "Sincronizar faxinas compartilhadas",
-                  style: TextStyle(
-                      color: Colors.white, fontStyle: FontStyle.italic),
-                ),
-                title: Text(
-                  "Sincronizar",
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                ),
-                onTap: () async {
-                  Navigator.pop(context);
-                  SharedUtil.syncronized(context);
-                },
+              decoration: BoxDecoration(
+                color: AppColors.PRIMARY,
               ),
-              Divider(color: AppColors.SECONDARY),
-              ListTile(
-                leading: new Icon(
-                  Icons.clear_all,
-                  color: Colors.white,
-                ),
-                subtitle: Text(
-                  "Gerenciar faxinas",
-                  style: TextStyle(
-                      color: Colors.white, fontStyle: FontStyle.italic),
-                ),
-                title: Text(
-                  "Faxinas",
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                ),
-                onTap: () async {
-                  CleaningBloc _bloc = BlocProvider.of(context);
-
-                  var _provider =
-                      BlocProvider(bloc: _bloc, child: CleaningWidget());
-
-                  await Navigator.push(
-                    context,
-                    AnimateRoute<bool>(builder: (context) => _provider),
-                  );
-
-                  //Navigator.pop(context);
-                },
+            ),
+            ListTile(
+              leading: new Icon(
+                Icons.import_export,
+                color: AppColors.SECONDARY,
+                size: 45,
               ),
-              ListTile(
-                leading: new Icon(
-                  Icons.fitness_center,
-                  color: Colors.white,
+              subtitle: Text(
+                "Importar faxinas",
+                style: TextStyle(
+                  fontStyle: FontStyle.italic,
                 ),
-                subtitle: Text(
-                  "Gerenciar tarefas",
-                  style: TextStyle(
-                      color: Colors.white, fontStyle: FontStyle.italic),
-                ),
-                title: Text(
-                  "Tarefas",
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                ),
-                onTap: () async {
-                  var bloc = BlocProvider(
-                    bloc: TaskBloc(),
-                    child: TaskWidget(),
-                  );
-
-                  await Navigator.push(
-                    context,
-                    AnimateRoute<bool>(builder: (context) => bloc),
-                  );
-
-                  //Navigator.pop(context);
-                },
               ),
-              ListTile(
-                leading: new Icon(
-                  Icons.shopping_cart,
-                  color: Colors.white,
+              title: Text(
+                "Importar",
+                style: TextStyle(
+                  fontSize: 20,
                 ),
-                subtitle: Text(
-                  "Gerenciar produtos",
-                  style: TextStyle(
-                      color: Colors.white, fontStyle: FontStyle.italic),
-                ),
-                title: Text(
-                  "Produtos",
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                ),
-                onTap: () async {
-                  var bloc = BlocProvider(
-                    bloc: ProductBloc(),
-                    child: ProductWidget(),
-                  );
+              ),
+              onTap: () async {
+                CleaningBloc _bloc = BlocProvider.of(context);
 
-                  await Navigator.push(
-                    context,
-                    AnimateRoute<bool>(builder: (context) => bloc),
-                  );
+                var _provider = BlocProvider(bloc: _bloc, child: ImportPage());
 
-                  //Navigator.pop(context);
-                },
-              )
-            ])));
+                await Navigator.push(
+                  context,
+                  AnimateRoute<bool>(builder: (context) => _provider),
+                );
+
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: new Icon(
+                Icons.sync,
+                color: AppColors.SECONDARY,
+                size: 45,
+              ),
+              subtitle: Text(
+                "Sincronizar faxinas compartilhadas",
+                style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+              title: Text(
+                "Sincronizar",
+                style: TextStyle(
+                  fontSize: 20,
+                ),
+              ),
+              onTap: () async {
+                Navigator.pop(context);
+                SharedUtil.syncronized(context);
+              },
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(
+                vertical: 10,
+                horizontal: 20,
+              ),
+              color: AppColors.PRIMARY,
+              height: 2,
+            ),
+            ListTile(
+              leading: new Icon(
+                Icons.clear_all,
+                color: AppColors.SECONDARY,
+                size: 45,
+              ),
+              subtitle: Text(
+                "Gerenciar faxinas",
+                style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+              title: Text(
+                "Faxinas",
+                style: TextStyle(
+                  fontSize: 20,
+                ),
+              ),
+              onTap: () async {
+                CleaningBloc _bloc = BlocProvider.of(context);
+
+                var _provider =
+                    BlocProvider(bloc: _bloc, child: CleaningWidget());
+
+                await Navigator.push(
+                  context,
+                  AnimateRoute<bool>(builder: (context) => _provider),
+                );
+              },
+            ),
+            ListTile(
+              leading: new Icon(
+                Icons.fitness_center,
+                color: AppColors.SECONDARY,
+                size: 45,
+              ),
+              subtitle: Text(
+                "Gerenciar tarefas",
+                style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+              title: Text(
+                "Tarefas",
+                style: TextStyle(
+                  fontSize: 20,
+                ),
+              ),
+              onTap: () async {
+                var bloc = BlocProvider(
+                  bloc: TaskBloc(),
+                  child: TaskWidget(),
+                );
+
+                await Navigator.push(
+                  context,
+                  AnimateRoute<bool>(builder: (context) => bloc),
+                );
+              },
+            ),
+            ListTile(
+              leading: new Icon(
+                Icons.shopping_cart,
+                color: AppColors.SECONDARY,
+                size: 45,
+              ),
+              subtitle: Text(
+                "Gerenciar produtos",
+                style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+              title: Text(
+                "Produtos",
+                style: TextStyle(
+                  fontSize: 20,
+                ),
+              ),
+              onTap: () async {
+                var bloc = BlocProvider(
+                  bloc: ProductBloc(),
+                  child: ProductWidget(),
+                );
+
+                await Navigator.push(
+                  context,
+                  AnimateRoute<bool>(builder: (context) => bloc),
+                );
+              },
+            )
+          ],
+        ),
+      ),
+    );
   }
 }

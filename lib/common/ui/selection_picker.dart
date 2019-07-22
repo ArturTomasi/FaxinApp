@@ -92,13 +92,21 @@ class _SelectionPickerState<T> extends State<SelectionPicker<T>> {
                               crossAxisAlignment: WrapCrossAlignment.start,
                               runSpacing: 5,
                               children: <Widget>[]..addAll(snapshot.data
-                                  .map<Chip>((p) => Chip(
+                                  .map<Chip>(
+                                    (p) => Chip(
                                       labelStyle: TextStyle(
-                                          color: AppColors.PRIMARY_DARK),
+                                        color: AppColors.PRIMARY_LIGHT,
+                                      ),
                                       backgroundColor: AppColors.SECONDARY,
                                       labelPadding: EdgeInsets.symmetric(
-                                          vertical: 2, horizontal: 10),
-                                      label: Text(p.toString())))
+                                        vertical: 2,
+                                        horizontal: 10,
+                                      ),
+                                      label: Text(
+                                        p.toString(),
+                                      ),
+                                    ),
+                                  )
                                   .toList()),
                             )
                           : Flex(
@@ -114,7 +122,7 @@ class _SelectionPickerState<T> extends State<SelectionPicker<T>> {
                         padding: EdgeInsets.only(top: 10),
                       ),
                       Container(
-                        color: AppColors.PRIMARY_DARK,
+                        color: Colors.black45,
                         width: double.infinity,
                         height: 1,
                       ),
