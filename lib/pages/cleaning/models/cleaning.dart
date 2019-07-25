@@ -6,12 +6,12 @@ import 'package:uuid/uuid.dart';
 enum CleaningType { IMPORTED, SHARED, COMMON }
 
 class Frequency {
-  static final Frequency NONE = Frequency._(0, "Manual");
-  static final Frequency DAY = Frequency._(1, "Diário");
-  static final Frequency WEEKLY = Frequency._(2, "Semanal");
-  static final Frequency BI_WEEKLY = Frequency._(3, "Quinzenal");
-  static final Frequency MONTH = Frequency._(4, "Mensal");
-  static final Frequency YEAR = Frequency._(5, "Anual");
+  static final Frequency NONE = Frequency._(0, "Manual", "#5B9279");
+  static final Frequency DAY = Frequency._(1, "Diário", "#8FCB9B");
+  static final Frequency WEEKLY = Frequency._(2, "Semanal", "#77bda9" );
+  static final Frequency BI_WEEKLY = Frequency._(3, "Quinzenal", "#6DAC9A");
+  static final Frequency MONTH = Frequency._(4, "Mensal", "#578A7B");
+  static final Frequency YEAR = Frequency._(5, "Anual", "#9CCFC0");
 
   static List<Frequency> values() => [
         NONE,
@@ -40,9 +40,9 @@ class Frequency {
   }
 
   int index;
-  String label;
+  String label, color;
 
-  Frequency._(this.index, this.label);
+  Frequency._(this.index, this.label, this.color);
 
   @override
   bool operator ==(Object other) =>
@@ -72,7 +72,7 @@ class Cleaning {
 
   Cleaning();
 
-  Cleaning.fromMap(Map<String, dynamic> map) {
+  Cleaning.fromMap(Map<dynamic, dynamic> map) {
     id = map[CleaningTable.ID];
     name = map[CleaningTable.NAME];
     uuid = map[CleaningTable.UUID];

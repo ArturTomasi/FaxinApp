@@ -13,27 +13,31 @@ class ProductWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     ProductBloc _bloc = BlocProvider.of<ProductBloc>(context);
     return Scaffold(
-        key: _scaffoldKey,
-        appBar: AppBar(
-          centerTitle: true,
-          title: Text("Produtos"),
-        ),
-        floatingActionButton: FloatingActionButton(
-            child: Icon(
-              Icons.add,
-              color: Colors.white,
-            ),
-            onPressed: () async {
-              await Navigator.of(context).push(
-                new AnimateRoute(
-                  fullscreenDialog: true,
-                  builder: (c) => ProductEditor(
-                        product: Product(),
-                      ),
+      key: _scaffoldKey,
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text("Produtos"),
+      ),
+      floatingActionButton: FloatingActionButton(
+          child: Icon(
+            Icons.add,
+            color: Colors.white,
+          ),
+          onPressed: () async {
+            await Navigator.of(context).push(
+              new AnimateRoute(
+                fullscreenDialog: true,
+                builder: (c) => ProductEditor(
+                  product: Product(),
                 ),
-              );
-              _bloc.refresh();
-            }),
-        body: BlocProvider(bloc: _bloc, child: ProductList()));
+              ),
+            );
+            _bloc.refresh();
+          }),
+      body: BlocProvider(
+        bloc: _bloc,
+        child: ProductList(),
+      ),
+    );
   }
 }

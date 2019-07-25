@@ -47,7 +47,7 @@ class HomeDrawer extends StatelessWidget {
               leading: new Icon(
                 Icons.import_export,
                 color: AppColors.SECONDARY,
-                size: 45,
+                size: 30,
               ),
               subtitle: Text(
                 "Importar faxinas",
@@ -78,7 +78,7 @@ class HomeDrawer extends StatelessWidget {
               leading: new Icon(
                 Icons.sync,
                 color: AppColors.SECONDARY,
-                size: 45,
+                size: 30,
               ),
               subtitle: Text(
                 "Sincronizar faxinas compartilhadas",
@@ -93,8 +93,8 @@ class HomeDrawer extends StatelessWidget {
                 ),
               ),
               onTap: () async {
-                Navigator.pop(context);
                 SharedUtil.syncronized(context);
+                Navigator.pop(context);
               },
             ),
             Container(
@@ -109,7 +109,7 @@ class HomeDrawer extends StatelessWidget {
               leading: new Icon(
                 Icons.clear_all,
                 color: AppColors.SECONDARY,
-                size: 45,
+                size: 30,
               ),
               subtitle: Text(
                 "Gerenciar faxinas",
@@ -139,7 +139,7 @@ class HomeDrawer extends StatelessWidget {
               leading: new Icon(
                 Icons.fitness_center,
                 color: AppColors.SECONDARY,
-                size: 45,
+                size: 30,
               ),
               subtitle: Text(
                 "Gerenciar tarefas",
@@ -169,7 +169,7 @@ class HomeDrawer extends StatelessWidget {
               leading: new Icon(
                 Icons.shopping_cart,
                 color: AppColors.SECONDARY,
-                size: 45,
+                size: 30,
               ),
               subtitle: Text(
                 "Gerenciar produtos",

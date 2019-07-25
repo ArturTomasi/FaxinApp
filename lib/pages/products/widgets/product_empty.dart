@@ -90,7 +90,7 @@ class ProductListEmptyWidget extends StatelessWidget {
               }
             },
             background: Container(
-              color: Colors.lightGreen,
+              color: AppColors.SECONDARY,
               child: ListTile(
                 trailing: Text(
                   "Repor produto",
@@ -98,7 +98,6 @@ class ProductListEmptyWidget extends StatelessWidget {
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 22,
-                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),

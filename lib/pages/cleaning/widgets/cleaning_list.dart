@@ -66,7 +66,9 @@ class CleaningListWidget extends StatelessWidget {
                   backgroundColor: AppColors.SECONDARY,
                   content: Text(
                     "Faxina concluida não pode ser excluida",
-                    style: TextStyle(fontSize: 16),
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
                   ),
                 ),
               );

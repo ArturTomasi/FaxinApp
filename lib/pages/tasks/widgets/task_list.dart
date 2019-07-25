@@ -63,12 +63,15 @@ class TaskListWidget extends StatelessWidget {
                 _bloc.delete(_tasks[i]);
                 _bloc.refresh();
 
-                Scaffold.of(context).showSnackBar(SnackBar(
+                Scaffold.of(context).showSnackBar(
+                  SnackBar(
                     backgroundColor: AppColors.SECONDARY,
                     content: Text(
                       "Tarefa excluida com sucesso!",
                       style: TextStyle(fontSize: 16),
-                    )));
+                    ),
+                  ),
+                );
               }
             },
             background: Container(

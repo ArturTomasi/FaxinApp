@@ -43,10 +43,10 @@ class SimpleLineChart extends StatelessWidget {
               renderSpec: new charts.SmallTickRendererSpec(
                 labelStyle: new charts.TextStyleSpec(
                   fontSize: 12,
-                  color: charts.MaterialPalette.white,
+                  color: charts.ColorUtil.fromDartColor(AppColors.PRIMARY),
                 ),
                 lineStyle: new charts.LineStyleSpec(
-                  color: charts.MaterialPalette.white,
+                  color: charts.ColorUtil.fromDartColor(AppColors.PRIMARY),
                 ),
               ),
               tickFormatterSpec: new charts.AutoDateTimeTickFormatterSpec(
@@ -57,6 +57,11 @@ class SimpleLineChart extends StatelessWidget {
             behaviors: [
               charts.ChartTitle(
                 "Frequência de Faxinas",
+                subTitle: 'Quantidade de faxinas realizadas por mês',
+                subTitleStyleSpec: charts.TextStyleSpec(
+                  color: charts.ColorUtil.fromDartColor(AppColors.PRIMARY),
+                  fontSize: 15
+                ),
                 titleStyleSpec: charts.TextStyleSpec(
                   color: charts.ColorUtil.fromDartColor(AppColors.PRIMARY),
                 ),

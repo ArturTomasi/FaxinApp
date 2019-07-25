@@ -15,31 +15,10 @@ class DonutPieChart extends StatelessWidget {
             [
               charts.Series<dynamic, int>(
                 id: 'donut-data',
-                labelAccessorFn: (row, _) {
-                  var x = row['type'];
-
-                  if (x == CleaningType.COMMON.index) {
-                    return "Faxinas";
-                  } else if (x == CleaningType.IMPORTED.index) {
-                    return "Importadas";
-                  } else if (x == CleaningType.SHARED.index) {
-                    return "Compartilhadas";
-                  } else {
-                    return "Desconhecido";
-                  }
-                },
-                colorFn: (s, i) {
-                  switch (s['type']) {
-                    case 0:
-                      return charts.Color.fromHex(code: "#a8f0db");
-                    case 1:
-                      return charts.Color.fromHex(code: "#77bda9");
-                    case 2:
-                      return charts.Color.fromHex(code: "#478d7a");
-                    default:
-                      return charts.Color.white;
-                  }
-                },
+                labelAccessorFn: (row, _) =>
+                    Frequency.valueOf(row['type']).label,
+                colorFn: (row, _) => charts.Color.fromHex(
+                    code: Frequency.valueOf(row['type']).color),
                 domainFn: (sales, _) => sales['type'],
                 measureFn: (sales, _) => sales['count'],
                 data: data.data,
@@ -67,6 +46,7 @@ class DonutPieChart extends StatelessWidget {
             behaviors: [
               charts.ChartTitle(
                 "Tipos de Faxina",
+                subTitle: ' ',
                 titleStyleSpec: charts.TextStyleSpec(
                   color: charts.ColorUtil.fromDartColor(AppColors.PRIMARY),
                 ),

@@ -28,15 +28,22 @@ class _CleaningTimelineState extends State<CleaningTimeline> {
             return Container(
               color: AppColors.PRIMARY_LIGHT,
               child: Center(
-                  child: Icon(Icons.clear_all,
-                      size: 100, color: AppColors.SECONDARY)),
+                child: Icon(
+                  Icons.clear_all,
+                  size: 100,
+                  color: AppColors.SECONDARY,
+                ),
+              ),
             );
           }
           return CleaningTimelineWidget(snapshot.data);
         } else {
           return Container(
-              color: AppColors.PRIMARY_LIGHT,
-              child: Center(child: CircularProgressIndicator()));
+            color: AppColors.PRIMARY_LIGHT,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
         }
       },
     );
@@ -209,8 +216,9 @@ class CleaningTimelineWidget extends StatelessWidget {
     DateTime now = DateTime.now();
 
     Duration duration = c.nextDate.difference(now);
-    if (duration.inDays > 0) {
-      return "Faltam ${duration.inDays} dia${duration.inDays > 1 ? 's' : ''}";
+    if (duration.inDays > 0 ||
+        (duration.inDays == 0 && c.nextDate.day != now.day)) {
+      return "Faltam ${duration.inDays + 1} dia${duration.inDays > 1 ? 's' : ''}";
     } else if (duration.inDays < 0) {
       return "${duration.inDays * -1} dia${duration.inDays > 1 ? 's' : ''} em atraso";
     } else {
@@ -222,7 +230,8 @@ class CleaningTimelineWidget extends StatelessWidget {
     DateTime now = DateTime.now();
 
     Duration duration = c.nextDate.difference(now);
-    if (duration.inDays > 0) {
+    if (duration.inDays > 0 ||
+        (duration.inDays == 0 && c.nextDate.day != now.day)) {
       return Colors.green;
     } else if (duration.inDays < 0) {
       return Colors.red;

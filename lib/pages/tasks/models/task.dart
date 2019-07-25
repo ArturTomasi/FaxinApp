@@ -9,7 +9,7 @@ class Task{
 
   Task();
 
-  Task.fromMap(Map<String, dynamic> map) {
+  Task.fromMap(Map<dynamic, dynamic> map) {
     id = map[TaskTable.ID];
     name = map[TaskTable.NAME];
     uuid = map[TaskTable.UUID];

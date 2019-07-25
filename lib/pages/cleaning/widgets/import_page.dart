@@ -122,20 +122,23 @@ class _ImportPageState extends State<ImportPage> {
       CleaningBloc _bloc = BlocProvider.of(context);
       _bloc.setLoading(true);
       Cleaning c = await SharedUtil.obtain(_codeController.text);
-
       if (c != null) {
-        await CleaningRepository.get().import(c);
+        var _current = await CleaningRepository.get().find(c.id);
 
-        PushNotification(context)
-          ..initialize()
-          ..schedule(c);
+        if (_current != null && _current.type == CleaningType.SHARED) {
+          msg = "Você não pode importar sua própria faxina!";
+        } else {
+          await CleaningRepository.get().import(c);
 
-        BlocProvider.of<CleaningBloc>(context).findPendents();
+          PushNotification(context)..schedule(c);
 
-        msg = "Importado faxina com sucesso!";
+          BlocProvider.of<CleaningBloc>(context).findPendents();
+
+          msg = "Importado faxina com sucesso!";
+
+          Navigator.of(context).pop();
+        }
       }
-
-      Navigator.of(context).pop();
 
       _bloc.setLoading(false);
     }

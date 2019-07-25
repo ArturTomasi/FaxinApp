@@ -37,7 +37,7 @@ class Dashboard extends StatelessWidget {
             child: SimpleLineChart(),
           ),
           SizedBox(
-            height: 20,
+            height: 40,
           ),
         ],
       ),

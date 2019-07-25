@@ -51,6 +51,12 @@ class CleaningBloc implements BlocBase {
         pendencyCache.removeAt(i);
         pendencyCache.insert(i, next);
       }
+    } else if (cleaning != null && cleaning.dueDate != null ) {
+      int i = pendencyCache.indexOf(cleaning);
+
+      if (i != -1) {
+        pendencyCache.removeAt(i);
+      }
     }
   }
 

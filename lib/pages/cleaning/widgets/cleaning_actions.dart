@@ -5,9 +5,11 @@ import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';
 import 'package:faxinapp/pages/cleaning/util/share_util.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
 import 'package:faxinapp/util/AppColors.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:share/share.dart';
 
 class CleaningActions extends StatefulWidget {
   final Cleaning cleaning;
@@ -227,6 +229,41 @@ class _CleaningActionsState extends State<CleaningActions>
                                     color: Colors.white,
                                   ),
                                 ),
+                              ),
+                              RaisedButton(
+                                color: AppColors.SECONDARY,
+                                onPressed: () async {
+                                  final DynamicLinkParameters parameters =
+                                      DynamicLinkParameters(
+                                    uriPrefix: 'https://faxinapp.page.link',
+                                    link: Uri.parse(
+                                        'https://faxinapp.page.link/${widget.cleaning.uuid}'),
+                                    androidParameters: AndroidParameters(
+                                      packageName: 'com.me.fa.faxinapp',
+                                      minimumVersion: 1,
+                                    ),
+                                    socialMetaTagParameters:
+                                        SocialMetaTagParameters(
+                                      title: 'Meu Lar',
+                                      description:
+                                          'Utilize o link para importar sua faxina',
+                                    ),
+                                  );
+
+                                  final Uri dynamicUrl =
+                                      await parameters.buildUrl();
+
+                                  Share.share(dynamicUrl.toString(),
+                                      subject: '${widget.cleaning.uuid}');
+
+                                  Navigator.pop(context);
+                                },
+                                child: Text(
+                                  "Compartilhar Código",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                  ),
+                                ),
                               )
                             ],
                           ),
@@ -236,7 +273,10 @@ class _CleaningActionsState extends State<CleaningActions>
                       show(ex.toString());
                     }
                   },
-                  child: Icon(Icons.share, color: AppColors.SECONDARY),
+                  child: Icon(
+                    Icons.share,
+                    color: AppColors.SECONDARY,
+                  ),
                 ),
               ],
             ),
@@ -271,8 +311,10 @@ class _CleaningActionsState extends State<CleaningActions>
   void show(String msg) {
     Scaffold.of(context).showSnackBar(
       SnackBar(
+        backgroundColor: AppColors.SECONDARY,
         content: Text(
           msg,
+          style: TextStyle(fontSize: 16),
         ),
       ),
     );

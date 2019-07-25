@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:connectivity/connectivity.dart';
 import 'package:faxinapp/bloc/bloc_provider.dart';
 import 'package:faxinapp/common/data/Secrets.dart';
@@ -8,64 +7,25 @@ import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning_product.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning_repository.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning_task.dart';
+import 'package:faxinapp/util/AppColors.dart';
 import 'package:faxinapp/util/push_notification.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:http/http.dart' as http;
 
 class SharedUtil {
-  static StreamSubscription listener;
-
-  static Future connectFirebase() async {
-    try {
-      Connectivity conn = Connectivity();
-
-      if (await conn.checkConnectivity() == ConnectivityResult.none) {
-        listener = conn.onConnectivityChanged.listen((x) {
-          if (x != ConnectivityResult.none) {
-            listener.cancel();
-
-            connectFirebase();
-          }
-        });
-        return;
-      }
-
-      Secrets s = await Secrets.instance();
-
-      var res = await http.post(
-          "https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=${s.key}",
-          headers: {'Content-Type': 'application/json'},
-          body: json.encode(
-            {
-              "email": s.email,
-              "password": s.password,
-              "returnSecureToken": true,
-            },
-          ),
-          encoding: Encoding.getByName('utf-8'));
-
-      final Map<String, dynamic> data = json.decode(res.body);
-
-      if (data.containsKey('idToken')) {
-        s.token = data['idToken'];
-
-        Timer(Duration(seconds: int.parse(data['expiresIn'])), connectFirebase);
-      }
-    } catch (ex) {
-      print(ex);
-    }
-  }
-
   static Future<String> share(Cleaning c) async {
     Secrets secrets = await Secrets.instance();
 
-    await http.patch(
-      '${secrets.firebase}/shared/${c.uuid}.json?auth=${secrets.token}',
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode(c),
-      encoding: Encoding.getByName('utf-8'),
+    var app = await FirebaseApp.appNamed(FirebaseApp.defaultAppName);
+
+    var db = FirebaseDatabase(
+      app: app,
+      databaseURL: '${secrets.firebase}',
     );
+
+    await db.reference().child('shared/${c.uuid}').update(c.toJson());
 
     c.type = CleaningType.SHARED;
 
@@ -77,22 +37,19 @@ class SharedUtil {
   static Future<Cleaning> obtain(String uuid) async {
     Secrets secrets = await Secrets.instance();
 
-    var res = await http.get(
-      '${secrets.firebase}/shared/$uuid.json?auth=${secrets.token}',
-      headers: {'Content-Type': 'application/json'},
+    var app = await FirebaseApp.appNamed(FirebaseApp.defaultAppName);
+
+    var db = FirebaseDatabase(
+      app: app,
+      databaseURL: '${secrets.firebase}',
     );
 
-    try {
-      if (res.statusCode == 200) {
-        if (res.body != null && res.body.isNotEmpty && res.body != 'null') {
-          Cleaning c = Cleaning.fromMap(json.decode(res.body));
-          c.type = CleaningType.IMPORTED;
+    var snapshot = await db.reference().child('shared/$uuid').once();
 
-          return c;
-        }
-      }
-    } catch (e) {}
-    
+    if (snapshot.value != null) {
+      return Cleaning.fromMap(snapshot.value)..type = CleaningType.IMPORTED;
+    }
+
     return null;
   }
 
@@ -103,114 +60,121 @@ class SharedUtil {
   ) async {
     Secrets secrets = await Secrets.instance();
 
-    var js = {
+    var app = await FirebaseApp.appNamed(FirebaseApp.defaultAppName);
+
+    var db = FirebaseDatabase(
+      app: app,
+      databaseURL: '${secrets.firebase}',
+    );
+
+    await db.reference().child('done/${cleaning.uuid}').update({
       "uuid": cleaning.uuid,
       "due_date": cleaning.dueDate.toIso8601String(),
       "products:": products.map((p) => p.toJson()).toList(),
       "tasks:": tasks.map((t) => t.toJson()).toList()
-    };
-
-    await http.patch(
-      '${secrets.firebase}/done/${cleaning.uuid}.json?auth=${secrets.token}',
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode(js),
-      encoding: Encoding.getByName('utf-8'),
-    );
+    });
   }
 
   static Future syncronized(BuildContext context, {bool show = true}) async {
     if (await Connectivity().checkConnectivity() == ConnectivityResult.none) {
       Scaffold.of(context).showSnackBar(
         SnackBar(
+          backgroundColor: AppColors.SECONDARY,
           content: Text(
             "Verifique sua conexão",
+            style: TextStyle(fontSize: 16),
           ),
         ),
       );
-      return false;
-    }
+    } else {
+      CleaningBloc _bloc = BlocProvider.of<CleaningBloc>(context);
 
-    CleaningBloc _bloc = BlocProvider.of<CleaningBloc>(context);
+      if (show) {
+        _bloc.setLoading(true);
+      }
 
-    if (show) {
-      _bloc.setLoading(true);
-    }
+      Secrets secrets = await Secrets.instance();
 
-    Secrets secrets = await Secrets.instance();
+      var app = await FirebaseApp.appNamed(FirebaseApp.defaultAppName);
 
-    List<Cleaning> cleanings = await CleaningRepository.get().findShared();
-
-    cleanings.forEach((c) async {
-      var res = await http.get(
-        '${secrets.firebase}/done/${c.uuid}.json?auth=${secrets.token}',
-        headers: {'Content-Type': 'application/json'},
+      var db = FirebaseDatabase(
+        app: app,
+        databaseURL: '${secrets.firebase}',
       );
 
-      if (res.statusCode == 200) {
-        if (res.body != null && res.body.isNotEmpty) {
-          var map = json.decode(res.body);
+      List<Cleaning> cleanings = await CleaningRepository.get().findShared();
 
-          if (map != null) {
+      cleanings.forEach(
+        (c) async {
+          var snapshot = await db.reference().child('done/${c.uuid}').once();
+          if (snapshot.value != null) {
             List<CleaningProduct> products = [];
             List<CleaningTask> tasks = [];
 
-            c.dueDate = DateTime.parse(map['due_date']);
+            c.dueDate = DateTime.parse(snapshot.value['due_date']);
 
-            c.tasks.forEach((t) {
-              var result =
-                  map['tasks'].firstWhere((map) => map['uuid'] == t.uuid);
+            c.tasks.forEach(
+              (t) {
+                var result = snapshot.value['tasks']
+                    .firstWhere((map) => map['uuid'] == t.uuid);
 
-              if (result != null) {
-                tasks.add(
-                  new CleaningTask(
-                    cleaning: c,
-                    task: t,
-                    realized: result['realized'],
-                  ),
-                );
-              }
-            });
+                if (result != null) {
+                  tasks.add(
+                    new CleaningTask(
+                      cleaning: c,
+                      task: t,
+                      realized: result['realized'],
+                    ),
+                  );
+                }
+              },
+            );
 
-            c.products.forEach((p) {
-              var result =
-                  map['products'].firstWhere((map) => map['uuid'] == p.uuid);
+            c.products.forEach(
+              (p) {
+                var result = snapshot.value['products']
+                    .firstWhere((map) => map['uuid'] == p.uuid);
 
-              if (result != null) {
-                products.add(
-                  new CleaningProduct(
-                    cleaning: c,
-                    product: p,
-                    amount: result['amount'],
-                    realized: result['realized'],
-                  ),
-                );
-              }
-            });
+                if (result != null) {
+                  products.add(
+                    new CleaningProduct(
+                      cleaning: c,
+                      product: p,
+                      amount: result['amount'],
+                      realized: result['realized'],
+                    ),
+                  );
+                }
+              },
+            );
 
             Cleaning cn =
                 await CleaningRepository.get().done(c, tasks, products);
             _bloc.update(c, cn);
 
-            await new PushNotification(context).cancel(c);
+            new PushNotification(context)
+              ..cancel(c)
+              ..schedule(cn);
 
-            http.delete(
-              '${secrets.firebase}/done/${c.uuid}.json?auth=${secrets.token}',
-              headers: {'Content-Type': 'application/json'},
-            );
-
-            http.delete(
-              '${secrets.firebase}/shared/${c.uuid}.json?auth=${secrets.token}',
-              headers: {'Content-Type': 'application/json'},
-            );
+            await db.reference().child('done/${c.uuid}').remove();
+            await db.reference().child('shared/${c.uuid}').remove();
           }
-        }
+        },
+      );
+
+      if (show) {
+        _bloc.setLoading(false);
       }
-    });
 
-    if (show) {
-      _bloc.setLoading(false);
+      Scaffold.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: AppColors.SECONDARY,
+          content: Text(
+            "Sincronizado com sucesso",
+            style: TextStyle(fontSize: 16),
+          ),
+        ),
+      );
     }
-
-    return true;
   }
 }

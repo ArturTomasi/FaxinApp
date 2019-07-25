@@ -11,7 +11,7 @@ class Product {
 
   Product();
 
-  Product.fromMap(Map<String, dynamic> map) {
+  Product.fromMap(Map<dynamic, dynamic> map) {
     id = map[ProductTable.ID];
     name = map[ProductTable.NAME];
     uuid = map[ProductTable.UUID];

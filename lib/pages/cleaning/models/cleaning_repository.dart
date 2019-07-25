@@ -387,7 +387,7 @@ class CleaningRepository {
     var db = await _appDatabase.getDb();
 
     return db.rawQuery(
-        "SELECT ${CleaningTable.TYPE}, count(*) as count from ${CleaningTable.table} group by ${CleaningTable.TYPE}");
+        "SELECT ${CleaningTable.FREQUENCY} as type, count(*) as count from ${CleaningTable.table} group by ${CleaningTable.FREQUENCY}");
   }
 
   Future<List> getFrequencyData() async {

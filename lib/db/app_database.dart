@@ -44,6 +44,8 @@ class AppDatabase {
         await _createCleaningTable(db);
         await _createCleaningTaskTable(db);
         await _createCleaningProductTable(db);
+
+        await _initTasks(db);
       },
       onUpgrade: (
         Database db,
@@ -61,12 +63,12 @@ class AppDatabase {
         await _createCleaningTable(db);
         await _createCleaningTaskTable(db);
         await _createCleaningProductTable(db);
+
+        await _initTasks(db);
       },
     );
 
     didInit = true;
-
-    SharedUtil.connectFirebase();
   }
 
   Future _createTaskTable(Database db) {
@@ -115,5 +117,51 @@ class AppDatabase {
         "${CleaningProductTable.REALIZED} INTEGER,"
         "${CleaningProductTable.AMOUNT} DOUBLE,"
         "${CleaningProductTable.REF_PRODUCT} INTEGER);");
+  }
+
+  void _initTasks(Database db) {
+    var names = [
+      "Colocar roupas para lavar",
+      "Varrer a casa",
+      "Varrer o pátio",
+      "Tirar o pó",
+      "Limpar guarda-roupa",
+      "Limpar eletrodomésticos",
+      "Lavar o vaso sanitário",
+      "Recolher o lixo",
+      "Limpar o chão",
+      "Passar aspirador",
+      "Limpar os vidros",
+      "Limpar janelas e aberturas",
+      "Lavar cortinas e tapetes",
+      "Descongelar geladeira/freezer",
+      "Dedetizar ambientes contra insetos",
+      "Trocar filtro do ar-condicionado",
+      "Lavar caixa d'água",
+      "Trocar filtro do aspirador",
+      "Arrumar a cama",
+      "Trocar roupa de cama, mesa e banho",
+      "Trocar as toalhas de rosto do banheiro",
+      "Revisar as roupas",
+      "Passar roupas",
+      "Organizar despensa de alimentos",
+      "Virar colchões das camas"
+    ];
+
+    names.forEach(
+      (n) {
+        var t = Task();
+        t.name = n;
+        db.insert(
+          TaskTable.table,
+          {
+            TaskTable.NAME: t.name,
+            TaskTable.UUID: t.uuid,
+            TaskTable.GUIDELINES: 'n/d',
+            TaskTable.STATE: t.state,
+          },
+        );
+      },
+    );
   }
 }

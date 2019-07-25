@@ -178,18 +178,24 @@ class _CleaningViewState extends State<CleaningView> {
 
   List<Widget> drawButton() {
     return [
-      mode == Mode.DONE
+      mode == Mode.DONE && widget.cleaning.dueDate == null
           ? Padding(
               padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
               child: RaisedButton(
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10))),
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(10),
+                  ),
+                ),
                 onPressed: _save,
                 color: AppColors.SECONDARY,
                 textColor: Colors.white,
                 child: Text(
-                    widget.cleaning.dueDate == null ? "Concluir" : "Fechar",
-                    style: TextStyle(fontSize: 16)),
+                  "Concluir",
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                ),
               ),
             )
           : Container(),
@@ -202,7 +208,7 @@ class _CleaningViewState extends State<CleaningView> {
     infos.add(drawRowInfo('Tempo Estimado:',
         '${MaterialLocalizations.of(context).formatTimeOfDay(widget.cleaning.estimatedTime, alwaysUse24HourFormat: true)}'));
     infos.add(drawRowInfo('Agendado:',
-        DateFormat('dd/MM/yyyy HH:MM').format(widget.cleaning.nextDate)));
+        DateFormat('dd/MM/yyyy HH:mm').format(widget.cleaning.nextDate)));
 
     Frequency frequency = widget.cleaning.frequency;
 
@@ -214,13 +220,13 @@ class _CleaningViewState extends State<CleaningView> {
         infos.add(
           drawRowInfo(
             'Próxima faxina:',
-            DateFormat('dd/MM/yyyy HH:MM').format(widget.cleaning.futureDate()),
+            DateFormat('dd/MM/yyyy HH:mm').format(widget.cleaning.futureDate()),
           ),
         );
       }
     } else {
       infos.add(drawRowInfo('Realizada em: ',
-          DateFormat('dd/MM/yyyy HH:MM').format(widget.cleaning.dueDate)));
+          DateFormat('dd/MM/yyyy HH:mm').format(widget.cleaning.dueDate)));
     }
 
     return infos;
@@ -228,15 +234,15 @@ class _CleaningViewState extends State<CleaningView> {
 
   Widget drawRowInfo(String key, String value) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 20),
       child: Row(
         children: <Widget>[
           SizedBox(
-            width: 100,
+            width: 120,
             child: Text(
               key,
               style: TextStyle(
-                fontSize: 15,
+                fontSize: 18,
                 color: AppColors.PRIMARY,
                 fontStyle: FontStyle.normal,
                 decoration: TextDecoration.none,
@@ -250,7 +256,7 @@ class _CleaningViewState extends State<CleaningView> {
           Text(
             value,
             style: TextStyle(
-              fontSize: 15,
+              fontSize: 18,
               fontStyle: FontStyle.normal,
               decoration: TextDecoration.none,
             ),
@@ -281,7 +287,7 @@ class _CleaningViewState extends State<CleaningView> {
           textAlign: TextAlign.justify,
           maxLines: 8,
           style: TextStyle(
-            fontSize: 15,
+            fontSize: 18,
           ),
         ),
       )
@@ -297,13 +303,15 @@ class _CleaningViewState extends State<CleaningView> {
   }
 
   Widget drawCategory(String value) {
-    return SizedBox(
-      height: 75,
+    return Padding(
+      padding: EdgeInsets.only(
+        top: 20,
+      ),
       child: Center(
         child: Text(
           value,
           style: TextStyle(
-            fontSize: 20,
+            fontSize: 22,
             fontStyle: FontStyle.normal,
             decoration: TextDecoration.none,
           ),
@@ -324,15 +332,14 @@ class _CleaningViewState extends State<CleaningView> {
               subtitle: new Text(
                 item.task.guidelines,
                 style: TextStyle(
-                  color: AppColors.SECONDARY,
                   fontStyle: FontStyle.italic,
                 ),
               ),
               title: new Text(
                 item.task.name,
                 style: TextStyle(
-                  color: AppColors.SECONDARY,
-                  fontSize: 15,
+                  color: AppColors.PRIMARY,
+                  fontSize: 18,
                 ),
               ),
               value: item.realized == 1,
@@ -357,7 +364,7 @@ class _CleaningViewState extends State<CleaningView> {
                 item.task.name,
                 style: TextStyle(
                   color: AppColors.PRIMARY,
-                  fontSize: 15,
+                  fontSize: 18,
                 ),
               ),
             ),
@@ -367,6 +374,7 @@ class _CleaningViewState extends State<CleaningView> {
 
   Widget drawProductItem(CleaningProduct item) {
     return ListTile(
+      contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
       leading: new Icon(
         Icons.shopping_cart,
         color: AppColors.SECONDARY,
@@ -395,7 +403,7 @@ class _CleaningViewState extends State<CleaningView> {
         item.product.name,
         style: TextStyle(
           color: AppColors.PRIMARY,
-          fontSize: 15,
+          fontSize: 18,
         ),
       ),
     );
@@ -404,8 +412,10 @@ class _CleaningViewState extends State<CleaningView> {
   void show(String msg) {
     key.currentState.showSnackBar(
       SnackBar(
+        backgroundColor: AppColors.SECONDARY,
         content: Text(
           msg,
+          style: TextStyle(fontSize: 16),
         ),
       ),
     );

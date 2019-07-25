@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "705415324125",
+    "firebase_url": "https://faxinapp-server.firebaseio.com",
+    "project_id": "faxinapp-server",
+    "storage_bucket": "faxinapp-server.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:705415324125:android:eb97bfbc65cd6fff",
+        "android_client_info": {
+          "package_name": "com.me.fa.faxinapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "705415324125-lm6evtq2o67b2jttt608qfgl1264ojrr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnX6xzmsRGrC9EI288A9DfQWqW4uPFFCg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "705415324125-4vmj1jjlptrckoatu5f8clicih4vpv6o.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "705415324125-9uvlqn6q8kajvn3ki4psl0elji9t525e.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.me.fa.faxinapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,7 +1,16 @@
+import 'dart:async';
+
 import 'package:faxinapp/bloc/bloc_provider.dart';
 import 'package:faxinapp/common/ui/splash.dart';
 import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';
+import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
+import 'package:faxinapp/pages/cleaning/models/cleaning_repository.dart';
+import 'package:faxinapp/pages/cleaning/util/share_util.dart';
 import 'package:faxinapp/pages/home/widgets/home_page.dart';
+import 'package:faxinapp/util/push_notification.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:faxinapp/util/AppColors.dart';
 import 'package:faxinapp/util/date_format.dart';
@@ -11,8 +20,8 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 void main() async {
   initDateFormat();
 
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  bool splash = prefs.getBool('splash') ?? true;
+  bool splash =
+      (await SharedPreferences.getInstance()).getBool('splash') ?? true;
 
   runApp(
     MyApp(splash),
@@ -27,6 +36,53 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  CleaningBloc _bloc = CleaningBloc();
+
+  @override
+  void initState() {
+    super.initState();
+    this.initDynamicLinks();
+  }
+
+  void initDynamicLinks() async {
+    final PendingDynamicLinkData data =
+        await FirebaseDynamicLinks.instance.getInitialLink();
+    final Uri deepLink = data?.link;
+
+    if (deepLink != null) {
+      _retrieveDynamicLink(deepLink.pathSegments.first);
+    }
+
+    FirebaseDynamicLinks.instance.onLink(
+        onSuccess: (PendingDynamicLinkData dynamicLink) async {
+      final Uri deepLink = dynamicLink?.link;
+
+      if (deepLink != null) {
+        _retrieveDynamicLink(deepLink.pathSegments.first);
+      }
+    }, onError: (OnLinkErrorException e) async {
+      print('onLinkError');
+      print(e.message);
+    });
+  }
+
+  Future _retrieveDynamicLink(uuid) async {
+    if (uuid != null) {
+      _bloc.setLoading(true);
+      var c = await SharedUtil.obtain(uuid);
+
+      if (c != null) {
+        await CleaningRepository.get().import(c);
+
+        PushNotification(context)..schedule(c);
+
+        _bloc.findPendents();
+      }
+
+      _bloc.setLoading(false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -41,7 +97,6 @@ class _MyAppState extends State<MyApp> {
       ],
       locale: const Locale('pt', "BR"),
       theme: ThemeData(
-        canvasColor: Colors.transparent,
         bottomAppBarColor: Colors.transparent,
         highlightColor: AppColors.SECONDARY,
         accentColor: AppColors.SECONDARY,
@@ -61,25 +116,26 @@ class _MyAppState extends State<MyApp> {
           disabledThumbColor: AppColors.PRIMARY_DARK,
         ),
         appBarTheme: AppBarTheme(
-            iconTheme: IconThemeData(
+          iconTheme: IconThemeData(
+            color: AppColors.PRIMARY_LIGHT,
+          ),
+          textTheme: TextTheme(
+            title: TextStyle(
+              fontSize: 28,
               color: AppColors.PRIMARY_LIGHT,
+              fontFamily: 'BelovedTeacher',
             ),
-            textTheme: TextTheme(
-              title: TextStyle(
-                fontSize: 28,
-                color: AppColors.PRIMARY_LIGHT,
-                fontFamily: 'BelovedTeacher',
-              ),
-            ),
-            actionsIconTheme: IconThemeData(
-              color: AppColors.PRIMARY_LIGHT,
-            )),
+          ),
+          actionsIconTheme: IconThemeData(
+            color: AppColors.PRIMARY_LIGHT,
+          ),
+        ),
         primaryColor: AppColors.PRIMARY,
       ),
       home: widget.splash
           ? Splash()
           : BlocProvider(
-              bloc: CleaningBloc(),
+              bloc: _bloc,
               child: HomePage(),
             ),
     );

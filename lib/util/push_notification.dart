@@ -17,10 +17,10 @@ class PushNotification {
   FlutterLocalNotificationsPlugin notifications;
 
   PushNotification(this.context) {
-    initialize();
+    _initialize();
   }
 
-  void initialize() {
+  void _initialize() {
     notifications = new FlutterLocalNotificationsPlugin();
 
     var initializationSettingsAndroid =
@@ -36,20 +36,22 @@ class PushNotification {
   }
 
   void schedule(Cleaning cleaning) async {
-    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-        channelId, channelName, channelInfo,
-        color: AppColors.SECONDARY,
-        importance: Importance.Max,
-        priority: Priority.High);
+    if (cleaning != null) {
+      var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+          channelId, channelName, channelInfo,
+          color: AppColors.PRIMARY,
+          importance: Importance.Max,
+          priority: Priority.High);
 
-    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
+      var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
 
-    NotificationDetails platformChannelSpecifics = new NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+      NotificationDetails platformChannelSpecifics = new NotificationDetails(
+          androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
 
-    await notifications.schedule(cleaning.id, cleaning.name,
-        cleaning.guidelines, cleaning.nextDate, platformChannelSpecifics,
-        payload: 'faxinapp:${cleaning.id}');
+      await notifications.schedule(cleaning.id, cleaning.name,
+          cleaning.guidelines, cleaning.nextDate, platformChannelSpecifics,
+          payload: 'faxinapp:${cleaning.id}');
+    }
   }
 
   Future cancel(Cleaning cleaning) async {

@@ -54,16 +54,17 @@ class SimpleBarChart extends StatelessWidget {
               renderSpec: new charts.SmallTickRendererSpec(
                 labelStyle: new charts.TextStyleSpec(
                   fontSize: 12,
-                  color: charts.MaterialPalette.white,
+                  color: charts.ColorUtil.fromDartColor(AppColors.PRIMARY),
                 ),
                 lineStyle: new charts.LineStyleSpec(
-                  color: charts.MaterialPalette.white,
+                  color: charts.ColorUtil.fromDartColor(AppColors.PRIMARY),
                 ),
               ),
             ),
             behaviors: [
               charts.ChartTitle(
                 "Consumo de Produtos",
+                subTitle: ' ',
                 titleStyleSpec: charts.TextStyleSpec(
                   color: charts.ColorUtil.fromDartColor(AppColors.PRIMARY),
                 ),
@@ -77,7 +78,7 @@ class SimpleBarChart extends StatelessWidget {
               child: Text(
                 "Sem dados",
                 style: TextStyle(
-                  color: Colors.white,
+                  color: AppColors.PRIMARY,
                 ),
               ),
             ),
