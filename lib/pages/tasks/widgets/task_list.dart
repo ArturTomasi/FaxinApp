@@ -53,10 +53,29 @@ class TaskListWidget extends StatelessWidget {
       color: AppColors.PRIMARY_LIGHT,
       child: ListView.builder(
         itemCount: _tasks.length,
+        physics: BouncingScrollPhysics(),
         itemBuilder: (BuildContext context, int i) {
           return Dismissible(
             key: ObjectKey(_tasks[i]),
             direction: DismissDirection.endToStart,
+            confirmDismiss: (d) {
+              if (_tasks[i].fixed == 0) {
+                return Future.value(true);
+              }
+              Scaffold.of(context).showSnackBar(
+                SnackBar(
+                  backgroundColor: AppColors.SECONDARY,
+                  content: Text(
+                    "Tarefa padrão não pode ser excluída",
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              );
+
+              return Future.value(false);
+            },
             onDismissed: (direction) {
               if (direction == DismissDirection.endToStart) {
                 TaskBloc _bloc = BlocProvider.of<TaskBloc>(context);

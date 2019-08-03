@@ -66,6 +66,7 @@ class ProductListEmptyWidget extends StatelessWidget {
       color: AppColors.PRIMARY_LIGHT,
       child: ListView.builder(
         itemCount: _products.length,
+        physics: BouncingScrollPhysics(),
         itemBuilder: (BuildContext context, int i) {
           return Dismissible(
             key: ObjectKey(_products[i]),

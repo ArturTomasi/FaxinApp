@@ -61,7 +61,7 @@ class CleaningTimelineWidget extends StatelessWidget {
       color: AppColors.PRIMARY_LIGHT,
       child: RefreshIndicator(
         onRefresh: () {
-          return SharedUtil.syncronized(context, show: false);
+          return SharedUtil.syncronized( buildContext: context );
         },
         child: ListView.builder(
           itemBuilder: centerTimelineBuilder,
@@ -153,57 +153,58 @@ class CleaningTimelineWidget extends StatelessWidget {
               child: SizedBox(
                 width: MediaQuery.of(context).size.width - 120,
                 child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Align(
-                          heightFactor: 0,
-                          alignment: Alignment.topRight,
-                          child: cleaning.type == CleaningType.COMMON
-                              ? Container()
-                              : Icon(
-                                  cleaning.type == CleaningType.IMPORTED
-                                      ? Icons.cloud_download
-                                      : Icons.share,
-                                  color: AppColors.PRIMARY,
-                                  size: 18,
-                                ),
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Align(
+                        heightFactor: 0,
+                        alignment: Alignment.topRight,
+                        child: cleaning.type == CleaningType.COMMON
+                            ? Container()
+                            : Icon(
+                                cleaning.type == CleaningType.IMPORTED
+                                    ? Icons.cloud_download
+                                    : Icons.share,
+                                color: AppColors.PRIMARY,
+                                size: 18,
+                              ),
+                      ),
+                      Text(
+                        cleaning.name,
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          fontSize: 22,
                         ),
-                        Text(
-                          cleaning.name,
-                          textAlign: TextAlign.left,
+                      ),
+                      const SizedBox(
+                        height: 8.0,
+                      ),
+                      Text(
+                        cleaning.guidelines,
+                        maxLines: 2,
+                        textAlign: TextAlign.left,
+                      ),
+                      const SizedBox(
+                        height: 8.0,
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width - 120,
+                        child: Text(
+                          deadline(cleaning),
+                          textAlign: TextAlign.right,
                           style: TextStyle(
-                            fontSize: 22,
+                            color: color(cleaning),
                           ),
                         ),
-                        const SizedBox(
-                          height: 8.0,
-                        ),
-                        Text(
-                          cleaning.guidelines,
-                          maxLines: 2,
-                          textAlign: TextAlign.left,
-                        ),
-                        const SizedBox(
-                          height: 8.0,
-                        ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width - 120,
-                          child: Text(
-                            deadline(cleaning),
-                            textAlign: TextAlign.right,
-                            style: TextStyle(
-                              color: color(cleaning),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 4.0,
-                        ),
-                      ],
-                    )),
+                      ),
+                      const SizedBox(
+                        height: 4.0,
+                      ),
+                    ],
+                  ),
+                ),
               ),
             )
           ],
@@ -216,10 +217,12 @@ class CleaningTimelineWidget extends StatelessWidget {
     DateTime now = DateTime.now();
 
     Duration duration = c.nextDate.difference(now);
+    //complicated
     if (duration.inDays > 0 ||
-        (duration.inDays == 0 && c.nextDate.day != now.day)) {
+        (duration.inDays == 0 && c.nextDate.day > now.day)) {
       return "Faltam ${duration.inDays + 1} dia${duration.inDays > 1 ? 's' : ''}";
-    } else if (duration.inDays < 0) {
+    } else if (duration.inDays < 0 ||
+        (duration.inDays == 0 && c.nextDate.day < now.day)) {
       return "${duration.inDays * -1} dia${duration.inDays > 1 ? 's' : ''} em atraso";
     } else {
       return "Hoje";
@@ -230,10 +233,12 @@ class CleaningTimelineWidget extends StatelessWidget {
     DateTime now = DateTime.now();
 
     Duration duration = c.nextDate.difference(now);
+    //complicated
     if (duration.inDays > 0 ||
-        (duration.inDays == 0 && c.nextDate.day != now.day)) {
+        (duration.inDays == 0 && c.nextDate.day > now.day)) {
       return Colors.green;
-    } else if (duration.inDays < 0) {
+    } else if (duration.inDays < 0 ||
+        (duration.inDays == 0 && c.nextDate.day < now.day)) {
       return Colors.red;
     } else {
       return Colors.yellow.shade700;

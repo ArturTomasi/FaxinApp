@@ -2,30 +2,27 @@ import 'dart:async';
 
 import 'package:faxinapp/bloc/bloc_provider.dart';
 import 'package:faxinapp/common/ui/splash.dart';
+import 'package:faxinapp/common/util/security_manager.dart';
 import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning_repository.dart';
 import 'package:faxinapp/pages/cleaning/util/share_util.dart';
 import 'package:faxinapp/pages/home/widgets/home_page.dart';
 import 'package:faxinapp/util/push_notification.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:faxinapp/util/AppColors.dart';
 import 'package:faxinapp/util/date_format.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   initDateFormat();
 
   bool splash =
-      (await SharedPreferences.getInstance()).getBool('splash') ?? true;
+      //(await SharedPreferences.getInstance()).getBool('splash') ?? true;
+      ! await SecurityManager.isPremium();
 
-  runApp(
-    MyApp(splash),
-  );
+  runApp(MyApp(splash));
 }
 
 class MyApp extends StatefulWidget {
@@ -42,6 +39,12 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     this.initDynamicLinks();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _bloc.dispose();
   }
 
   void initDynamicLinks() async {
@@ -68,18 +71,27 @@ class _MyAppState extends State<MyApp> {
 
   Future _retrieveDynamicLink(uuid) async {
     if (uuid != null) {
-      _bloc.setLoading(true);
+      _bloc.setLoading("Conectando ao servidor");
       var c = await SharedUtil.obtain(uuid);
 
       if (c != null) {
-        await CleaningRepository.get().import(c);
+        var _current = await CleaningRepository.get().find(c.id);
 
-        PushNotification(context)..schedule(c);
+        if (_current != null && _current.type.index == CleaningType.SHARED.index) {
+          _bloc.setLoading("Você não pode importar sua própria faxina!");
+        } else {
+          _bloc.setLoading("Importando faxina");
+          await CleaningRepository.get().import(c);
 
-        _bloc.findPendents();
+          _bloc.setLoading("Agendando sua faxina");
+          PushNotification(context)..schedule(c);
+
+          _bloc.setLoading("Atualizando...;");
+          _bloc.findPendents();
+        }
       }
 
-      _bloc.setLoading(false);
+      _bloc.setLoading(null);
     }
   }
 
@@ -133,7 +145,10 @@ class _MyAppState extends State<MyApp> {
         primaryColor: AppColors.PRIMARY,
       ),
       home: widget.splash
-          ? Splash()
+          ? BlocProvider(
+              bloc: _bloc,
+              child: Splash(),
+            )
           : BlocProvider(
               bloc: _bloc,
               child: HomePage(),

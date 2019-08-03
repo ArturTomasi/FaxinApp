@@ -52,6 +52,7 @@ class CleaningListWidget extends StatelessWidget {
     return Container(
       color: AppColors.PRIMARY_LIGHT,
       child: ListView.builder(
+        physics: BouncingScrollPhysics(),
         itemCount: _cleaning.length,
         itemBuilder: (BuildContext context, int i) {
           return Dismissible(
@@ -65,7 +66,7 @@ class CleaningListWidget extends StatelessWidget {
                 SnackBar(
                   backgroundColor: AppColors.SECONDARY,
                   content: Text(
-                    "Faxina concluida não pode ser excluida",
+                    "Faxina concluida não pode ser excluída",
                     style: TextStyle(
                       fontSize: 16,
                     ),

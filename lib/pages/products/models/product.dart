@@ -8,6 +8,7 @@ class Product {
   double capacity = 0;
   double currentCapacity = 0;
   int state = 1;
+  int fixed = 0;
 
   Product();
 
@@ -16,6 +17,7 @@ class Product {
     name = map[ProductTable.NAME];
     uuid = map[ProductTable.UUID];
     branding = map[ProductTable.BRANDING];
+    fixed = map[ProductTable.FIXED];
     capacity = double.parse(map[ProductTable.CAPACITY].toString());
     currentCapacity =
         double.parse(map[ProductTable.CURRENT_CAPACITY].toString());
@@ -43,4 +45,5 @@ class ProductTable {
   static const CAPACITY = "capacity";
   static const CURRENT_CAPACITY = "current_capacity";
   static const STATE = "state";
+  static const FIXED = "fixed";
 }

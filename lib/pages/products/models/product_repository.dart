@@ -58,7 +58,8 @@ class ProductRepository {
     var db = await _appDatabase.getDb();
 
     var result = await db.query(ProductTable.table,
-        where: "${ProductTable.STATE} = 1", orderBy: ProductTable.NAME);
+        where: "${ProductTable.STATE} = 1",
+        orderBy: '${ProductTable.NAME} COLLATE RTRIM');
 
     List<Product> products = List();
 
@@ -110,30 +111,37 @@ class ProductRepository {
   }
 
   Future<List> getCharProducts() async {
-
     var db = await _appDatabase.getDb();
 
-    return db.rawQuery(
-      "select "
+    return db.rawQuery("select "
         " P.name, ( CP.used / P.capacity ) as value"
-      " from " 
-        " products P "
-      " inner join "
-      " ( " 
-        " select "
-          " sum( amount ) as used,  "
-          " ref_product "
         " from "
-          " cleaning_products "
+        " products P "
+        " inner join "
+        " ( "
+        " select "
+        " sum( amount ) as used,  "
+        " ref_product "
+        " from "
+        " cleaning_products "
         " where "
-          " realized = 1 "
+        " realized = 1 "
         " group by "
-          "ref_product "
-      " ) as CP "
-      " on " 
+        "ref_product "
+        " ) as CP "
+        " on "
         " CP.ref_product = P.id "
-      " where "
-        " P.state = 1 "
-    );
+        " where "
+        " P.state = 1 ");
+  }
+
+  Future<int> count() async {
+    var db = await _appDatabase.getDb();
+
+    var result = await db.rawQuery(
+        'select count(*) as cnt from ${ProductTable.table} where ${ProductTable.FIXED} = 0 and ${ProductTable.STATE} = 1');
+
+    if (result.isNotEmpty) return result[0]["cnt"];
+    return 0;
   }
 }

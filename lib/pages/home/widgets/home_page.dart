@@ -25,6 +25,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
+  final GlobalKey<ScaffoldState> _keyScaffold = GlobalKey();
+
   final GlobalKey<FancyTabBarState> _keyNavigator =
       GlobalKey<FancyTabBarState>();
   final List<Widget> pages = [];
@@ -61,11 +63,12 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     CleaningBloc bloc = BlocProvider.of<CleaningBloc>(context);
 
     return Scaffold(
+      key: _keyScaffold,
       backgroundColor: AppColors.PRIMARY_LIGHT,
       appBar: bar(),
-      drawer: HomeDrawer(),
-      body: StreamBuilder<bool>(
-        initialData: false,
+      drawer: HomeDrawer(_keyScaffold),
+      body: StreamBuilder<String>(
+        initialData: null,
         stream: bloc.loading,
         builder: (context, snap) {
           return Stack(
@@ -90,12 +93,25 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 ),
               ),
               navigator,
-              snap.hasData && !snap.data
+              !snap.hasData || snap.data == null
                   ? Container()
                   : Container(
                       color: AppColors.PRIMARY_LIGHT.withOpacity(0.5),
                       child: Center(
-                        child: CircularProgressIndicator(),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            CircularProgressIndicator(),
+                            Text(
+                              snap.data,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: AppColors.SECONDARY,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     )
             ],
@@ -154,7 +170,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 );
 
                 if (c != null) {
-                  _bloc.findPendents();
+                  await _bloc.findPendents();
                 }
                 break;
 
@@ -185,7 +201,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                 break;
 
               case 3:
-                await SharedUtil.syncronized(context);
+                await SharedUtil.syncronized(buildContext: context);
                 break;
             }
           },

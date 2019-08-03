@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning_product.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning_task.dart';
-import 'package:faxinapp/pages/cleaning/util/share_util.dart';
 import 'package:faxinapp/pages/products/models/product.dart';
 import 'package:faxinapp/pages/tasks/models/task.dart';
 import 'package:path/path.dart';
@@ -34,7 +33,7 @@ class AppDatabase {
 
     _database = await openDatabase(
       path,
-      version: 10,
+      version: 20,
       onCreate: (
         Database db,
         int version,
@@ -45,7 +44,8 @@ class AppDatabase {
         await _createCleaningTaskTable(db);
         await _createCleaningProductTable(db);
 
-        await _initTasks(db);
+        _initTasks(db);
+        _initProducts(db);
       },
       onUpgrade: (
         Database db,
@@ -64,7 +64,8 @@ class AppDatabase {
         await _createCleaningTaskTable(db);
         await _createCleaningProductTable(db);
 
-        await _initTasks(db);
+        _initTasks(db);
+        _initProducts(db);
       },
     );
 
@@ -76,6 +77,7 @@ class AppDatabase {
         "${TaskTable.ID} INTEGER PRIMARY KEY AUTOINCREMENT,"
         "${TaskTable.GUIDELINES} TEXT, "
         "${TaskTable.UUID} TEXT, "
+        "${TaskTable.FIXED} INTEGER DEFAULT 0, "
         "${TaskTable.STATE} INTEGER, "
         "${TaskTable.NAME} TEXT);");
   }
@@ -85,6 +87,7 @@ class AppDatabase {
         "${ProductTable.ID} INTEGER PRIMARY KEY AUTOINCREMENT,"
         "${ProductTable.NAME} TEXT,"
         "${ProductTable.UUID} TEXT,"
+        "${ProductTable.FIXED} INTEGER DEFAULT 0, "
         "${ProductTable.BRANDING} TEXT,"
         "${ProductTable.CAPACITY} DOUBLE,"
         "${ProductTable.CURRENT_CAPACITY} DOUBLE,"
@@ -121,44 +124,121 @@ class AppDatabase {
 
   void _initTasks(Database db) {
     var names = [
-      "Colocar roupas para lavar",
-      "Varrer a casa",
-      "Varrer o pátio",
-      "Tirar o pó",
-      "Limpar guarda-roupa",
-      "Limpar eletrodomésticos",
-      "Lavar o vaso sanitário",
-      "Recolher o lixo",
-      "Limpar o chão",
-      "Passar aspirador",
-      "Limpar os vidros",
-      "Limpar janelas e aberturas",
-      "Lavar cortinas e tapetes",
+      "Arrumar camas",
+      "Lavar roupas",
+      "Dedetizar contra insetos",
       "Descongelar geladeira/freezer",
-      "Dedetizar ambientes contra insetos",
-      "Trocar filtro do ar-condicionado",
-      "Lavar caixa d'água",
-      "Trocar filtro do aspirador",
-      "Arrumar a cama",
-      "Trocar roupa de cama, mesa e banho",
-      "Trocar as toalhas de rosto do banheiro",
-      "Revisar as roupas",
+      "Limpar caixa d'água",
+      "Lavar cortinas e tapetes",
+      "Limpar o vaso sanitário",
+      "Limpar eletrodomésticos",
+      "Limpar guarda-roupa",
+      "Limpar aberturas",
+      "Limpar chão",
+      "Varrer chão",
+      "Limpar vidros",
+      "Organizar despensa",
+      "Passar aspirador",
       "Passar roupas",
-      "Organizar despensa de alimentos",
-      "Virar colchões das camas"
+      "Recolher lixo",
+      "Revisar roupas",
+      "Tirar pó",
+      "Trocar toalhas",
+      "Limpar filtro ar-condicionado",
+      "Limpar lareira",
     ];
 
     names.forEach(
-      (n) {
+      (n) async {
         var t = Task();
         t.name = n;
-        db.insert(
+        await db.insert(
           TaskTable.table,
           {
             TaskTable.NAME: t.name,
             TaskTable.UUID: t.uuid,
-            TaskTable.GUIDELINES: 'n/d',
+            TaskTable.GUIDELINES: '',
             TaskTable.STATE: t.state,
+            TaskTable.FIXED: 1
+          },
+        );
+      },
+    );
+  }
+
+  void _initProducts(Database db) {
+    var names = [
+      {
+        'name': 'Álcool',
+        'capacity': 500.0,
+      },
+      {
+        'name': 'Álcool gel',
+        'capacity': 500.0,
+      },
+      {
+        'name': 'Detergente',
+        'capacity': 500.0,
+      },
+      {
+        'name': 'Desengordurante',
+        'capacity': 500.0,
+      },
+      {
+        'name': 'Limpa-vidros',
+        'capacity': 500.0,
+      },
+      {
+        'name': 'Sabão',
+        'capacity': 1000.0,
+      },
+      {
+        'name': 'Amaciante',
+        'capacity': 100.0,
+      },
+      {
+        'name': 'Água sanitária',
+        'capacity': 1000.0,
+      },
+      {
+        'name': 'Multiuso',
+        'capacity': 500.0,
+      },
+      {
+        'name': 'Desinfetante',
+        'capacity': 500.0,
+      },
+      {
+        'name': 'Limpador de uso geral',
+        'capacity': 1000.0,
+      },
+      {
+        'name': 'Sapólio',
+        'capacity': 500.0,
+      },
+      {
+        'name': 'Vinagre',
+        'capacity': 750.0,
+      },
+    ];
+
+    names.forEach(
+      (n) async {
+        var p = Product();
+        p.name = n['name'];
+        p.capacity = n['capacity'];
+        p.currentCapacity = p.capacity;
+
+        await db.insert(
+          ProductTable.table,
+          {
+            ProductTable.NAME: p.name,
+            ProductTable.UUID: p.uuid,
+            ProductTable.STATE: p.state,
+            ProductTable.CAPACITY: p.capacity,
+            ProductTable.CURRENT_CAPACITY: p.currentCapacity,
+            ProductTable.BRANDING: '',
+            ProductTable.FIXED: 1
           },
         );
       },

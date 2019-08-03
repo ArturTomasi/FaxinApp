@@ -6,6 +6,7 @@ import 'package:faxinapp/pages/cleaning/util/share_util.dart';
 import 'package:faxinapp/util/AppColors.dart';
 import 'package:faxinapp/util/push_notification.dart';
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:qr_reader/qr_reader.dart';
 
 class ImportPage extends StatefulWidget {
@@ -33,8 +34,8 @@ class _ImportPageState extends State<ImportPage> {
           "Importar Faxina",
         ),
       ),
-      body: StreamBuilder<bool>(
-        initialData: false,
+      body: StreamBuilder<String>(
+        initialData: null,
         stream: _bloc.loading,
         builder: (_, snap) => Stack(
           alignment: Alignment.center,
@@ -56,7 +57,7 @@ class _ImportPageState extends State<ImportPage> {
                         labelText: "Código",
                         icon: GestureDetector(
                           child: Icon(
-                            Icons.camera_alt,
+                            MdiIcons.qrcodeScan,
                             size: 40,
                             color: AppColors.SECONDARY,
                           ),
@@ -88,11 +89,19 @@ class _ImportPageState extends State<ImportPage> {
                     width: MediaQuery.of(context).size.width * 0.8,
                     child: RaisedButton(
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10))),
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10),
+                        ),
+                      ),
                       onPressed: _save,
                       color: AppColors.SECONDARY,
                       textColor: Colors.white,
-                      child: Text("Importar", style: TextStyle(fontSize: 16)),
+                      child: Text(
+                        "Importar",
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
                     ),
                   ),
                   SizedBox(
@@ -101,12 +110,25 @@ class _ImportPageState extends State<ImportPage> {
                 ],
               ),
             ),
-            snap.hasData && !snap.data
+            !snap.hasData || snap.data == null
                 ? Container()
                 : Container(
                     color: AppColors.PRIMARY_LIGHT.withOpacity(0.5),
                     child: Center(
-                      child: CircularProgressIndicator(),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          CircularProgressIndicator(),
+                          Text(
+                            snap.data,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: AppColors.SECONDARY,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
           ],
@@ -120,18 +142,22 @@ class _ImportPageState extends State<ImportPage> {
 
     if (_codeController.text != null && _codeController.text.isNotEmpty) {
       CleaningBloc _bloc = BlocProvider.of(context);
-      _bloc.setLoading(true);
+      _bloc.setLoading("Conectando ao servidor");
       Cleaning c = await SharedUtil.obtain(_codeController.text);
       if (c != null) {
+        _bloc.setLoading("Validando sua faxina");
         var _current = await CleaningRepository.get().find(c.id);
 
-        if (_current != null && _current.type == CleaningType.SHARED) {
+        if (_current != null && _current.type.index == CleaningType.SHARED.index) {
           msg = "Você não pode importar sua própria faxina!";
         } else {
+          _bloc.setLoading("Importando faxina");
           await CleaningRepository.get().import(c);
 
+          _bloc.setLoading("Agendando faxina");
           PushNotification(context)..schedule(c);
 
+          _bloc.setLoading("Atualizando...");
           BlocProvider.of<CleaningBloc>(context).findPendents();
 
           msg = "Importado faxina com sucesso!";
@@ -140,7 +166,7 @@ class _ImportPageState extends State<ImportPage> {
         }
       }
 
-      _bloc.setLoading(false);
+      _bloc.setLoading(null);
     }
 
     _codeController.text = '';

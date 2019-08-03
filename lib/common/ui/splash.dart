@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:faxinapp/bloc/bloc_provider.dart';
 import 'package:faxinapp/common/ui/animate_route.dart';
 import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';
@@ -5,6 +7,7 @@ import 'package:faxinapp/pages/home/widgets/home_page.dart';
 import 'package:faxinapp/util/AppColors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:simple_coverflow/simple_coverflow.dart';
 
@@ -13,36 +16,37 @@ class Splash extends StatefulWidget {
   _SplashState createState() => _SplashState();
 }
 
-class _SplashState extends State<Splash> {
+class _SplashState extends State<Splash> with TickerProviderStateMixin {
+  AnimationController animation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    animation = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 400),
+    );
+
+    Tween(begin: 0, end: 0.5).animate(animation);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final _pages = [
-      card(
-        "Quisque pretium, purus nec sollicitudin euismod, lorem ",
-        "Donec eget sollicitudin turpis, eget vestibulum urna. Etiam congue vestibulum quam sit amet ornare. Ut gravida, lorem sit amet sagittis dapibus, metus orci congue tortor",
-        "assets/images/banner.jpg",
-      ),
-      card(
-        "Phasellus hendrerit nisl sit amet mauris suscipit, in convallis massa tempor.",
-        "Donec aliquam viverra urna vel porttitor. Praesent ac sodales orci. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Morbi in posuere leo, vitae ullamcorper orci. Suspendisse potenti. Duis ut consectetur leo.",
-        "assets/images/banner1.jpg",
-      ),
-      card(
-        "Vivamus lobortis libero odio, quis efficitur magna bibendum nec",
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean ut cursus diam. Cras pulvinar volutpat nulla, vitae congue lorem consequat vel. Pellentesque fermentum sem et velit sagittis, a gravida dolor imperdiet. ",
-        "assets/images/banner2.jpg",
-      ),
-      card(
-        "Quisque condimentum eros sed arcu ullamcorper facilisis sit amet ac tortor",
-        "Fusce vel mauris consectetur erat bibendum lobortis in vitae sem. Morbi non ex feugiat, vehicula felis id, dignissim ante.",
-        "assets/images/banner1.jpg",
-      ),
-      card(
-        "Nam viverra arcu ac libero auctor ultricies. Sed iaculis eu erat semper cursus.",
-        "Nam eu est a lorem consectetur ultricies id sit amet dolor. Suspendisse vehicula vitae sapien at sagittis. Etiam eget mattis dui, imperdiet posuere orci. Maecenas a tristique libero, suscipit ultrices risus. Sed dictum scelerisque erat vel pharetra. Pellentesque sed mauris tellus. Duis luctus justo at aliquam egestas. Vivamus lobortis libero odio, quis efficitur magna bibendum nec. Donec ac leo dapibus quam mattis luctus et ac quam.",
-        "assets/images/banner.jpg",
-      ),
+      welcome(),
+      buymeacoffe(),
+      complete(),
+      end(),
     ];
+
+    CleaningBloc _bloc = BlocProvider.of<CleaningBloc>(context);
+    var _currentIndex = 0;
 
     return Scaffold(
       backgroundColor: AppColors.PRIMARY_LIGHT,
@@ -52,6 +56,13 @@ class _SplashState extends State<Splash> {
           CoverFlow(
             dismissibleItems: false,
             itemCount: _pages.length,
+            currentItemChangedCallback: (i) {
+              _currentIndex = i;
+              if (i == _pages.length - 1)
+                animation.forward();
+              else
+                animation.reverse();
+            },
             itemBuilder: (_, i) => _pages[i],
           ),
           Padding(
@@ -59,18 +70,35 @@ class _SplashState extends State<Splash> {
               bottom: 20,
             ),
             child: SizedBox(
-              width: 100,
-              child: RaisedButton(
-                color: AppColors.PRIMARY,
-                elevation: 5,
-                child: Text(
-                  "Prosseguir",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontFamily: 'bold',
+              width: 120,
+              child: FadeTransition(
+                opacity: animation,
+                child: RaisedButton(
+                  color: AppColors.SECONDARY,
+                  elevation: 5,
+                  child: Text(
+                    "Prosseguir",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontFamily: 'bold',
+                    ),
                   ),
+                  onPressed: () {
+                    if (_currentIndex == _pages.length - 1) {
+                      SharedPreferences.getInstance()
+                          .then((s) => s.setBool('splash', false));
+
+                      Navigator.of(context).pushReplacement(
+                        AnimateRoute(
+                          builder: (_) => BlocProvider(
+                            bloc: _bloc,
+                            child: HomePage(),
+                          ),
+                        ),
+                      );
+                    }
+                  },
                 ),
-                onPressed: _procceed,
               ),
             ),
           ),
@@ -79,17 +107,18 @@ class _SplashState extends State<Splash> {
     );
   }
 
-  Widget card(String title, String subtitle, String banner) {
+  Widget welcome() {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 5),
       decoration: BoxDecoration(
+        color: AppColors.PRIMARY,
         image: DecorationImage(
-          fit: BoxFit.fill,
           colorFilter: new ColorFilter.mode(
-            Colors.white.withOpacity(0.5),
-            BlendMode.dstATop,
+            Colors.white.withOpacity(0.9),
+            BlendMode.dstOut,
           ),
-          image: AssetImage(banner),
+          fit: BoxFit.none,
+          image: ExactAssetImage("assets/images/logo.png", scale: 2),
         ),
         boxShadow: [
           BoxShadow(
@@ -101,59 +130,354 @@ class _SplashState extends State<Splash> {
         borderRadius: BorderRadius.circular(15),
       ),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        mainAxisSize: MainAxisSize.max,
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.symmetric(
-              vertical: 20,
-              horizontal: 10,
+            padding: EdgeInsets.only(
+              top: 50,
             ),
             child: Text(
-              title,
-              textAlign: TextAlign.justify,
+              "Bem-vindo ao aplicativo",
+              textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 32,
-                fontFamily: 'BreeSerif',
-                color: AppColors.PRIMARY,
-                fontWeight: FontWeight.bold,
+                color: AppColors.PRIMARY_LIGHT,
+                fontSize: 30,
+                fontFamily: 'BelovedTeacher',
               ),
+            ),
+          ),
+          Text(
+            "Meu Lar",
+            style: TextStyle(
+                color: AppColors.PRIMARY_LIGHT,
+                fontSize: 40,
+                fontFamily: 'BelovedTeacher'),
+          ),
+          Container(
+            height: 2,
+            margin: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+            color: AppColors.PRIMARY_LIGHT,
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: 40,
+            ),
+            child: Text(
+              "O objetivo do aplicativo é ajudar você na organização do seu Lar!",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: AppColors.PRIMARY_LIGHT,
+                fontSize: 20,
+              ),
+            ),
+          ),
+          Container(
+            height: 85,
+            margin: EdgeInsets.symmetric(horizontal: 80),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Image.asset(
+                  'assets/images/icone_4.png',
+                  height: 35,
+                ),
+                Image.asset(
+                  'assets/images/icone_3.png',
+                  height: 35,
+                ),
+                Image.asset(
+                  'assets/images/icone_2.png',
+                  height: 35,
+                ),
+                Image.asset(
+                  'assets/images/icone_1.png',
+                  height: 35,
+                ),
+              ],
             ),
           ),
           Padding(
             padding: EdgeInsets.symmetric(
-              vertical: 30,
-              horizontal: 10,
+              horizontal: 40,
             ),
             child: Text(
-              subtitle,
-              textAlign: TextAlign.justify,
+              "Esta é uma versão gratuita e livre de anúncios que permite:",
+              textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 22,
-                
-                fontFamily: 'BreeSerif',
-                color: AppColors.PRIMARY,
-                fontStyle: FontStyle.italic,
-                fontWeight: FontWeight.normal,
+                color: AppColors.PRIMARY_LIGHT,
+                fontSize: 20,
               ),
             ),
-          )
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: AppColors.PRIMARY_DARK,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            width: MediaQuery.of(context).size.width,
+            margin: EdgeInsets.all(20),
+            padding: EdgeInsets.symmetric(
+              vertical: 10,
+            ),
+            child: Text(
+              '10 eventos de organização\n(agendamento manual);\n'
+              '10 novos produtos;\n'
+              '10 novas tarefas.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+                height: 1.2,
+                color: AppColors.SECONDARY,
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
 
-  void _procceed() {
-    SharedPreferences.getInstance().then((s) {
-      s.setBool('splash', false);
-    });
+  Widget end() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 5),
+      decoration: BoxDecoration(
+        color: AppColors.PRIMARY,
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 5,
+            color: Colors.white,
+            spreadRadius: 0,
+          )
+        ],
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Column(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(
+              top: 50,
+            ),
+            child: Image.asset(
+              'assets/images/logo.png',
+              scale: 6,
+            ),
+          ),
+          Text(
+            "Meu Lar",
+            style: TextStyle(
+                color: AppColors.PRIMARY_LIGHT,
+                fontSize: 40,
+                fontFamily: 'BelovedTeacher'),
+          ),
+          Container(
+            height: 2,
+            margin: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+            color: AppColors.PRIMARY_LIGHT,
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: 40,
+            ),
+            child: Text(
+              "Obrigado por instalar nosso aplicativo!\n\n"
+              "Sugestões são sempre bem-vindas e podemos conversar através de nossas redes sociais:",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: AppColors.PRIMARY_LIGHT,
+                fontSize: 18,
+              ),
+            ),
+          ),
+          Column(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(
+                  top: 25,
+                  bottom: 10,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Icon(
+                      MdiIcons.instagram,
+                      color: AppColors.PRIMARY_LIGHT,
+                    ),
+                    Text(
+                      '   @appmeular',
+                      style: TextStyle(
+                        color: AppColors.PRIMARY_LIGHT,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Icon(
+                    MdiIcons.facebookBox,
+                    color: AppColors.PRIMARY_LIGHT,
+                  ),
+                  Text(
+                    '   /aplicativomeular',
+                    style: TextStyle(
+                      color: AppColors.PRIMARY_LIGHT,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 
-    Navigator.of(context).pushReplacement(
-      AnimateRoute(
-        builder: (_) => BlocProvider(
-          bloc: CleaningBloc(),
-          child: HomePage(),
-        ),
+  Widget complete() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 5),
+      decoration: BoxDecoration(
+        color: AppColors.PRIMARY,
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 5,
+            color: Colors.white,
+            spreadRadius: 0,
+          )
+        ],
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Column(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(
+              top: 50,
+            ),
+            child: Image.asset(
+              'assets/images/logo.png',
+              scale: 6,
+            ),
+          ),
+          Text(
+            "Meu Lar",
+            style: TextStyle(
+                color: AppColors.PRIMARY_LIGHT,
+                fontSize: 40,
+                fontFamily: 'BelovedTeacher'),
+          ),
+          Container(
+            height: 2,
+            margin: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+            color: AppColors.PRIMARY_LIGHT,
+          ),
+          Padding(
+            padding: EdgeInsets.only(left: 40, right: 40, top: 10, bottom: 10),
+            child: Text(
+              "Versão Completa:",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: AppColors.PRIMARY_LIGHT,
+                fontSize: 20,
+              ),
+            ),
+          ),
+          Container(
+            decoration: BoxDecoration(
+              color: AppColors.PRIMARY_DARK,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            width: MediaQuery.of(context).size.width,
+            margin: EdgeInsets.all(20),
+            padding: EdgeInsets.symmetric(
+              vertical: 10,
+            ),
+            child: Text(
+              'Cadastro ilimitado de eventos,\n tarefas e produtos;\n\n'
+              'Compartilhamento de eventos\n com outras pessoas;\n\n'
+              'Agendamento automático dos\n eventos conforme a periodicidade\n de cada um.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 15,
+                height: 1,
+                color: AppColors.SECONDARY,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buymeacoffe() {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 5),
+      decoration: BoxDecoration(
+        color: AppColors.PRIMARY,
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 5,
+            color: Colors.white,
+            spreadRadius: 0,
+          )
+        ],
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Column(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(
+              top: 50,
+            ),
+            child: Image.asset(
+              'assets/images/logo.png',
+              scale: 6,
+            ),
+          ),
+          Text(
+            "Meu Lar",
+            style: TextStyle(
+                color: AppColors.PRIMARY_LIGHT,
+                fontSize: 40,
+                fontFamily: 'BelovedTeacher'),
+          ),
+          Container(
+            height: 2,
+            margin: EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+            color: AppColors.PRIMARY_LIGHT,
+          ),
+          Padding(
+            padding: EdgeInsets.only(
+              left: 40,
+              right: 40,
+              top: 10,
+            ),
+            child: Text(
+              "E aí, gostou do aplicativo?",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: AppColors.PRIMARY_LIGHT,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 70, vertical: 20),
+            child: Text(
+              "Instale a versão completa por apenas R\$ 1,49 e nos ajude a continuar ajudando na organização de outros lares!",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: AppColors.PRIMARY_LIGHT,
+                fontSize: 18,
+              ),
+            ),
+          ),
+          Image.asset(
+            'assets/images/google-play-badge.png',
+            scale: 4,
+          )
+        ],
       ),
     );
   }

@@ -25,6 +25,8 @@ dependencies:
   connectivity: ^0.4.3+2  
   charts_flutter: 
   simple_coverflow: '^0.0.6' 
+  material_design_icons_flutter: ^3.2.3895
+  flutter_inapp_purchase: ^1.0.1
   share:
 dev_dependencies:
   flutter_test:

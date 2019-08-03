@@ -7,6 +7,8 @@ import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning_product.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning_repository.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning_task.dart';
+import 'package:faxinapp/pages/products/models/product.dart';
+import 'package:faxinapp/pages/tasks/models/task.dart';
 import 'package:faxinapp/util/AppColors.dart';
 import 'package:faxinapp/util/push_notification.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -70,83 +72,102 @@ class SharedUtil {
     await db.reference().child('done/${cleaning.uuid}').update({
       "uuid": cleaning.uuid,
       "due_date": cleaning.dueDate.toIso8601String(),
-      "products:": products.map((p) => p.toJson()).toList(),
-      "tasks:": tasks.map((t) => t.toJson()).toList()
+      "products": products.map((p) => p.toJson()).toList(),
+      "tasks": tasks.map((t) => t.toJson()).toList()
     });
   }
 
-  static Future syncronized(BuildContext context, {bool show = true}) async {
+  static Future syncronized({
+    GlobalKey<ScaffoldState> globalKey,
+    BuildContext buildContext,
+  }) async {
+    ScaffoldState state;
+    BuildContext context;
+
+    if ( buildContext == null && globalKey != null ){
+      context = globalKey.currentContext;
+      state = globalKey.currentState;
+    } else if ( state == null && context != null ) {
+      state = buildContext.ancestorStateOfType(const TypeMatcher<ScaffoldState>());
+      context =  buildContext;
+    } else {
+      NullThrownError(); 
+    }
+
     if (await Connectivity().checkConnectivity() == ConnectivityResult.none) {
-      Scaffold.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: AppColors.SECONDARY,
-          content: Text(
-            "Verifique sua conexão",
-            style: TextStyle(fontSize: 16),
-          ),
-        ),
-      );
+      state.showSnackBar(
+            SnackBar(
+              backgroundColor: AppColors.SECONDARY,
+              content: Text(
+                "Verifique sua conexão",
+                style: TextStyle(fontSize: 16),
+              ),
+            ),
+          );
     } else {
       CleaningBloc _bloc = BlocProvider.of<CleaningBloc>(context);
 
-      if (show) {
-        _bloc.setLoading(true);
+      if (globalKey != null) {
+        _bloc.setLoading('Conectando ao servidor');
       }
 
-      Secrets secrets = await Secrets.instance();
+      String msg = "Sincronizado com sucesso";
 
-      var app = await FirebaseApp.appNamed(FirebaseApp.defaultAppName);
+      try {
+        Secrets secrets = await Secrets.instance();
 
-      var db = FirebaseDatabase(
-        app: app,
-        databaseURL: '${secrets.firebase}',
-      );
+        var app = await FirebaseApp.appNamed(FirebaseApp.defaultAppName);
 
-      List<Cleaning> cleanings = await CleaningRepository.get().findShared();
+        var db = FirebaseDatabase(
+          app: app,
+          databaseURL: '${secrets.firebase}',
+        );
 
-      cleanings.forEach(
-        (c) async {
+        _bloc.setLoading('Buscando suas faxinas compartilhadas');
+
+        List<Cleaning> cleanings = await CleaningRepository.get().findShared();
+
+        for (Cleaning c in cleanings) {
+          _bloc.setLoading('Sincronizando ${c.name}');
           var snapshot = await db.reference().child('done/${c.uuid}').once();
+
           if (snapshot.value != null) {
+            _bloc.setLoading('Convertendo faxina ${c.name}');
             List<CleaningProduct> products = [];
             List<CleaningTask> tasks = [];
 
             c.dueDate = DateTime.parse(snapshot.value['due_date']);
 
-            c.tasks.forEach(
-              (t) {
-                var result = snapshot.value['tasks']
-                    .firstWhere((map) => map['uuid'] == t.uuid);
+            for (Task t in c.tasks) {
+              var result = snapshot.value['tasks']
+                  .firstWhere((map) => map['uuid'] == t.uuid);
 
-                if (result != null) {
-                  tasks.add(
-                    new CleaningTask(
-                      cleaning: c,
-                      task: t,
-                      realized: result['realized'],
-                    ),
-                  );
-                }
-              },
-            );
+              if (result != null) {
+                tasks.add(
+                  new CleaningTask(
+                    cleaning: c,
+                    task: t,
+                    realized: result['realized'],
+                  ),
+                );
+              }
+            }
 
-            c.products.forEach(
-              (p) {
-                var result = snapshot.value['products']
-                    .firstWhere((map) => map['uuid'] == p.uuid);
+            for (Product p in c.products) {
+              var result = snapshot.value['products']
+                  .firstWhere((map) => map['uuid'] == p.uuid);
 
-                if (result != null) {
-                  products.add(
-                    new CleaningProduct(
-                      cleaning: c,
-                      product: p,
-                      amount: result['amount'],
-                      realized: result['realized'],
-                    ),
-                  );
-                }
-              },
-            );
+              if (result != null) {
+                products.add(
+                  new CleaningProduct(
+                    cleaning: c,
+                    product: p,
+                    amount: result['amount'],
+                    realized: result['realized'],
+                  ),
+                );
+              }
+            }
 
             Cleaning cn =
                 await CleaningRepository.get().done(c, tasks, products);
@@ -159,18 +180,20 @@ class SharedUtil {
             await db.reference().child('done/${c.uuid}').remove();
             await db.reference().child('shared/${c.uuid}').remove();
           }
-        },
-      );
-
-      if (show) {
-        _bloc.setLoading(false);
+        }
+      } catch (e) {
+        msg = "Ocorreu um erro ao importar faxina";
       }
 
-      Scaffold.of(context).showSnackBar(
+      if (globalKey != null) {
+        _bloc.setLoading(null);
+      }
+
+      state.showSnackBar(
         SnackBar(
           backgroundColor: AppColors.SECONDARY,
           content: Text(
-            "Sincronizado com sucesso",
+            msg,
             style: TextStyle(fontSize: 16),
           ),
         ),

@@ -17,10 +17,10 @@ class CleaningBloc implements BlocBase {
 
   Stream<List<Cleaning>> get pendencies => _controllerPendency.stream;
 
-  StreamController<bool> _controllerLoading =
-      StreamController<bool>.broadcast();
+  StreamController<String> _controllerLoading =
+      StreamController<String>.broadcast();
 
-  Stream<bool> get loading => _controllerLoading.stream;
+  Stream<String> get loading => _controllerLoading.stream;
 
   List<Cleaning> pendencyCache;
 
@@ -31,7 +31,9 @@ class CleaningBloc implements BlocBase {
   }
 
   @override
-  void dispose() {}
+  void dispose() {
+    print( 'D I S P O S E');
+  }
 
   refresh() async {
     _controller.sink.add(await _repository.findAll());
@@ -39,7 +41,7 @@ class CleaningBloc implements BlocBase {
     findPendents();
   }
 
-  setLoading(bool value) {
+  setLoading(String value) {
     _controllerLoading.sink.add(value);
   }
 

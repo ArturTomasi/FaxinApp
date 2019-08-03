@@ -81,4 +81,14 @@ class TaskRepository {
       await save(t);
     });
   }
+
+  Future<int> count() async {
+    var db = await _appDatabase.getDb();
+
+    var result = await db.rawQuery(
+        'select count(*) as cnt from ${TaskTable.table} where ${TaskTable.FIXED} = 0 and ${TaskTable.STATE} = 1');
+
+    if (result.isNotEmpty) return result[0]["cnt"];
+    return 0;
+  }
 }

@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:faxinapp/util/AppColors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'tab_item.dart';
 import 'package:vector_math/vector_math.dart' as vector;
 
@@ -89,7 +90,7 @@ class FancyTabBarState extends State<FancyTabBar>
 
   void moveChart() {
     setState(() {
-      nextIcon = Icons.insert_chart;
+      nextIcon = MdiIcons.chartBar;
       currentSelected = 0;
     });
 
@@ -123,7 +124,7 @@ class FancyTabBarState extends State<FancyTabBar>
         alignment: Alignment.topCenter,
         children: <Widget>[
           Container(
-            height: 55,
+            height: 60,
             margin: EdgeInsets.only(top: 45),
             color: AppColors.PRIMARY,
             child: Row(
@@ -132,7 +133,7 @@ class FancyTabBarState extends State<FancyTabBar>
               children: <Widget>[
                 TabItem(
                     selected: currentSelected == 0,
-                    iconData: Icons.insert_chart,
+                    iconData: MdiIcons.chartBar,
                     title: "Gráficos",
                     callbackFunction: () {
                       moveChart();

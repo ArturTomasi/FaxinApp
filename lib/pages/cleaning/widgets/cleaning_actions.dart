@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'package:connectivity/connectivity.dart';
 import 'package:faxinapp/bloc/bloc_provider.dart';
+import 'package:faxinapp/common/data/Secrets.dart';
 import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';
 import 'package:faxinapp/pages/cleaning/util/share_util.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
@@ -191,9 +192,9 @@ class _CleaningActionsState extends State<CleaningActions>
                           ConnectivityResult.none) {
                         show("Verifica sua conexão");
                       } else {
-                        bloc.setLoading(true);
+                        bloc.setLoading("Compartilhando");
                         await SharedUtil.share(widget.cleaning);
-                        bloc.setLoading(false);
+                        bloc.setLoading( null );
                         await showDialog(
                           context: context,
                           builder: (_) => SimpleDialog(

@@ -47,10 +47,29 @@ class ProductListWidget extends StatelessWidget {
       color: AppColors.PRIMARY_LIGHT,
       child: ListView.builder(
         itemCount: _products.length,
+        physics: BouncingScrollPhysics(),
         itemBuilder: (BuildContext context, int i) {
           return Dismissible(
             key: ObjectKey(_products[i]),
             direction: DismissDirection.endToStart,
+            confirmDismiss: (d) {
+              if (_products[i].fixed == 0) {
+                return Future.value(true);
+              }
+              Scaffold.of(context).showSnackBar(
+                SnackBar(
+                  backgroundColor: AppColors.SECONDARY,
+                  content: Text(
+                    "Produto padrão não pode ser excluído",
+                    style: TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              );
+
+              return Future.value(false);
+            },
             onDismissed: (direction) {
               if (direction == DismissDirection.endToStart) {
                 ProductBloc _bloc = BlocProvider.of<ProductBloc>(context);

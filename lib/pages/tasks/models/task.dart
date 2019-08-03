@@ -6,11 +6,13 @@ class Task{
   String name = "";
   String guidelines = "";
   int state = 1;
+  int fixed = 0;
 
   Task();
 
   Task.fromMap(Map<dynamic, dynamic> map) {
     id = map[TaskTable.ID];
+    fixed = map[TaskTable.FIXED];
     name = map[TaskTable.NAME];
     uuid = map[TaskTable.UUID];
     guidelines = map[TaskTable.GUIDELINES];
@@ -36,4 +38,5 @@ class TaskTable {
   static const NAME = "name";
   static const GUIDELINES = "guidelines";
   static const STATE = "state";
+  static const FIXED = "fixed";
 }

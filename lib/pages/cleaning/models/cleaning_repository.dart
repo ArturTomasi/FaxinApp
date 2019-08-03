@@ -336,11 +336,18 @@ class CleaningRepository {
         where: '${CleaningTable.ID} = ? ',
         whereArgs: [cleaning.id]);
 
-    tasks.forEach((task) async => await db.update(
-        CleaningTaskTable.table, {CleaningTaskTable.REALIZED: task.realized},
+    tasks.forEach(
+      (task) async => await db.update(
+        CleaningTaskTable.table,
+        {CleaningTaskTable.REALIZED: task.realized},
         where:
             "${CleaningTaskTable.REF_CLEANING} = ? and ${CleaningTaskTable.REF_TASK} = ?",
-        whereArgs: [cleaning.id, task.task.id]));
+        whereArgs: [
+          cleaning.id,
+          task.task.id,
+        ],
+      ),
+    );
 
     products.forEach((product) async {
       await db.update(
@@ -353,31 +360,40 @@ class CleaningRepository {
               "${CleaningProductTable.REF_CLEANING} = ? and ${CleaningProductTable.REF_PRODUCT} = ?",
           whereArgs: [cleaning.id, product.product.id]);
 
+      product.product.currentCapacity -= product.amount;
+
       await db.update(
           ProductTable.table,
           {
             ProductTable.CURRENT_CAPACITY:
-                product.product.currentCapacity - product.amount,
+                product.product.currentCapacity,
           },
           where: "${ProductTable.ID} = ?",
           whereArgs: [product.product.id]);
     });
 
-    products.forEach((product) => {});
+    
 
     Cleaning newCleaning;
-    
-    if ( cleaning.type != CleaningType.IMPORTED && cleaning.frequency != Frequency.NONE ) {
-      newCleaning =  Cleaning();
+
+    if (cleaning.type != CleaningType.IMPORTED &&
+        cleaning.frequency != Frequency.NONE) {
+
+      //update products curretn capacity
+      List<Product> _prods = List<Product>();
+      
+      products.forEach((product) => _prods.add( product.product ) );
+
+      newCleaning = Cleaning();
       newCleaning.estimatedTime = cleaning.estimatedTime;
       newCleaning.frequency = cleaning.frequency;
       newCleaning.guidelines = cleaning.guidelines;
       newCleaning.name = cleaning.name;
       newCleaning.tasks = cleaning.tasks;
-      newCleaning.products = cleaning.products;
+      newCleaning.products = _prods;
       newCleaning.nextDate = cleaning.futureDate();
 
-      await this.save(newCleaning); 
+      await this.save(newCleaning);
     }
 
     return newCleaning;
@@ -418,5 +434,15 @@ class CleaningRepository {
     );
 
     return data;
+  }
+
+  Future<int> count() async {
+    var db = await _appDatabase.getDb();
+
+    var result =
+        await db.rawQuery('select count(*) as cnt from ${CleaningTable.table}');
+
+    if (result.isNotEmpty) return result[0]["cnt"];
+    return 0;
   }
 }
