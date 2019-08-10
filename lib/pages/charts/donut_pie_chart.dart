@@ -16,7 +16,7 @@ class DonutPieChart extends StatelessWidget {
               charts.Series<dynamic, int>(
                 id: 'donut-data',
                 labelAccessorFn: (row, _) =>
-                    Frequency.valueOf(row['type']).label,
+                    '${Frequency.valueOf(row['type']).label}: ${row['count']}',
                 colorFn: (row, _) => charts.Color.fromHex(
                     code: Frequency.valueOf(row['type']).color),
                 domainFn: (sales, _) => sales['type'],

@@ -25,7 +25,7 @@ class _ProductEditorState extends State<ProductEditor> {
       initialData: false,
       future: SecurityManager.canAddProduct(),
       builder: (_, snap) {
-        return snap.hasData && snap.data
+        return ( snap.hasData && snap.data ) || (product.id  != null && product.id > 0)
             ? Scaffold(
                 appBar: AppBar(
                   centerTitle: true,

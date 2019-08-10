@@ -121,11 +121,11 @@ class _MyAppState extends State<MyApp> {
           backgroundColor: AppColors.SECONDARY,
         ),
         sliderTheme: SliderTheme.of(context).copyWith(
-          disabledActiveTickMarkColor: AppColors.PRIMARY_DARK,
-          disabledInactiveTickMarkColor: AppColors.PRIMARY,
-          disabledActiveTrackColor: AppColors.PRIMARY_DARK,
-          disabledInactiveTrackColor: AppColors.PRIMARY,
-          disabledThumbColor: AppColors.PRIMARY_DARK,
+          disabledActiveTickMarkColor: AppColors.PRIMARY,
+          disabledInactiveTickMarkColor: AppColors.PRIMARY_DARK,
+          disabledActiveTrackColor: AppColors.PRIMARY,
+          disabledInactiveTrackColor: AppColors.PRIMARY_DARK,
+          disabledThumbColor: AppColors.PRIMARY,
         ),
         appBarTheme: AppBarTheme(
           iconTheme: IconThemeData(

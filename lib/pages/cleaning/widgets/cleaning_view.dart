@@ -409,7 +409,9 @@ class _CleaningViewState extends State<CleaningView> {
               max: item.product.capacity,
               label:
                   '${((item.amount / item.product.capacity) * 100).toInt()}%',
-              value: item.amount.toDouble(),
+              value: widget.cleaning.dueDate == null
+                  ? item.amount.toDouble()
+                  : (item.product.capacity - item.amount),
             )
           : Container(),
       title: new Text(

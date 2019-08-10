@@ -60,7 +60,7 @@ class _CleaningEditorState extends State<CleaningEditor> {
       initialData: false,
       future: SecurityManager.canAddCleaning(),
       builder: (_, snap) {
-        return snap.hasData && snap.data
+        return ( snap.hasData && snap.data ) || (cleaning.id  != null && cleaning.id > 0)
             ? Scaffold(
                 appBar: AppBar(
                   centerTitle: true,
@@ -146,8 +146,7 @@ class _CleaningEditorState extends State<CleaningEditor> {
                               },
                               elements: snap.hasData && snap.data
                                   ? Frequency.values()
-                                  : []
-                                ..add(Frequency.NONE),
+                                  : ([]..add(Frequency.NONE)),
                               selecteds: _frequency != null
                                   ? ([]..add(_frequency))
                                   : null,

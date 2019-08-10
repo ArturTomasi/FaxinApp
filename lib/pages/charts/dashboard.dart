@@ -25,9 +25,12 @@ class Dashboard extends StatelessWidget {
           SizedBox(
             height: 40,
           ),
-          SizedBox(
-            height: (MediaQuery.of(context).size.height * 0.4),
-            child: SimpleBarChart(),
+          Padding(
+            padding: EdgeInsets.symmetric( horizontal: 10 ),
+            child: SizedBox(
+              height: (MediaQuery.of(context).size.height * 0.7 ),
+              child: SimpleBarChart(),
+            ),
           ),
           SizedBox(
             height: 40,

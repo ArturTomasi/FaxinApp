@@ -2,10 +2,13 @@ import 'dart:math' as math;
 import 'package:connectivity/connectivity.dart';
 import 'package:faxinapp/bloc/bloc_provider.dart';
 import 'package:faxinapp/common/data/Secrets.dart';
+import 'package:faxinapp/common/ui/animate_route.dart';
+import 'package:faxinapp/common/util/security_manager.dart';
 import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';
 import 'package:faxinapp/pages/cleaning/util/share_util.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
 import 'package:faxinapp/util/AppColors.dart';
+import 'package:faxinapp/util/licensing_expired.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -50,8 +53,13 @@ class _CleaningActionsState extends State<CleaningActions>
           alignment: FractionalOffset.topCenter,
           child: ScaleTransition(
             scale: CurvedAnimation(
-                parent: _controller,
-                curve: Interval(0.0, 1.0, curve: Curves.easeOut)),
+              parent: _controller,
+              curve: Interval(
+                0.0,
+                1.0,
+                curve: Curves.easeOut,
+              ),
+            ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
@@ -67,7 +75,7 @@ class _CleaningActionsState extends State<CleaningActions>
                   ),
                   alignment: Alignment.center,
                   child: Text(
-                    "Concluir",
+                    "Realizar",
                     style: TextStyle(
                       color: Colors.white,
                     ),
@@ -79,7 +87,7 @@ class _CleaningActionsState extends State<CleaningActions>
                   heroTag: 'done',
                   onPressed: () async {
                     if (widget.cleaning.type == CleaningType.SHARED) {
-                      show('Faxina compartilhada não pode ser concluida!');
+                      show('Faxina compartilhada não pode ser realizada!');
                     } else if (widget.cleaning.type == CleaningType.IMPORTED) {
                       if (await Connectivity().checkConnectivity() ==
                           ConnectivityResult.none) {
@@ -186,7 +194,18 @@ class _CleaningActionsState extends State<CleaningActions>
                   mini: true,
                   onPressed: () async {
                     try {
-                      if (widget.cleaning.type == CleaningType.IMPORTED) {
+                      if (!await SecurityManager.isPremium()) {
+                        await Navigator.of(context).push(
+                          new AnimateRoute(
+                            fullscreenDialog: true,
+                            builder: (c) => LicensingExipred(
+                              text:
+                                  "\nPara compartilhar o evento com\noutras pessoas você precisa\nassinar a versão Premium!\n\nAproveite o valor promocional\nque é por tempo limitado.\n",
+                            ),
+                          ),
+                        );
+                      } else if (widget.cleaning.type ==
+                          CleaningType.IMPORTED) {
                         show("Faxina importada não pode ser compartilhada");
                       } else if (await Connectivity().checkConnectivity() ==
                           ConnectivityResult.none) {
@@ -194,7 +213,7 @@ class _CleaningActionsState extends State<CleaningActions>
                       } else {
                         bloc.setLoading("Compartilhando");
                         await SharedUtil.share(widget.cleaning);
-                        bloc.setLoading( null );
+                        bloc.setLoading(null);
                         await showDialog(
                           context: context,
                           builder: (_) => SimpleDialog(

@@ -23,7 +23,7 @@ class _TaskEditorState extends State<TaskEditor> {
       initialData: false,
       future: SecurityManager.canAddTask(),
       builder: (_, snap) {
-        return snap.hasData && snap.data
+        return ( snap.hasData && snap.data ) || (task.id  != null && task.id > 0)
             ? Scaffold(
                 appBar: AppBar(
                   centerTitle: true,

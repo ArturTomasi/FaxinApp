@@ -220,10 +220,10 @@ class CleaningTimelineWidget extends StatelessWidget {
     //complicated
     if (duration.inDays > 0 ||
         (duration.inDays == 0 && c.nextDate.day > now.day)) {
-      return "Faltam ${duration.inDays + 1} dia${duration.inDays > 1 ? 's' : ''}";
+      return "Faltam ${duration.inDays + 1} dia${(duration.inDays+1) > 1 ? 's' : ''}";
     } else if (duration.inDays < 0 ||
         (duration.inDays == 0 && c.nextDate.day < now.day)) {
-      return "${duration.inDays * -1} dia${duration.inDays > 1 ? 's' : ''} em atraso";
+      return "${(duration.inDays - 1) * -1} dia${(duration.inDays - 1) * -1 > 1 ? 's' : ''} em atraso";
     } else {
       return "Hoje";
     }

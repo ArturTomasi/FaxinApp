@@ -113,8 +113,8 @@ class ProductRepository {
   Future<List> getCharProducts() async {
     var db = await _appDatabase.getDb();
 
-    return db.rawQuery("select "
-        " P.name, ( CP.used / P.capacity ) as value"
+    var result = await db.rawQuery("select "
+        " P.name, ( ( CP.used / P.capacity ) * 100 ) as value"
         " from "
         " products P "
         " inner join "
@@ -132,7 +132,16 @@ class ProductRepository {
         " on "
         " CP.ref_product = P.id "
         " where "
-        " P.state = 1 ");
+        " P.state = 1 " 
+        " order by 2 desc " 
+        " limit 10 " );
+
+      if ( result != null && result.isNotEmpty )
+      {
+        return <Map>[]..addAll( result );
+      }
+
+      return [];
   }
 
   Future<int> count() async {

@@ -52,7 +52,7 @@ class Frequency {
           index == other.index;
 
   @override
-  int get hashCode => runtimeType.hashCode ^ index.hashCode;
+  int get hashCode => index.hashCode;
 
   @override
   String toString() => label;

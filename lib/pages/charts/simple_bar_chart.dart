@@ -12,32 +12,36 @@ class SimpleBarChart extends StatelessWidget {
         if (data.hasData && data.data.isNotEmpty) {
           return new charts.BarChart(
             [
-              new charts.Series<dynamic, String>(
+              new charts.Series<Map, String>(
                 id: 'products',
-                colorFn: (_, __) => charts.ColorUtil.fromDartColor(
-                  AppColors.SECONDARY,
-                ),
-                labelAccessorFn: (p, _) => '${p['name']}',
-                domainFn: (p, _) {
-                  String x = p['name'];
-                  if (x.length > 15) {
-                    return '${x.substring(0, 15)}...';
-                  }
-                  return x;
-                },
+                colorFn: (_, __) =>
+                    charts.ColorUtil.fromDartColor(AppColors.SECONDARY),
+                labelAccessorFn: (p, _) => '${p['value'].toInt()}%',
+                domainFn: (p, _) => p['name'],
                 measureFn: (p, _) => p['value'],
-                outsideLabelStyleAccessorFn: (_, __) => charts.TextStyleSpec(
-                  color: charts.ColorUtil.fromDartColor(AppColors.PRIMARY),
-                ),
-                insideLabelStyleAccessorFn: (_, __) => charts.TextStyleSpec(
-                  color: charts.ColorUtil.fromDartColor(AppColors.PRIMARY),
-                ),
                 data: data.data,
               )
             ],
             animate: true,
+            vertical: false,
+            barRendererDecorator: new charts.BarLabelDecorator<String>(
+                labelPosition: charts.BarLabelPosition.inside,
+                labelAnchor: charts.BarLabelAnchor.end),
             animationDuration: Duration(
               milliseconds: 500,
+            ),
+            domainAxis: new charts.OrdinalAxisSpec(
+              renderSpec: charts.SmallTickRendererSpec(
+                labelJustification: charts.TickLabelJustification.inside,
+                labelAnchor: charts.TickLabelAnchor.centered,
+                labelStyle: charts.TextStyleSpec(
+                  color: charts.ColorUtil.fromDartColor(AppColors.PRIMARY),
+                ),
+                lineStyle: charts.LineStyleSpec(
+                  dashPattern: [3],
+                  color: charts.ColorUtil.fromDartColor(AppColors.PRIMARY),
+                ),
+              ),
             ),
             primaryMeasureAxis: new charts.NumericAxisSpec(
               renderSpec: new charts.GridlineRendererSpec(
@@ -47,17 +51,6 @@ class SimpleBarChart extends StatelessWidget {
                 ),
                 axisLineStyle: charts.LineStyleSpec(
                   color: charts.ColorUtil.fromDartColor(AppColors.SECONDARY),
-                ),
-              ),
-            ),
-            domainAxis: new charts.OrdinalAxisSpec(
-              renderSpec: new charts.SmallTickRendererSpec(
-                labelStyle: new charts.TextStyleSpec(
-                  fontSize: 12,
-                  color: charts.ColorUtil.fromDartColor(AppColors.PRIMARY),
-                ),
-                lineStyle: new charts.LineStyleSpec(
-                  color: charts.ColorUtil.fromDartColor(AppColors.PRIMARY),
                 ),
               ),
             ),
