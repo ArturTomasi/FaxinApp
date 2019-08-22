@@ -118,7 +118,6 @@ class FancyTabBarState extends State<FancyTabBar>
   @override
   Widget build(BuildContext context) {
     return Container(
-      //color: AppColors.PRIMARY_LIGHT,
       color: Colors.transparent,
       child: Stack(
         alignment: Alignment.topCenter,

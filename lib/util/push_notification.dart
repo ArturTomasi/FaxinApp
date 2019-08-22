@@ -72,10 +72,12 @@ class PushNotification {
           child: CleaningView(cleaning: cleaning),
         );
 
-        Navigator.push(
-          context,
-          AnimateRoute(builder: (context) => provider),
-        );
+        if (context != null) {
+          Navigator.push(
+            context,
+            AnimateRoute(builder: (context) => provider),
+          );
+        }
       }
     }
   }

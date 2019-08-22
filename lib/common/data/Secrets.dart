@@ -4,7 +4,7 @@ import 'package:flutter/services.dart' show rootBundle;
 class Secrets {
   static Secrets _instance;
 
-  String firebase, key, logo, email, password, token;
+  String firebase, key, logo, email, password, token, server;
 
   static Future<Secrets> instance() async {
     if (_instance == null) {
@@ -23,12 +23,14 @@ class Secrets {
     this.email,
     this.password,
     this.logo,
+    this.server,
   });
 
   factory Secrets.fromJson(Map<String, dynamic> jsonMap) {
     return new Secrets(
       key: jsonMap["key"],
       firebase: jsonMap["firebase"],
+      server : jsonMap["server"],
       logo: jsonMap["logo"],
       email: jsonMap["email"],
       password: jsonMap["password"],

@@ -211,9 +211,12 @@ class _CleaningActionsState extends State<CleaningActions>
                           ConnectivityResult.none) {
                         show("Verifica sua conexão");
                       } else {
-                        bloc.setLoading("Compartilhando");
-                        await SharedUtil.share(widget.cleaning);
-                        bloc.setLoading(null);
+                        try {
+                          bloc.setLoading("Compartilhando");
+                          await SharedUtil.share(widget.cleaning);
+                        } finally {
+                          bloc.setLoading(null);
+                        }
                         await showDialog(
                           context: context,
                           builder: (_) => SimpleDialog(

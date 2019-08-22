@@ -18,9 +18,9 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 void main() async {
   initDateFormat();
 
-  bool splash =
-      //(await SharedPreferences.getInstance()).getBool('splash') ?? true;
-      ! await SecurityManager.isPremium();
+  bool splash = !await SecurityManager.isPremium(reload: true);
+
+  await SharedUtil.syncronizedJob();
 
   runApp(MyApp(splash));
 }
@@ -77,7 +77,8 @@ class _MyAppState extends State<MyApp> {
       if (c != null) {
         var _current = await CleaningRepository.get().find(c.id);
 
-        if (_current != null && _current.type.index == CleaningType.SHARED.index) {
+        if (_current != null &&
+            _current.type.index == CleaningType.SHARED.index) {
           _bloc.setLoading("Você não pode importar sua própria faxina!");
         } else {
           _bloc.setLoading("Importando faxina");

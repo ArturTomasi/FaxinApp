@@ -26,12 +26,12 @@ class SecurityManager {
     return (await TaskRepository.get().count()) <= 10;
   }
 
-  static Future<bool> isPremium() async {
+  static Future<bool> isPremium({reload: false}) async {
     var sp = await SharedPreferences.getInstance();
 
     var isPremium = sp.getBool('isPremium');
 
-    if (isPremium == null) {
+    if (isPremium == null || reload ) {
       try {
         IAPManager iap = IAPManager();
         iap.initConnection();
