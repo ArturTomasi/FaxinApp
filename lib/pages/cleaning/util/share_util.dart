@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 class SharedUtil {
-  static bool _firebase = true;
+  static bool _firebase = false;
 
   static Future<String> share(Cleaning c) async {
     if (_firebase) {

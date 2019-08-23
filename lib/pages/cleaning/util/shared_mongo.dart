@@ -226,7 +226,7 @@ class SharedMongo {
           },
         );
 
-        if (res.body != null && res.body.isNotEmpty) {
+        if (res.statusCode == 200 && res.body != null && res.body.isNotEmpty) {
           var snapshot = json.decode(res.body);
 
           List<CleaningProduct> products = [];
