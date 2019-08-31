@@ -10,6 +10,7 @@ import 'package:faxinapp/pages/products/widgets/product_widget.dart';
 import 'package:faxinapp/pages/tasks/bloc/task_bloc.dart';
 import 'package:faxinapp/pages/tasks/widgets/task_widget.dart';
 import 'package:faxinapp/util/AppColors.dart';
+import 'package:faxinapp/util/IAPViewUtil.dart';
 import 'package:faxinapp/util/iap_manager.dart';
 import 'package:flutter/material.dart';
 
@@ -54,9 +55,21 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   child: Center(
                     child: Column(
                       children: <Widget>[
-                        Image.asset(
-                          "assets/images/logo.png",
-                          width: 75,
+                        GestureDetector(
+                          onDoubleTap: () async {
+                            await Navigator.push(
+                              context,
+                              AnimateRoute<bool>(
+                                builder: (context) => IAPViewUtil(),
+                              ),
+                            );
+
+                            Navigator.pop(context);
+                          },
+                          child: Image.asset(
+                            "assets/images/logo.png",
+                            width: 75,
+                          ),
                         ),
                         Text(
                           "Meu Lar",
@@ -229,50 +242,71 @@ class _HomeDrawerState extends State<HomeDrawer> {
               ],
             ),
             FutureBuilder<bool>(
-              initialData: false,
               future: SecurityManager.isPremium(),
               builder: (i, snap) {
-                return snap.hasData && !snap.data
-                    ? Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Container(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 10,
-                              horizontal: 20,
+                if (snap.hasData) {
+                  return !snap.data
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                vertical: 10,
+                                horizontal: 20,
+                              ),
+                              color: AppColors.PRIMARY,
+                              height: 2,
                             ),
-                            color: AppColors.PRIMARY,
-                            height: 2,
-                          ),
-                          Container(
-                            color: AppColors.PRIMARY_DARK,
-                            child: ListTile(
-                              leading: Image.asset(
-                                'assets/images/icone_premium.png',
-                                height: 30,
-                                width: 30,
-                                alignment: Alignment.bottomCenter,
-                              ),
-                              subtitle: Text(
-                                "Adiquira a versão completa",
-                                style: TextStyle(
-                                  fontStyle: FontStyle.italic,
+                            Container(
+                              color: AppColors.PRIMARY_DARK,
+                              child: ListTile(
+                                leading: Image.asset(
+                                  'assets/images/icone_premium.png',
+                                  height: 30,
+                                  width: 30,
+                                  alignment: Alignment.bottomCenter,
                                 ),
-                              ),
-                              title: Text(
-                                "Seja Premium",
-                                style: TextStyle(
-                                  fontSize: 20,
+                                subtitle: Text(
+                                  "Adiquira a versão completa",
+                                  style: TextStyle(
+                                    fontStyle: FontStyle.italic,
+                                  ),
                                 ),
+                                title: Text(
+                                  "Seja Premium",
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                  ),
+                                ),
+                                onTap: _buy,
                               ),
-                              onTap: _buy,
                             ),
-                          ),
-                        ],
-                      )
-                    : Container();
+                          ],
+                        )
+                      : Container();
+                } else {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                          vertical: 10,
+                          horizontal: 20,
+                        ),
+                        color: AppColors.PRIMARY,
+                        height: 2,
+                      ),
+                      Container(
+                        color: AppColors.PRIMARY_DARK,
+                        child: CircularProgressIndicator(),
+                      ),
+                    ],
+                  );
+                }
               },
             ),
           ],
@@ -282,6 +316,6 @@ class _HomeDrawerState extends State<HomeDrawer> {
   }
 
   void _buy() {
-    iap.buy();
+    iap.buy(context);
   }
 }

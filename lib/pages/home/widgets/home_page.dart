@@ -26,14 +26,10 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _keyScaffold = GlobalKey();
-
-  final GlobalKey<FancyTabBarState> _keyNavigator =
-      GlobalKey<FancyTabBarState>();
+  final GlobalKey<FancyTabBarState> _keyNavigator = GlobalKey<FancyTabBarState>();
   final List<Widget> pages = [];
   int pageIx = 1;
-  final PageController pageController = PageController(
-    initialPage: 1,
-  );
+  final PageController pageController = PageController( initialPage: 1 );
   bool _propagateAnimations = true;
 
   _HomePageState() {

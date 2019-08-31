@@ -8,6 +8,7 @@ import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning_repository.dart';
 import 'package:faxinapp/pages/cleaning/util/share_util.dart';
 import 'package:faxinapp/pages/home/widgets/home_page.dart';
+import 'package:faxinapp/util/iap_manager.dart';
 import 'package:faxinapp/util/push_notification.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
@@ -17,34 +18,30 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   initDateFormat();
-
-  bool splash = !await SecurityManager.isPremium(reload: true);
-
-  await SharedUtil.syncronizedJob();
-
-  runApp(MyApp(splash));
+  runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
-  final bool splash;
-  MyApp(this.splash);
   @override
   _MyAppState createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  CleaningBloc _bloc = CleaningBloc();
+  final CleaningBloc _bloc = CleaningBloc();
+  final IAPManager iap = IAPManager();
 
   @override
   void initState() {
     super.initState();
     this.initDynamicLinks();
+    this.iap.initConnection();
   }
 
   @override
   void dispose() {
     super.dispose();
     _bloc.dispose();
+    this.iap.endConnection();
   }
 
   void initDynamicLinks() async {
@@ -145,15 +142,31 @@ class _MyAppState extends State<MyApp> {
         ),
         primaryColor: AppColors.PRIMARY,
       ),
-      home: widget.splash
-          ? BlocProvider(
-              bloc: _bloc,
-              child: Splash(),
-            )
-          : BlocProvider(
-              bloc: _bloc,
-              child: HomePage(),
-            ),
+      home: FutureBuilder<bool>(
+        future: SecurityManager.isPremium(),
+        builder: (_, snap) {
+          print('FAXINAPP snap.toString()');
+          print(snap.toString());
+          if (snap.hasData) {
+            return snap.data
+                ? BlocProvider(
+                    bloc: _bloc,
+                    child: HomePage(),
+                  )
+                : BlocProvider(
+                    bloc: _bloc,
+                    child: Splash(),
+                  );
+          } else {
+            return Container(
+              color: AppColors.PRIMARY_LIGHT,
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+        },
+      ),
     );
   }
 }

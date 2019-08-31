@@ -9,39 +9,40 @@ class SecurityManager {
     if (await isPremium()) {
       return true;
     }
-    return (await CleaningRepository.get().count()) <= 10;
+    return (await CleaningRepository.get().count()) < 10;
   }
 
   static Future<bool> canAddProduct() async {
     if (await isPremium()) {
       return true;
     }
-    return (await ProductRepository.get().count()) <= 10;
+    return (await ProductRepository.get().count()) < 10;
   }
 
   static Future<bool> canAddTask() async {
     if (await isPremium()) {
       return true;
     }
-    return (await TaskRepository.get().count()) <= 10;
+    return (await TaskRepository.get().count()) < 10;
   }
 
-  static Future<bool> isPremium({reload: false}) async {
+  static Future<bool> isPremium() async {
     var sp = await SharedPreferences.getInstance();
 
-    var isPremium = sp.getBool('isPremium');
+    var isPremium = sp.getBool('isPremium') ?? false;
 
-    if (isPremium == null || reload ) {
-      try {
-        IAPManager iap = IAPManager();
-        iap.initConnection();
+    if (isPremium) {
+      return isPremium;
+    }
 
-        sp.setBool('isPremium', isPremium = await iap.isPremium());
-
-        iap.endConnection();
-      } catch (e) {
-        sp.setBool('isPremium', isPremium = false);
-      }
+    try {
+      IAPManager iap = IAPManager();
+      iap.initConnection();
+      isPremium = await iap.isPremium();
+      await sp.setBool('isPremium', isPremium);
+      iap.endConnection();
+    } catch (e) {
+      print(e);
     }
 
     return isPremium;

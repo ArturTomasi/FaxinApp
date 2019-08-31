@@ -33,7 +33,7 @@ class AppDatabase {
 
     _database = await openDatabase(
       path,
-      version: 20,
+      version: 22,
       onCreate: (
         Database db,
         int version,

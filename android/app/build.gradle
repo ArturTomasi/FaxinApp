@@ -42,8 +42,8 @@ android {
         applicationId "com.me.fa.faxinapp"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 7
-        versionName '1.0'
+        versionCode 22
+        versionName '1.2.2'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {

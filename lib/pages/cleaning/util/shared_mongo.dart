@@ -134,7 +134,7 @@ class SharedMongo {
             },
           );
 
-          if (res.body != null && res.body.isNotEmpty) {
+          if ( res.statusCode == 200 && res.body != null && res.body.isNotEmpty) {
             var snapshot = json.decode(res.body);
 
             _bloc.setLoading('Convertendo faxina ${c.name}');
