@@ -1,7 +1,6 @@
 import 'dart:math' as math;
 import 'package:connectivity/connectivity.dart';
 import 'package:faxinapp/bloc/bloc_provider.dart';
-import 'package:faxinapp/common/data/Secrets.dart';
 import 'package:faxinapp/common/ui/animate_route.dart';
 import 'package:faxinapp/common/util/security_manager.dart';
 import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';

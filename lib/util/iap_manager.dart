@@ -16,43 +16,42 @@ class IAPManager {
   }
 
   Future<bool> isPremium() async {
-    bool value = (await SharedPreferences.getInstance()).getBool('isPremium')??false;
-    
-    try{
+    bool value =
+        (await SharedPreferences.getInstance()).getBool('isPremium') ?? false;
+
+    try {
       //Fez a compra e não consumiou o produto"
       List<PurchasedItem> purchased =
           await FlutterInappPurchase.getAvailablePurchases();
-      print( 'getAvailablePurchases' );
-      print( purchased );
+      print('getAvailablePurchases');
+      print(purchased);
 
       if (purchased != null && purchased.isNotEmpty) {
         for (var p in purchased) {
-          print( p );
+          print(p);
           if (p.productId == _id) {
             value = true;
-            await (await SharedPreferences.getInstance()).setBool('isPremium', value);
           }
         }
       }
 
       //historico de compras
       purchased = await FlutterInappPurchase.getPurchaseHistory();
-      print( 'historico de compras' );
-      print( purchased );
+      print('historico de compras');
+      print(purchased);
       if (purchased != null && purchased.isNotEmpty) {
         for (var p in purchased) {
-          print( p );
+          print(p);
           if (p.productId == _id) {
             value = true;
-            await (await SharedPreferences.getInstance()).setBool('isPremium', value);
           }
         }
       }
-
+    } catch (e) {
+      print(e);
     }
-    catch ( e ) {
-      print( e );
-    } 
+
+    await (await SharedPreferences.getInstance()).setBool('isPremium', value);
 
     return value;
   }
@@ -64,7 +63,8 @@ class IAPManager {
       if (product != null) {
         show(context, "Adquirido versão premium!");
 
-        await (await SharedPreferences.getInstance()).setBool('isPremium', true);
+        await (await SharedPreferences.getInstance())
+            .setBool('isPremium', true);
       }
     } catch (e) {
       show(context, e.toString());

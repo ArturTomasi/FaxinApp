@@ -8,7 +8,6 @@ import 'package:faxinapp/pages/cleaning/models/cleaning.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning_repository.dart';
 import 'package:faxinapp/pages/cleaning/util/share_util.dart';
 import 'package:faxinapp/pages/home/widgets/home_page.dart';
-import 'package:faxinapp/util/iap_manager.dart';
 import 'package:faxinapp/util/push_notification.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
@@ -28,20 +27,17 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final CleaningBloc _bloc = CleaningBloc();
-  final IAPManager iap = IAPManager();
 
   @override
   void initState() {
     super.initState();
     this.initDynamicLinks();
-    this.iap.initConnection();
   }
 
   @override
   void dispose() {
     super.dispose();
     _bloc.dispose();
-    this.iap.endConnection();
   }
 
   void initDynamicLinks() async {
@@ -84,7 +80,7 @@ class _MyAppState extends State<MyApp> {
           _bloc.setLoading("Agendando sua faxina");
           PushNotification(context)..schedule(c);
 
-          _bloc.setLoading("Atualizando...;");
+          _bloc.setLoading("Atualizando...");
           _bloc.findPendents();
         }
       }

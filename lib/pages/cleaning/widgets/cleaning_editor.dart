@@ -57,164 +57,172 @@ class _CleaningEditorState extends State<CleaningEditor> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      initialData: false,
       future: SecurityManager.canAddCleaning(),
       builder: (_, snap) {
-        return ( snap.hasData && snap.data ) || (cleaning.id  != null && cleaning.id > 0)
-            ? Scaffold(
-                appBar: AppBar(
-                  centerTitle: true,
-                  title: Text(
-                    cleaning.id != null ? "Editar Faxina" : "Nova Faxina",
-                  ),
-                  actions: <Widget>[
-                    FlatButton(
-                      onPressed: () async {
-                        save(cleaning);
-                      },
-                      child: Text(
-                        "SALVAR",
-                        style: TextStyle(
-                          color: AppColors.PRIMARY_LIGHT,
+        if (snap.hasData) {
+          return snap.data || (cleaning.id != null && cleaning.id > 0)
+              ? Scaffold(
+                  appBar: AppBar(
+                    centerTitle: true,
+                    title: Text(
+                      cleaning.id != null ? "Editar Faxina" : "Nova Faxina",
+                    ),
+                    actions: <Widget>[
+                      FlatButton(
+                        onPressed: () async {
+                          save(cleaning);
+                        },
+                        child: Text(
+                          "SALVAR",
+                          style: TextStyle(
+                            color: AppColors.PRIMARY_LIGHT,
+                          ),
                         ),
-                      ),
-                    )
-                  ],
-                ),
-                body: Container(
-                  padding: EdgeInsets.only(top: 10, left: 20, right: 20),
-                  color: AppColors.PRIMARY_LIGHT,
-                  child: SafeArea(
-                    right: true,
-                    left: true,
-                    child: Form(
-                      key: _formState,
-                      child: ListView(
-                        children: <Widget>[
-                          TextFormField(
-                            decoration: InputDecoration(
-                                labelText: "Nome",
-                                labelStyle:
-                                    TextStyle(color: AppColors.SECONDARY),
-                                counterStyle:
-                                    TextStyle(color: AppColors.SECONDARY),
-                                errorBorder: InputBorder.none),
-                            maxLength: 80,
-                            autofocus: true,
-                            controller: _nameTextController,
-                            validator: (value) {
-                              return value.isEmpty ? "Requerido *" : null;
-                            },
-                          ),
-                          TextFormField(
-                            decoration: InputDecoration(
-                                labelText: "Instruções",
-                                labelStyle:
-                                    TextStyle(color: AppColors.SECONDARY),
-                                counterStyle:
-                                    TextStyle(color: AppColors.SECONDARY),
-                                errorBorder: InputBorder.none),
-                            minLines: 2,
-                            maxLines: 8,
-                            controller: _guidelinesTextController,
-                            maxLength: 4000,
-                            onSaved: (value) {
-                              cleaning.guidelines = value;
-                            },
-                          ),
-                          DatePicker(
-                            initialValue: _nextDate,
-                            title: "Agendamento",
-                            onChanged: (value) {
-                              _nextDate = value;
-                            },
-                          ),
-                          DatePicker(
-                            initialValue: DateTime(1, 1, 1, 1, 0),
-                            title: "Tempo estimado",
-                            showDate: false,
-                            onChanged: (value) {
-                              _estimatedTime = TimeOfDay.fromDateTime(value);
-                            },
-                          ),
-                          FutureBuilder<bool>(
-                            initialData: false,
-                            future: SecurityManager.isPremium(),
-                            builder: (_, snap) => SelectionPicker<Frequency>(
-                              onChanged: (f) {
-                                _frequency = f != null ? f.first : null;
+                      )
+                    ],
+                  ),
+                  body: Container(
+                    padding: EdgeInsets.only(top: 10, left: 20, right: 20),
+                    color: AppColors.PRIMARY_LIGHT,
+                    child: SafeArea(
+                      right: true,
+                      left: true,
+                      child: Form(
+                        key: _formState,
+                        child: ListView(
+                          children: <Widget>[
+                            TextFormField(
+                              decoration: InputDecoration(
+                                  labelText: "Nome",
+                                  labelStyle:
+                                      TextStyle(color: AppColors.SECONDARY),
+                                  counterStyle:
+                                      TextStyle(color: AppColors.SECONDARY),
+                                  errorBorder: InputBorder.none),
+                              maxLength: 80,
+                              autofocus: true,
+                              controller: _nameTextController,
+                              validator: (value) {
+                                return value.isEmpty ? "Requerido *" : null;
                               },
-                              elements: snap.hasData && snap.data
-                                  ? Frequency.values()
-                                  : ([]..add(Frequency.NONE)),
-                              selecteds: _frequency != null
-                                  ? ([]..add(_frequency))
-                                  : null,
-                              singleSelected: true,
-                              renderer: FrequencySelector(),
-                              title: "Frequência",
                             ),
-                          ),
-                          FutureBuilder<List<Product>>(
-                            future: ProductRepository.get().findAll(),
-                            builder: (x, y) => SelectionPicker<Product>(
+                            TextFormField(
+                              decoration: InputDecoration(
+                                  labelText: "Instruções",
+                                  labelStyle:
+                                      TextStyle(color: AppColors.SECONDARY),
+                                  counterStyle:
+                                      TextStyle(color: AppColors.SECONDARY),
+                                  errorBorder: InputBorder.none),
+                              minLines: 2,
+                              maxLines: 8,
+                              controller: _guidelinesTextController,
+                              maxLength: 4000,
+                              onSaved: (value) {
+                                cleaning.guidelines = value;
+                              },
+                            ),
+                            DatePicker(
+                              initialValue: _nextDate,
+                              title: "Agendamento",
                               onChanged: (value) {
-                                _products = value;
+                                _nextDate = value;
                               },
-                              title: "Produtos",
-                              selecteds: _products,
-                              renderer: ProductSelector(),
-                              elements: y.data,
                             ),
-                          ),
-                          FutureBuilder<List<Task>>(
-                            future: TaskRepository.get().findAll(),
-                            builder: (x, y) => SelectionPicker<Task>(
+                            DatePicker(
+                              initialValue: DateTime(1, 1, 1, 1, 0),
+                              title: "Tempo estimado",
+                              showDate: false,
                               onChanged: (value) {
-                                _tasks = value;
+                                _estimatedTime = TimeOfDay.fromDateTime(value);
                               },
-                              title: "Tarefas",
-                              selecteds: _tasks,
-                              renderer: TaskSelector(),
-                              elements: y.data,
                             ),
-                          ),
-                          SizedBox(
-                            height: 50,
-                          ),
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width,
-                            child: RaisedButton(
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(
-                                    10,
+                            FutureBuilder<bool>(
+                              initialData: false,
+                              future: SecurityManager.isPremium(),
+                              builder: (_, snap) => SelectionPicker<Frequency>(
+                                onChanged: (f) {
+                                  _frequency = f != null ? f.first : null;
+                                },
+                                elements: snap.hasData && snap.data
+                                    ? Frequency.values()
+                                    : ([]..add(Frequency.NONE)),
+                                selecteds: _frequency != null
+                                    ? ([]..add(_frequency))
+                                    : null,
+                                singleSelected: true,
+                                renderer: FrequencySelector(),
+                                title: "Frequência",
+                              ),
+                            ),
+                            FutureBuilder<List<Product>>(
+                              future: ProductRepository.get().findAll(),
+                              builder: (x, y) => SelectionPicker<Product>(
+                                onChanged: (value) {
+                                  _products = value;
+                                },
+                                title: "Produtos",
+                                selecteds: _products,
+                                renderer: ProductSelector(),
+                                elements: y.data,
+                              ),
+                            ),
+                            FutureBuilder<List<Task>>(
+                              future: TaskRepository.get().findAll(),
+                              builder: (x, y) => SelectionPicker<Task>(
+                                onChanged: (value) {
+                                  _tasks = value;
+                                },
+                                title: "Tarefas",
+                                selecteds: _tasks,
+                                renderer: TaskSelector(),
+                                elements: y.data,
+                              ),
+                            ),
+                            SizedBox(
+                              height: 50,
+                            ),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width,
+                              child: RaisedButton(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(
+                                      10,
+                                    ),
+                                  ),
+                                ),
+                                onPressed: () async {
+                                  save(cleaning);
+                                },
+                                color: AppColors.SECONDARY,
+                                textColor: Colors.white,
+                                child: Text(
+                                  "Salvar",
+                                  style: TextStyle(
+                                    fontSize: 16,
                                   ),
                                 ),
                               ),
-                              onPressed: () async {
-                                save(cleaning);
-                              },
-                              color: AppColors.SECONDARY,
-                              textColor: Colors.white,
-                              child: Text(
-                                "Salvar",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                ),
-                              ),
                             ),
-                          ),
-                          SizedBox(
-                            height: 50,
-                          ),
-                        ],
+                            SizedBox(
+                              height: 50,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              )
-            : LicensingExipred();
+                )
+              : LicensingExipred();
+        } else {
+          return Container(
+            color: AppColors.PRIMARY_LIGHT,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
+        }
       },
     );
   }

@@ -31,8 +31,7 @@ class PushNotification {
     var initializationSettings = new InitializationSettings(
         initializationSettingsAndroid, initializationSettingsIOS);
 
-    notifications.initialize(initializationSettings,
-        onSelectNotification: onSelectNotification);
+    notifications.initialize(initializationSettings);
   }
 
   void schedule(Cleaning cleaning) async {
@@ -57,7 +56,7 @@ class PushNotification {
   Future cancel(Cleaning cleaning) async {
     await notifications.cancel(cleaning.id);
   }
-
+  /*
   Future onSelectNotification(String payload) async {
     if (payload != null && payload.startsWith('faxinapp:')) {
       Cleaning cleaning = await CleaningRepository.get().find(
@@ -67,18 +66,31 @@ class PushNotification {
       );
 
       if (cleaning != null) {
-        var provider = BlocProvider(
-          bloc: CleaningBloc(),
-          child: CleaningView(cleaning: cleaning),
-        );
-
         if (context != null) {
+          CleaningBloc _bloc;
+
+          try {
+            _bloc = BlocProvider.of<CleaningBloc>(context);
+            if (_bloc == null) {
+              _bloc = CleaningBloc();
+            }
+          } catch (e) {
+            _bloc = CleaningBloc();
+          }
+
+          print("FAXINAPP: ${cleaning.name}");
           Navigator.push(
             context,
-            AnimateRoute(builder: (context) => provider),
+            AnimateRoute(
+              builder: (context) => BlocProvider(
+                bloc: _bloc,
+                child: CleaningView(cleaning: cleaning),
+              ),
+            ),
           );
         }
       }
     }
   }
+  */
 }
