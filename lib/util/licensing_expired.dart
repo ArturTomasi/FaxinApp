@@ -1,5 +1,5 @@
+import 'package:faxinapp/common/util/iap_manager.dart';
 import 'package:faxinapp/util/AppColors.dart';
-import 'package:faxinapp/util/iap_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -13,20 +13,6 @@ class LicensingExipred extends StatefulWidget {
 }
 
 class _LicensingExipredState extends State<LicensingExipred> {
-  final IAPManager iap = new IAPManager();
-
-  @override
-  void initState() {
-    super.initState();
-    iap.initConnection();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    iap.endConnection();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,8 +84,43 @@ class _LicensingExipredState extends State<LicensingExipred> {
   }
 
   void _buy() async {
-    await iap.buy( context );
+    try {
+      await IAPManager.buy((success) {
+        if (success) {
+          Navigator.pop(context);
+          show('Versão premium adquirido com sucesso!');
+        }
+      });
+    } catch (e) {
+      show(e.toString());
+    }
+  }
 
-    Navigator.of(context).pop();
+  void show(String message) {
+    showDialog(
+      context: context,
+      builder: (_) => SimpleDialog(
+        title: Center(
+          child: Text(
+            "Aviso",
+            style: TextStyle(
+              color: AppColors.PRIMARY_LIGHT,
+            ),
+          ),
+        ),
+        backgroundColor: AppColors.SECONDARY.withOpacity(0.8),
+        contentPadding: EdgeInsets.all(20),
+        children: <Widget>[
+          Center(
+            child: Text(
+              message,
+              style: TextStyle(
+                color: AppColors.PRIMARY_LIGHT,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

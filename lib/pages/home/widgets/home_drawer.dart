@@ -1,5 +1,6 @@
 import 'package:faxinapp/bloc/bloc_provider.dart';
 import 'package:faxinapp/common/ui/animate_route.dart';
+import 'package:faxinapp/common/util/iap_manager.dart';
 import 'package:faxinapp/common/util/security_manager.dart';
 import 'package:faxinapp/pages/cleaning/bloc/cleaning_bloc.dart';
 import 'package:faxinapp/pages/cleaning/util/share_util.dart';
@@ -10,8 +11,6 @@ import 'package:faxinapp/pages/products/widgets/product_widget.dart';
 import 'package:faxinapp/pages/tasks/bloc/task_bloc.dart';
 import 'package:faxinapp/pages/tasks/widgets/task_widget.dart';
 import 'package:faxinapp/util/AppColors.dart';
-import 'package:faxinapp/util/IAPViewUtil.dart';
-import 'package:faxinapp/util/iap_manager.dart';
 import 'package:flutter/material.dart';
 
 class HomeDrawer extends StatefulWidget {
@@ -24,20 +23,16 @@ class HomeDrawer extends StatefulWidget {
 
 class _HomeDrawerState extends State<HomeDrawer> {
   final GlobalKey<ScaffoldState> _state;
-  final IAPManager iap = new IAPManager();
-
   _HomeDrawerState(this._state);
 
   @override
   void initState() {
     super.initState();
-    iap.initConnection();
   }
 
   @override
   void dispose() {
     super.dispose();
-    iap.endConnection();
   }
 
   @override
@@ -55,21 +50,9 @@ class _HomeDrawerState extends State<HomeDrawer> {
                   child: Center(
                     child: Column(
                       children: <Widget>[
-                        GestureDetector(
-                          onDoubleTap: () async {
-                            await Navigator.push(
-                              context,
-                              AnimateRoute<bool>(
-                                builder: (context) => IAPViewUtil(),
-                              ),
-                            );
-
-                            Navigator.pop(context);
-                          },
-                          child: Image.asset(
-                            "assets/images/logo.png",
-                            width: 75,
-                          ),
+                        Image.asset(
+                          "assets/images/logo.png",
+                          width: 75,
                         ),
                         Text(
                           "Meu Lar",
@@ -315,7 +298,44 @@ class _HomeDrawerState extends State<HomeDrawer> {
     );
   }
 
-  void _buy() {
-    iap.buy(context);
+  void _buy() async {
+    try {
+      await IAPManager.buy((success) {
+        if (success) {
+          Navigator.pop(context);
+          show('Versão premium adquirido com sucesso!');
+        }
+      });
+    } catch (e) {
+      show(e.toString());
+    }
+  }
+
+  void show(String message) {
+    showDialog(
+      context: context,
+      builder: (_) => SimpleDialog(
+        title: Center(
+          child: Text(
+            "Aviso",
+            style: TextStyle(
+              color: AppColors.PRIMARY_LIGHT,
+            ),
+          ),
+        ),
+        backgroundColor: AppColors.SECONDARY.withOpacity(0.8),
+        contentPadding: EdgeInsets.all(20),
+        children: <Widget>[
+          Center(
+            child: Text(
+              message,
+              style: TextStyle(
+                color: AppColors.PRIMARY_LIGHT,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

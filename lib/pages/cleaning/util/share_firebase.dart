@@ -1,3 +1,4 @@
+/*
 import 'dart:async';
 import 'package:connectivity/connectivity.dart';
 import 'package:faxinapp/bloc/bloc_provider.dart';
@@ -268,3 +269,4 @@ class SharedFirebase {
     }
   }
 }
+*/

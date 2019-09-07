@@ -1,7 +1,7 @@
+import 'package:faxinapp/common/util/iap_manager.dart';
 import 'package:faxinapp/pages/cleaning/models/cleaning_repository.dart';
 import 'package:faxinapp/pages/products/models/product_repository.dart';
 import 'package:faxinapp/pages/tasks/models/task_repository.dart';
-import 'package:faxinapp/util/iap_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SecurityManager {
@@ -29,22 +29,14 @@ class SecurityManager {
   static Future<bool> isPremium() async {
     var sp = await SharedPreferences.getInstance();
 
-    var isPremium = sp.getBool('isPremium') ?? false;
-
-    if (isPremium) {
-      return isPremium;
+    //await sp.remove('isPremium');
+    bool value = sp.getBool('isPremium');
+    
+    if ( value == null )
+    {
+      value = await IAPManager.isPremium(); 
     }
-
-    try {
-      IAPManager iap = IAPManager();
-      iap.initConnection();
-      isPremium = await iap.isPremium();
-      await sp.setBool('isPremium', isPremium);
-      iap.endConnection();
-    } catch (e) {
-      print(e);
-    }
-
-    return isPremium;
+    
+    return value;
   }
 }
