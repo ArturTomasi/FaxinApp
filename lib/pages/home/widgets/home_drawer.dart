@@ -252,7 +252,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
                                   alignment: Alignment.bottomCenter,
                                 ),
                                 subtitle: Text(
-                                  "Adiquira a versão completa",
+                                  "Assine a versão completa",
                                   style: TextStyle(
                                     fontStyle: FontStyle.italic,
                                   ),
@@ -303,7 +303,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
       await IAPManager.buy((success) {
         if (success) {
           Navigator.pop(context);
-          show('Versão premium adquirido com sucesso!');
+          show('Versão premium assinada com sucesso!');
         }
       });
     } catch (e) {
@@ -323,7 +323,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
             ),
           ),
         ),
-        backgroundColor: AppColors.SECONDARY.withOpacity(0.8),
+        backgroundColor: AppColors.SECONDARY,
         contentPadding: EdgeInsets.all(20),
         children: <Widget>[
           Center(

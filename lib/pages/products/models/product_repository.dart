@@ -1,4 +1,5 @@
 import 'package:faxinapp/db/app_database.dart';
+import 'package:faxinapp/common/util/diacritic.dart';
 import 'package:faxinapp/pages/products/models/product.dart';
 
 class ProductRepository {
@@ -66,6 +67,10 @@ class ProductRepository {
     for (Map<String, dynamic> item in result) {
       products.add(Product.fromMap(item));
     }
+
+    products.sort(
+        (a, b) => removeDiacritics(a.name).compareTo(removeDiacritics(b.name)));
+
     return products;
   }
 
@@ -82,6 +87,10 @@ class ProductRepository {
     for (Map<String, dynamic> item in result) {
       products.add(Product.fromMap(item));
     }
+    
+    products.sort(
+        (a, b) => removeDiacritics(a.name).compareTo(removeDiacritics(b.name)));
+
     return products;
   }
 
@@ -132,16 +141,15 @@ class ProductRepository {
         " on "
         " CP.ref_product = P.id "
         " where "
-        " P.state = 1 " 
-        " order by 2 desc " 
-        " limit 10 " );
+        " P.state = 1 "
+        " order by 2 desc "
+        " limit 10 ");
 
-      if ( result != null && result.isNotEmpty )
-      {
-        return <Map>[]..addAll( result );
-      }
+    if (result != null && result.isNotEmpty) {
+      return <Map>[]..addAll(result);
+    }
 
-      return [];
+    return [];
   }
 
   Future<int> count() async {

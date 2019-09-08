@@ -20,7 +20,7 @@ class SharedMongo {
   static Future<String> share(Cleaning c) async {
     Secrets secrets = await Secrets.instance();
 
-    await http.post(
+    var response = await http.post(
       '${secrets.server}/api/share/${c.uuid}',
       headers: {
         'Content-Type': 'application/json',
@@ -30,11 +30,15 @@ class SharedMongo {
       encoding: Encoding.getByName('utf-8'),
     );
 
-    c.type = CleaningType.SHARED;
+    if (response.statusCode == 200) {
+      c.type = CleaningType.SHARED;
 
-    CleaningRepository.get().save(c);
+      CleaningRepository.get().save(c);
 
-    return c.uuid;
+      return c.uuid;
+    }
+
+    return response.body;
   }
 
   static Future<Cleaning> obtain(String uuid) async {
@@ -134,7 +138,9 @@ class SharedMongo {
             },
           );
 
-          if ( res.statusCode == 200 && res.body != null && res.body.isNotEmpty) {
+          if (res.statusCode == 200 &&
+              res.body != null &&
+              res.body.isNotEmpty) {
             var snapshot = json.decode(res.body);
 
             _bloc.setLoading('Convertendo faxina ${c.name}');

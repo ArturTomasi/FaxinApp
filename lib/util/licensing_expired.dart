@@ -88,7 +88,7 @@ class _LicensingExipredState extends State<LicensingExipred> {
       await IAPManager.buy((success) {
         if (success) {
           Navigator.pop(context);
-          show('Versão premium adquirido com sucesso!');
+          show('Versão premium assinada com sucesso!');
         }
       });
     } catch (e) {
@@ -108,7 +108,7 @@ class _LicensingExipredState extends State<LicensingExipred> {
             ),
           ),
         ),
-        backgroundColor: AppColors.SECONDARY.withOpacity(0.8),
+        backgroundColor: AppColors.SECONDARY,
         contentPadding: EdgeInsets.all(20),
         children: <Widget>[
           Center(

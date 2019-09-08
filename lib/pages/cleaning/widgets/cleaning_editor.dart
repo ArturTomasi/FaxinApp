@@ -262,7 +262,7 @@ class _CleaningEditorState extends State<CleaningEditor> {
               ),
             ),
           ),
-          backgroundColor: AppColors.SECONDARY.withOpacity(0.8),
+          backgroundColor: AppColors.SECONDARY,
           contentPadding: EdgeInsets.all(20),
           children: <Widget>[
             Center(

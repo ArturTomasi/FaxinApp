@@ -29,14 +29,12 @@ class SecurityManager {
   static Future<bool> isPremium() async {
     var sp = await SharedPreferences.getInstance();
 
-    //await sp.remove('isPremium');
     bool value = sp.getBool('isPremium');
-    
-    if ( value == null )
-    {
-      value = await IAPManager.isPremium(); 
+
+    if (value == null) {
+      value = await IAPManager.isPremium();
     }
-    
+
     return value;
   }
 }

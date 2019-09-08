@@ -24,17 +24,8 @@ class IAPManager {
       }
 
       bool result = false;
-      print('FAXINAPP');
+      
       for (PurchaseDetails details in response.pastPurchases) {
-        print(details.productID);
-        print(details.billingClientPurchase);
-        print(details.billingClientPurchase.sku);
-        print(details.billingClientPurchase.signature);
-        print(details.billingClientPurchase.purchaseToken);
-        print(details.billingClientPurchase.originalJson);
-        print(details.billingClientPurchase.orderId);
-        print(details.purchaseID);
-        print(details.transactionDate);
         if (details.productID == _current) {
           result = true;
         }

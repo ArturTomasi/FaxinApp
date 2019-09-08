@@ -1,3 +1,4 @@
+import 'package:faxinapp/common/util/diacritic.dart';
 import 'package:faxinapp/db/app_database.dart';
 import 'package:faxinapp/pages/tasks/models/task.dart';
 
@@ -61,6 +62,9 @@ class TaskRepository {
     for (Map<String, dynamic> item in result) {
       tasks.add(Task.fromMap(item));
     }
+
+    tasks.sort(
+        (a, b) => removeDiacritics(a.name).compareTo(removeDiacritics(b.name)));
 
     return tasks;
   }
