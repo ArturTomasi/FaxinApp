@@ -92,6 +92,7 @@ class _LicensingExipredState extends State<LicensingExipred> {
         }
       });
     } catch (e) {
+      Navigator.pop(context);
       show(e.toString());
     }
   }

@@ -2,7 +2,6 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class IAPManager {
-  //static const _current = 'faxinapp';
   static const _current = 'meu_lar_premium';
   static Set<String> _SKU = Set<String>.identity()..add(_current);
 

@@ -49,17 +49,17 @@ class _SelectionPickerState<T> extends State<SelectionPicker<T>> {
         child: GestureDetector(
           onTap: () async {
             List<T> value = await showDialog(
-                context: context,
-                builder: (c) {
-                  return SelectionDialog<T>(
-                    widget.elements,
-                    singleSelected: widget.singleSelected,
-                    selecteds: _tempSelecteds,
-                    renderer: widget.renderer,
-                  );
-                });
-
-            bloc.add(value);
+              context: context,
+              builder: (c) => SelectionDialog<T>(
+                widget.elements,
+                singleSelected: widget.singleSelected,
+                selecteds: _tempSelecteds,
+                renderer: widget.renderer,
+              ),
+            );
+            if (value != null) {
+              bloc.add(value);
+            }
           },
           child: StreamBuilder<List<T>>(
             stream: bloc.selecteds,

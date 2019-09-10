@@ -307,6 +307,7 @@ class _HomeDrawerState extends State<HomeDrawer> {
         }
       });
     } catch (e) {
+      Navigator.pop(context);
       show(e.toString());
     }
   }

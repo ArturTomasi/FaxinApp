@@ -124,7 +124,7 @@ class _SelectionDialogState<T> extends State<SelectionDialog<T>> {
         Navigator.pop(context);
       },
       color: AppColors.PRIMARY_LIGHT,
-      textColor: Colors.white,
+      textColor: AppColors.SECONDARY,
       child: Text("Cancelar", style: TextStyle(fontSize: 14)),
     ));
 
