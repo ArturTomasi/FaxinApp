@@ -24,7 +24,7 @@ class SharedMongo {
       '${secrets.server}/api/share/${c.uuid}',
       headers: {
         'Content-Type': 'application/json',
-        'X-App-Secrets': secrets.key,
+        'X-App-Secret': secrets.key,
       },
       body: json.encode(c.toJson()),
       encoding: Encoding.getByName('utf-8'),
@@ -48,7 +48,7 @@ class SharedMongo {
       '${secrets.server}/api/share/$uuid',
       headers: {
         'Content-Type': 'application/json',
-        'X-App-Secrets': secrets.key,
+        'X-App-Secret': secrets.key,
       },
     );
 
@@ -71,7 +71,7 @@ class SharedMongo {
       '${secrets.server}/api/done/${cleaning.uuid}',
       headers: {
         'Content-Type': 'application/json',
-        'X-App-Secrets': secrets.key,
+        'X-App-Secret': secrets.key,
       },
       body: json.encode({
         "uuid": cleaning.uuid,
@@ -134,7 +134,7 @@ class SharedMongo {
             '${secrets.server}/api/done/${c.uuid}',
             headers: {
               'Content-Type': 'application/json',
-              'X-App-Secrets': secrets.key,
+              'X-App-Secret': secrets.key,
             },
           );
 
@@ -192,7 +192,7 @@ class SharedMongo {
               '${secrets.server}/api/remove/${c.uuid}',
               headers: {
                 'Content-Type': 'application/json',
-                'X-App-Secrets': secrets.key,
+                'X-App-Secret': secrets.key,
               },
             );
           }
@@ -228,7 +228,7 @@ class SharedMongo {
           '${secrets.server}/api/done/${c.uuid}',
           headers: {
             'Content-Type': 'application/json',
-            'X-App-Secrets': secrets.key,
+            'X-App-Secret': secrets.key,
           },
         );
 
@@ -281,7 +281,7 @@ class SharedMongo {
             '${secrets.server}/api/remove/${c.uuid}',
             headers: {
               'Content-Type': 'application/json',
-              'X-App-Secrets': secrets.key,
+              'X-App-Secret': secrets.key,
             },
           );
         }

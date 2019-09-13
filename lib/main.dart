@@ -92,6 +92,10 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      builder: (context, child) => MediaQuery(
+        child: child,
+        data: MediaQuery.of(context).copyWith(textScaleFactor: 0.85),
+      ),
       debugShowCheckedModeBanner: false,
       title: "Meu Lar",
       localizationsDelegates: [

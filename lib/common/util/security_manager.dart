@@ -31,10 +31,14 @@ class SecurityManager {
 
     bool value = sp.getBool('isPremium');
 
-    if (value == null) {
-      value = await IAPManager.isPremium();
+    try {
+      if (value == null) {
+        value = await IAPManager.isPremium();
+      }
+    } catch (e) {
+      value = false;
     }
-
+    
     return value;
   }
 }
