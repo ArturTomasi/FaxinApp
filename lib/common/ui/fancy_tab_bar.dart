@@ -135,24 +135,30 @@ class FancyTabBarState extends State<FancyTabBar>
                     iconData: MdiIcons.chartBar,
                     title: "Gráficos",
                     callbackFunction: () {
-                      moveChart();
-                      widget.onChanged(0);
+                      if (currentSelected != 0) {
+                        moveChart();
+                        widget.onChanged(0);
+                      }
                     }),
                 TabItem(
                     selected: currentSelected == 1,
                     iconData: Icons.clear_all,
                     title: "Faxinas",
                     callbackFunction: () {
-                      moveCleaning();
-                      widget.onChanged(1);
+                      if (currentSelected != 1) {
+                        moveCleaning();
+                        widget.onChanged(1);
+                      }
                     }),
                 TabItem(
                     selected: currentSelected == 2,
                     iconData: Icons.shopping_cart,
                     title: "Produtos",
                     callbackFunction: () {
-                      moveProduct();
-                      widget.onChanged(2);
+                      if (currentSelected != 2) {
+                        moveProduct();
+                        widget.onChanged(2);
+                      }
                     }),
               ],
             ),
