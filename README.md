@@ -1,16 +1,12 @@
-# faxinapp
+# Meu Lar
 
-A new Flutter project.
+Um projeto desenvolvido com flutter.
 
-## Getting Started
+## Descrição
 
-This project is a starting point for a Flutter application.
+O objetivo do aplicativo é te ajudar na organização, limpeza e gerenciamento de produtos do seu Lar!
 
-A few resources to get you started if this is your first Flutter project:
+Com ele, você poderá cadastrar tarefas a serem executadas, por você ou outra pessoa, em períodos pré-estabelecidos conforme sua definição.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+- [Aplicativo](https://play.google.com/store/apps/details?id=com.me.fa.faxinapp)
+- [Site](https://inoveapp.com.br)
