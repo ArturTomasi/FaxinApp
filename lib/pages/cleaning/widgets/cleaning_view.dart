@@ -178,6 +178,10 @@ class _CleaningViewState extends State<CleaningView> {
 
           await notification.cancel(widget.cleaning);
 
+          if (next != null) {
+            notification.schedule(next);
+          }
+
           Navigator.of(context).pop(next);
         }
       } else {

@@ -145,8 +145,6 @@ class _MyAppState extends State<MyApp> {
       home: FutureBuilder<bool>(
         future: SecurityManager.isPremium(),
         builder: (_, snap) {
-          print('FAXINAPP snap.toString()');
-          print(snap.toString());
           if (snap.hasData) {
             return snap.data
                 ? BlocProvider(
